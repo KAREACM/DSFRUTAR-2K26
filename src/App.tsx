@@ -1,0 +1,139 @@
+import { useState, useEffect } from 'react';
+import { BootExperience } from './components/BootExperience';
+import { HeroSection } from './components/HeroSection';
+import { AboutSection } from './components/AboutSection';
+import { FaqSection } from './components/FaqSection';
+import { Navbar } from './components/Navbar';
+import { Footer } from './components/ui/footer-section';
+import { LoginScreen } from './components/LoginScreen';
+import { RegistrationFlow } from './components/registration/RegistrationFlow';
+import { Banner } from './components/ui/banner';
+import { AdminLogin } from './components/admin/AdminLogin';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+
+export default function App() {
+  // 'playing' | 'fading' | 'completed'
+  const [preloaderState, setPreloaderState] = useState<'playing' | 'fading' | 'completed'>('playing');
+  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'registration' | 'admin' | 'admin_dashboard'>('home');
+  const [adminEmail, setAdminEmail] = useState('');
+
+  // Listen for browser path changes (e.g. /admin)
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (window.location.pathname === '/admin') {
+        setCurrentPage('admin');
+      }
+    };
+
+    handleRouteChange();
+    window.addEventListener('popstate', handleRouteChange);
+    return () => window.removeEventListener('popstate', handleRouteChange);
+  }, []);
+
+  const handlePreloaderComplete = () => {
+    setPreloaderState('fading');
+    setTimeout(() => {
+      setPreloaderState('completed');
+    }, 500);
+  };
+
+  useEffect(() => {
+    if (preloaderState === 'completed') {
+      document.body.classList.remove('overflow-hidden');
+      document.body.classList.add('overflow-x-hidden', 'overflow-y-auto');
+    } else {
+      document.body.classList.add('overflow-hidden');
+    }
+  }, [preloaderState]);
+
+  // Reset scroll position on page transition
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [currentPage]);
+
+  const handleGoToAdmin = () => {
+    window.history.pushState({}, '', '/admin');
+    setCurrentPage('admin');
+  };
+
+  const handleBackToHome = () => {
+    window.history.pushState({}, '', '/');
+    setCurrentPage('home');
+  };
+
+  return (
+    <div className="relative w-full min-h-screen bg-[#050814] text-white">
+      
+      {/* Top Rainbow Announcement Banner */}
+      {preloaderState !== 'playing' && currentPage === 'home' && (
+        <Banner id="disfrutar-live-banner" variant="rainbow" height="2.5rem">
+          <div className="flex items-center justify-center gap-3 text-xs font-mono">
+            <span>🎉 <strong className="text-white">DISFRUTAR 2K26 Registrations are LIVE!</strong> KARE ACM Chapter</span>
+          </div>
+        </Banner>
+      )}
+
+      {/* Fixed Sticky Navigation Bar */}
+      {preloaderState !== 'playing' && currentPage === 'home' && (
+        <Navbar 
+          isVisible={preloaderState === 'fading' || preloaderState === 'completed'} 
+          onRegisterClick={() => setCurrentPage('login')}
+          onHomeClick={handleBackToHome}
+        />
+      )}
+
+      {/* Main Content Pages */}
+      {preloaderState !== 'playing' && (
+        currentPage === 'home' ? (
+          <>
+            <HeroSection 
+              isVisible={preloaderState === 'fading' || preloaderState === 'completed'} 
+              onRegisterClick={() => setCurrentPage('login')}
+            />
+            <AboutSection />
+            <FaqSection />
+            <Footer />
+          </>
+        ) : currentPage === 'login' ? (
+          <LoginScreen 
+            onBack={handleBackToHome} 
+            onSuccessLogin={() => setCurrentPage('registration')}
+            onAdminSuccessLogin={(email) => {
+              setAdminEmail(email);
+              setCurrentPage('admin_dashboard');
+            }}
+            onGoToAdmin={handleGoToAdmin}
+          />
+        ) : currentPage === 'registration' ? (
+          <RegistrationFlow 
+            onBackToPortal={handleBackToHome}
+          />
+        ) : currentPage === 'admin' ? (
+          <AdminLogin
+            onBack={handleBackToHome}
+            onSuccessLogin={(email) => {
+              setAdminEmail(email);
+              setCurrentPage('admin_dashboard');
+            }}
+          />
+        ) : (
+          <AdminDashboard
+            adminEmail={adminEmail || '99240041356@klu.ac.in'}
+            onLogout={handleBackToHome}
+          />
+        )
+      )}
+
+      {/* Preloader overlay with smooth opacity transition */}
+      {preloaderState !== 'completed' && (
+        <div 
+          className={`fixed inset-0 z-50 transition-opacity duration-500 ease-out ${
+            preloaderState === 'fading' ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
+        >
+          <BootExperience onComplete={handlePreloaderComplete} />
+        </div>
+      )}
+    </div>
+  );
+}

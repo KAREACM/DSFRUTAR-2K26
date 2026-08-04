@@ -1,0 +1,431 @@
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  QrCode, 
+  UploadCloud, 
+  CheckCircle2, 
+  AlertCircle, 
+  ArrowLeft, 
+  CreditCard, 
+  ShieldCheck, 
+  FileText, 
+  X, 
+  ExternalLink,
+  Smartphone
+} from 'lucide-react';
+import { TeamRegistrationState } from '../../types/registration';
+
+interface PaymentStepProps {
+  state: TeamRegistrationState;
+  onChange: (updatedState: TeamRegistrationState) => void;
+  onBack: () => void;
+  onSubmitPayment: () => void;
+}
+
+export const PaymentStep: React.FC<PaymentStepProps> = ({
+  state,
+  onChange,
+  onBack,
+  onSubmitPayment,
+}) => {
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const activeMembers = state.members.filter(m => m.name.trim() !== '');
+  const memberCount = activeMembers.length;
+  const totalAmount = memberCount * 350;
+
+  const upiId = "acmkare@upi";
+  const payeeName = "KARE ACM Student Chapter";
+  const note = `Disfrutar2K26-${state.teamName.replace(/\s+/g, '')}`;
+  const upiDeepLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${totalAmount}&tn=${encodeURIComponent(note)}&cu=INR`;
+
+  const handleTransactionIdChange = (id: string) => {
+    onChange({
+      ...state,
+      payment: {
+        ...state.payment,
+        transactionId: id
+      }
+    });
+  };
+
+  const handleFileUpload = (file: File) => {
+    if (!file) return;
+
+    // Check type
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
+    if (!validTypes.includes(file.type)) {
+      alert("Please upload a PNG, JPG, JPEG or PDF screenshot file.");
+      return;
+    }
+
+    const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+
+    onChange({
+      ...state,
+      payment: {
+        ...state.payment,
+        screenshotFile: file,
+        screenshotPreview: previewUrl
+      }
+    });
+  };
+
+  const handleRemoveFile = () => {
+    onChange({
+      ...state,
+      payment: {
+        ...state.payment,
+        screenshotFile: null,
+        screenshotPreview: null
+      }
+    });
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileUpload(e.dataTransfer.files[0]);
+    }
+  };
+
+  const isTxIdValid = state.payment.transactionId.trim().length >= 6;
+  const isFileUploaded = !!state.payment.screenshotFile;
+  const isFormValid = isTxIdValid && isFileUploaded;
+
+  return (
+    <div className="w-full max-w-4xl mx-auto space-y-6">
+      
+      {/* Header Banner */}
+      <div className="text-center space-y-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#536BFF]/15 border border-[#536BFF]/30 text-[#8DA2FF] text-xs font-mono uppercase tracking-wider">
+          <CreditCard className="w-3.5 h-3.5" />
+          Step 3 of 4 — UPI Checkout
+        </div>
+        <h2 className="text-2xl sm:text-3xl font-bold font-space text-white tracking-wide">
+          Registration Payment
+        </h2>
+        <p className="text-white/60 text-xs sm:text-sm font-sans max-w-lg mx-auto">
+          Scan the UPI QR code or launch your preferred UPI app to complete payment.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* Left Column: QR Code & Direct Deep Links (7 cols) */}
+        <div className="lg:col-span-7 bg-[#07091C]/80 border border-white/12 rounded-[24px] p-6 backdrop-blur-[24px] shadow-[0_24px_64px_rgba(0,0,0,0.8)] space-y-6">
+          
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div className="flex items-center gap-2.5">
+              <QrCode className="w-5 h-5 text-[#8DA2FF]" />
+              <h3 className="font-space font-bold text-base text-white">UPI Payment Hub</h3>
+            </div>
+            <span className="text-xs font-mono text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+              Instant Transfer
+            </span>
+          </div>
+
+          {/* QR Code Canvas Frame */}
+          <div className="flex flex-col items-center justify-center p-6 rounded-[20px] bg-[#0c102b] border border-white/10 space-y-3">
+            <div className="relative p-4 rounded-[16px] bg-white text-black shadow-[0_0_32px_rgba(83,107,255,0.3)]">
+              {/* High precision SVG QR Code visualization */}
+              <svg viewBox="0 0 200 200" className="w-44 h-44 sm:w-52 sm:h-52">
+                <rect width="200" height="200" fill="#FFFFFF" />
+                {/* Position detection patterns */}
+                <rect x="10" y="10" width="50" height="50" fill="#000000" />
+                <rect x="18" y="18" width="34" height="34" fill="#FFFFFF" />
+                <rect x="26" y="26" width="18" height="18" fill="#000000" />
+
+                <rect x="140" y="10" width="50" height="50" fill="#000000" />
+                <rect x="148" y="18" width="34" height="34" fill="#FFFFFF" />
+                <rect x="156" y="26" width="18" height="18" fill="#000000" />
+
+                <rect x="10" y="140" width="50" height="50" fill="#000000" />
+                <rect x="18" y="148" width="34" height="34" fill="#FFFFFF" />
+                <rect x="26" y="156" width="18" height="18" fill="#000000" />
+
+                {/* Simulated QR data matrix dots */}
+                <g fill="#000000">
+                  <rect x="70" y="20" width="10" height="10" />
+                  <rect x="90" y="20" width="10" height="10" />
+                  <rect x="110" y="20" width="10" height="10" />
+                  <rect x="70" y="40" width="10" height="10" />
+                  <rect x="100" y="40" width="20" height="10" />
+                  
+                  <rect x="20" y="70" width="10" height="10" />
+                  <rect x="40" y="70" width="20" height="10" />
+                  <rect x="70" y="70" width="10" height="10" />
+                  <rect x="90" y="70" width="20" height="20" fill="#536BFF" />
+                  <rect x="120" y="70" width="10" height="10" />
+                  <rect x="140" y="70" width="20" height="10" />
+                  <rect x="170" y="70" width="10" height="10" />
+
+                  <rect x="20" y="90" width="10" height="20" />
+                  <rect x="40" y="100" width="10" height="10" />
+                  <rect x="60" y="90" width="20" height="10" />
+                  <rect x="120" y="90" width="30" height="10" />
+                  <rect x="160" y="90" width="20" height="20" />
+
+                  <rect x="70" y="120" width="20" height="10" />
+                  <rect x="100" y="120" width="10" height="20" />
+                  <rect x="130" y="120" width="20" height="10" />
+
+                  <rect x="70" y="140" width="10" height="20" />
+                  <rect x="90" y="150" width="20" height="10" />
+                  <rect x="120" y="140" width="20" height="20" />
+                  <rect x="150" y="140" width="10" height="20" />
+                  <rect x="170" y="150" width="10" height="20" />
+
+                  <rect x="70" y="170" width="30" height="10" />
+                  <rect x="110" y="170" width="20" height="10" />
+                  <rect x="140" y="170" width="20" height="10" />
+                  <rect x="170" y="180" width="10" height="10" />
+                </g>
+
+                {/* Center ACM Logo emblem */}
+                <circle cx="100" cy="100" r="18" fill="#07091C" />
+                <text x="100" y="104" fontSize="9" fontWeight="bold" fill="#536BFF" textAnchor="middle" fontFamily="sans-serif">ACM</text>
+              </svg>
+            </div>
+
+            <div className="text-center space-y-1">
+              <span className="text-xs font-mono font-bold text-white uppercase tracking-wider block">Scan QR via any UPI App</span>
+              <p className="text-[11px] font-mono text-[#8DA2FF]">{upiId}</p>
+            </div>
+          </div>
+
+          {/* Deep Link Quick App Launcher Buttons */}
+          <div className="space-y-2">
+            <span className="text-[11px] font-mono uppercase tracking-widest text-white/50 block">Direct UPI Pay Launchers</span>
+            <div className="grid grid-cols-2 gap-2.5">
+              <a
+                href={upiDeepLink}
+                className="h-[42px] px-3 rounded-full bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 text-xs font-space text-white font-medium cursor-pointer"
+              >
+                <Smartphone className="w-3.5 h-3.5 text-[#536BFF]" />
+                <span>Google Pay</span>
+              </a>
+
+              <a
+                href={upiDeepLink}
+                className="h-[42px] px-3 rounded-full bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 text-xs font-space text-white font-medium cursor-pointer"
+              >
+                <Smartphone className="w-3.5 h-3.5 text-purple-400" />
+                <span>PhonePe</span>
+              </a>
+
+              <a
+                href={upiDeepLink}
+                className="h-[42px] px-3 rounded-full bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 text-xs font-space text-white font-medium cursor-pointer"
+              >
+                <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Paytm / Any UPI</span>
+              </a>
+
+              <a
+                href={upiDeepLink}
+                className="h-[42px] px-3 rounded-full bg-[#536BFF]/20 border border-[#536BFF]/40 hover:bg-[#536BFF]/30 transition-all flex items-center justify-center gap-2 text-xs font-space text-[#8DA2FF] font-bold cursor-pointer"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Open UPI App</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Right Column: Invoice Summary & Transaction Proof Upload (5 cols) */}
+        <div className="lg:col-span-5 space-y-5">
+          
+          {/* Invoice Summary Card */}
+          <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-5 backdrop-blur-[24px] space-y-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <span className="text-xs font-space font-bold text-white">Invoice Summary</span>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                Valid Size ({memberCount})
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs font-mono">
+              <div className="flex justify-between text-white/60">
+                <span>Team Name</span>
+                <span className="text-white font-bold">{state.teamName}</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Registration Fee</span>
+                <span>₹350 × {memberCount}</span>
+              </div>
+              <div className="border-t border-white/10 pt-2 flex justify-between items-center">
+                <span className="text-white font-bold">Total Amount</span>
+                <span className="text-xl font-space font-bold text-[#8DA2FF]">₹{totalAmount}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Verification Form */}
+          <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-5 backdrop-blur-[24px] space-y-4">
+            <h4 className="text-sm font-space font-bold text-white flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#8DA2FF]" />
+              Payment Verification
+            </h4>
+
+            {/* Transaction ID input */}
+            <div className="space-y-1.5">
+              <label className="block text-[10px] font-mono uppercase tracking-wider text-white/60 pl-2">
+                UPI Transaction ID / UTR Number *
+              </label>
+              <input
+                type="text"
+                value={state.payment.transactionId}
+                onChange={(e) => handleTransactionIdChange(e.target.value)}
+                placeholder="e.g. 123456789012"
+                className="w-full h-[44px] px-4 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 transition-all text-xs text-white placeholder-white/25 outline-none font-mono"
+              />
+            </div>
+
+            {/* Screenshot Drag & Drop Upload */}
+            <div className="space-y-1.5">
+              <label className="block text-[10px] font-mono uppercase tracking-wider text-white/60 pl-2">
+                Upload Payment Screenshot *
+              </label>
+
+              {!state.payment.screenshotFile ? (
+                <div
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`p-5 rounded-[20px] border-2 border-dashed text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center gap-2 ${
+                    dragActive 
+                      ? 'border-[#536BFF] bg-[#536BFF]/15' 
+                      : 'border-white/15 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.05]'
+                  }`}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg, application/pdf"
+                    onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                    className="hidden"
+                  />
+                  <div className="w-10 h-10 rounded-full bg-[#536BFF]/20 border border-[#536BFF]/40 flex items-center justify-center text-[#8DA2FF]">
+                    <UploadCloud className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-space font-semibold text-white">Drag Screenshot or Choose File</p>
+                    <p className="text-[10px] font-mono text-white/40 mt-0.5">Supports PNG, JPG, JPEG, PDF</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3 rounded-[18px] bg-white/[0.04] border border-white/15 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    {state.payment.screenshotPreview ? (
+                      <img 
+                        src={state.payment.screenshotPreview} 
+                        alt="Screenshot Preview" 
+                        className="w-10 h-10 rounded-lg object-cover border border-white/20 shrink-0" 
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                    )}
+                    <div className="truncate">
+                      <p className="text-xs font-space font-medium text-white truncate">
+                        {state.payment.screenshotFile.name}
+                      </p>
+                      <p className="text-[10px] font-mono text-emerald-400 flex items-center gap-1 mt-0.5">
+                        <CheckCircle2 className="w-3 h-3" /> Ready for submission
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleRemoveFile}
+                    className="p-1.5 rounded-full bg-white/10 hover:bg-red-500/20 text-white/60 hover:text-red-400 transition-colors cursor-pointer shrink-0"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Validation Pill Checks */}
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center gap-2 text-[11px] font-mono">
+                {isTxIdValid ? (
+                  <span className="text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Transaction ID Entered
+                  </span>
+                ) : (
+                  <span className="text-white/40 flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-400" /> Enter Transaction ID
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 text-[11px] font-mono">
+                {isFileUploaded ? (
+                  <span className="text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Screenshot Uploaded
+                  </span>
+                ) : (
+                  <span className="text-white/40 flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-400" /> Upload Payment Screenshot
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Submit Registration Button */}
+            <button
+              type="button"
+              onClick={onSubmitPayment}
+              disabled={!isFormValid}
+              className={`w-full h-[48px] rounded-full font-space font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 border transition-all duration-300 ${
+                isFormValid
+                  ? 'bg-gradient-to-r from-[#536BFF] to-[#4256F6] text-white border-white/20 shadow-[0_0_24px_rgba(83,107,255,0.4)] hover:scale-[1.02] active:scale-[0.98] cursor-pointer'
+                  : 'bg-white/5 text-white/30 border-white/5 cursor-not-allowed'
+              }`}
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Submit Registration</span>
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Bottom Back Button */}
+      <div className="flex justify-start">
+        <button
+          type="button"
+          onClick={onBack}
+          className="h-[42px] px-6 rounded-full border border-white/14 bg-white/5 text-white font-space text-xs font-semibold flex items-center justify-center gap-2 hover:bg-white/10 transition-all cursor-pointer"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Review</span>
+        </button>
+      </div>
+
+    </div>
+  );
+};
