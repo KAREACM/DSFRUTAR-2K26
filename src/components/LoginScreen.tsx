@@ -1,4 +1,3 @@
-'use client';
 import React, { useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { 
@@ -10,10 +9,11 @@ import {
   Loader2,
   CheckCircle2
 } from 'lucide-react';
+import { signInStudent, signInStudentWithGoogle, signInAdminUser, isKluEmail, isAdminCredentials } from '../lib/firebaseAuth';
 
 interface LoginScreenProps {
   onBack: () => void;
-  onSuccessLogin?: () => void;
+  onSuccessLogin?: (userEmail?: string) => void;
   onAdminSuccessLogin?: (email: string) => void;
   onGoToAdmin?: () => void;
 }
@@ -50,71 +50,86 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     btn.style.setProperty('--mouse-y', '50%');
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
     setErrorMessage('');
-    // Simulate high-tech authentication
-    setTimeout(() => {
+    try {
+      const user = await signInStudentWithGoogle();
       setIsLoading(false);
       setIsSuccess(true);
       setTimeout(() => {
-        if (onSuccessLogin) {
-          onSuccessLogin();
+        if (user.email && isAdminCredentials(user.email)) {
+          if (onAdminSuccessLogin) onAdminSuccessLogin(user.email);
+          else if (onSuccessLogin) onSuccessLogin(user.email);
+          else onBack();
+        } else if (onSuccessLogin) {
+          onSuccessLogin(user.email || '');
         } else {
           onBack();
         }
-      }, 1200);
-    }, 1500);
+      }, 1000);
+    } catch (err: any) {
+      setIsLoading(false);
+      setErrorMessage(err.message || 'Google Authentication failed. Please verify your @klu.ac.in account.');
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       setErrorMessage('Please fill in all the authorization parameters.');
       return;
     }
-    
-    // Quick validate
-    if (!email.includes('@')) {
-      setErrorMessage('Please provide a valid email address.');
-      return;
-    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPass = password.trim();
 
     setIsLoading(true);
     setErrorMessage('');
 
-    const cleanEmail = email.trim().toLowerCase();
-
-    // Check if user entered Organizer / Admin credentials
-    if ((cleanEmail === '99240041356@klu.ac.in' || cleanEmail === 'admin@klu.ac.in') && password === 'disfrutar24k6') {
+    // Check if user entered Organizer / Admin credentials (e.g. disfrutar2k26@klu.ac.in / disfrutar@2k26klu)
+    if (isAdminCredentials(cleanEmail, cleanPass)) {
+      try {
+        await signInAdminUser(cleanEmail, cleanPass);
+      } catch (e) {
+        // Continue with fallback session
+      }
+      setIsLoading(false);
+      setIsSuccess(true);
       setTimeout(() => {
-        setIsLoading(false);
-        setIsSuccess(true);
-        setTimeout(() => {
-          if (onAdminSuccessLogin) {
-            onAdminSuccessLogin(cleanEmail);
-          } else if (onSuccessLogin) {
-            onSuccessLogin();
-          } else {
-            onBack();
-          }
-        }, 1000);
-      }, 1200);
+        if (onAdminSuccessLogin) {
+          onAdminSuccessLogin(cleanEmail);
+        } else if (onSuccessLogin) {
+          onSuccessLogin(cleanEmail);
+        } else {
+          onBack();
+        }
+      }, 1000);
       return;
     }
 
-    // Simulate database handshake and session authorization for participants
-    setTimeout(() => {
+    // Validate university email domain @klu.ac.in
+    if (!isKluEmail(cleanEmail)) {
+      setIsLoading(false);
+      setErrorMessage('Please login using your University Email (@klu.ac.in)');
+      return;
+    }
+
+    try {
+      await signInStudent(cleanEmail, password);
       setIsLoading(false);
       setIsSuccess(true);
       setTimeout(() => {
         if (onSuccessLogin) {
-          onSuccessLogin();
+          onSuccessLogin(cleanEmail);
         } else {
           onBack();
         }
-      }, 1200);
-    }, 1500);
+      }, 1000);
+    } catch (err: any) {
+      setIsLoading(false);
+      setErrorMessage(err.message || 'Authentication failed. Please verify credentials.');
+    }
   };
 
   return (

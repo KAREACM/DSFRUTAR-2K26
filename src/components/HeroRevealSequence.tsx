@@ -198,7 +198,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-[#50A7D8]/35 backdrop-blur-md shadow-xl">
             <Sparkles className="w-3.5 h-3.5 text-[#50A7D8] animate-pulse" />
             <p className="text-[11px] sm:text-xs md:text-sm font-semibold tracking-[0.22em] text-white/90 uppercase font-jakarta whitespace-nowrap">
-              24-HOUR NATIONAL AI HACKATHON
+              32-HOUR NATIONAL AI HACKATHON
             </p>
           </div>
         </div>

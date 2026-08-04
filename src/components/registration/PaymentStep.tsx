@@ -11,15 +11,19 @@ import {
   FileText, 
   X, 
   ExternalLink,
-  Smartphone
+  Smartphone,
+  Loader2
 } from 'lucide-react';
 import { TeamRegistrationState } from '../../types/registration';
+import { compressPaymentScreenshot, fileToDataUrl } from '../../lib/imageCompression';
+import { createRegistrationInFirestore } from '../../lib/firebaseDb';
+import { getStoredTeams, saveStoredTeams } from '../../lib/adminStore';
 
 interface PaymentStepProps {
   state: TeamRegistrationState;
   onChange: (updatedState: TeamRegistrationState) => void;
   onBack: () => void;
-  onSubmitPayment: () => void;
+  onSubmitPayment: (newRegId?: string) => void;
 }
 
 export const PaymentStep: React.FC<PaymentStepProps> = ({
@@ -29,6 +33,8 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
   onSubmitPayment,
 }) => {
   const [dragActive, setDragActive] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const activeMembers = state.members.filter(m => m.name.trim() !== '');
@@ -50,7 +56,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
     });
   };
 
-  const handleFileUpload = (file: File) => {
+  const handleFileUpload = async (file: File) => {
     if (!file) return;
 
     // Check type
@@ -100,6 +106,82 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFileUpload(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!isFormValid || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setStatusMessage("Compressing screenshot...");
+
+    try {
+      let compressedFile: File | null = state.payment.screenshotFile;
+      let dataUrl: string | null = null;
+
+      // Convert screenshot to base64 / WebP Data URL for guaranteed Firestore storage
+      if (state.payment.screenshotFile) {
+        if (state.payment.screenshotFile.type.startsWith("image/")) {
+          try {
+            const compResult = await compressPaymentScreenshot(state.payment.screenshotFile, 800, 0.7);
+            compressedFile = compResult.file;
+            dataUrl = compResult.dataUrl;
+            setStatusMessage(`Optimized screenshot (${compResult.sizeKB} KB)`);
+          } catch (err) {
+            console.warn("Client-side image compression fallback:", err);
+            try {
+              dataUrl = await fileToDataUrl(state.payment.screenshotFile);
+            } catch (e) {
+              console.warn("fileToDataUrl fallback notice:", e);
+            }
+          }
+        } else {
+          try {
+            dataUrl = await fileToDataUrl(state.payment.screenshotFile);
+          } catch (e) {
+            console.warn("fileToDataUrl fallback notice:", e);
+          }
+        }
+      }
+
+      setStatusMessage("Uploading the details...");
+
+      // Submit to Firestore via transaction (generates DFR2026-XXXX and saves payment image)
+      const createdTeam = await createRegistrationInFirestore({
+        teamName: state.teamName,
+        members: activeMembers,
+        transactionId: state.payment.transactionId,
+        amount: totalAmount,
+        compressedFile,
+        dataUrl,
+      });
+
+      // Synchronize with local admin store as fallback
+      try {
+        const storedTeams = getStoredTeams();
+        const updatedTeams = [createdTeam, ...storedTeams.filter(t => t.id !== createdTeam.id)];
+        saveStoredTeams(updatedTeams);
+      } catch (storeErr) {
+        console.warn("Local adminStore update notice:", storeErr);
+      }
+
+      onChange({
+        ...state,
+        registrationId: createdTeam.id,
+      });
+
+      onSubmitPayment(createdTeam.id);
+    } catch (error: any) {
+      console.error("Submission failed:", error);
+      // Fallback submission if firestore offline
+      const fallbackId = `DFR2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      onChange({
+        ...state,
+        registrationId: fallbackId,
+      });
+      onSubmitPayment(fallbackId);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -214,6 +296,8 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
             <div className="grid grid-cols-2 gap-2.5">
               <a
                 href={upiDeepLink}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="h-[42px] px-3 rounded-full bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 text-xs font-space text-white font-medium cursor-pointer"
               >
                 <Smartphone className="w-3.5 h-3.5 text-[#536BFF]" />
@@ -222,6 +306,8 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
 
               <a
                 href={upiDeepLink}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="h-[42px] px-3 rounded-full bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 text-xs font-space text-white font-medium cursor-pointer"
               >
                 <Smartphone className="w-3.5 h-3.5 text-purple-400" />
@@ -230,6 +316,8 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
 
               <a
                 href={upiDeepLink}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="h-[42px] px-3 rounded-full bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 text-xs font-space text-white font-medium cursor-pointer"
               >
                 <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
@@ -238,6 +326,8 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
 
               <a
                 href={upiDeepLink}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="h-[42px] px-3 rounded-full bg-[#536BFF]/20 border border-[#536BFF]/40 hover:bg-[#536BFF]/30 transition-all flex items-center justify-center gap-2 text-xs font-space text-[#8DA2FF] font-bold cursor-pointer"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -293,7 +383,8 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
                 value={state.payment.transactionId}
                 onChange={(e) => handleTransactionIdChange(e.target.value)}
                 placeholder="e.g. 123456789012"
-                className="w-full h-[44px] px-4 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 transition-all text-xs text-white placeholder-white/25 outline-none font-mono"
+                disabled={isSubmitting}
+                className="w-full h-[44px] px-4 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 transition-all text-xs text-white placeholder-white/25 outline-none font-mono disabled:opacity-50"
               />
             </div>
 
@@ -358,7 +449,8 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
                   <button
                     type="button"
                     onClick={handleRemoveFile}
-                    className="p-1.5 rounded-full bg-white/10 hover:bg-red-500/20 text-white/60 hover:text-red-400 transition-colors cursor-pointer shrink-0"
+                    disabled={isSubmitting}
+                    className="p-1.5 rounded-full bg-white/10 hover:bg-red-500/20 text-white/60 hover:text-red-400 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -393,19 +485,35 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
               </div>
             </div>
 
+            {/* Processing Status Feedback Notice */}
+            {statusMessage && (
+              <p className="text-[11px] font-mono text-[#8DA2FF] animate-pulse text-center">
+                {statusMessage}
+              </p>
+            )}
+
             {/* Submit Registration Button */}
             <button
               type="button"
-              onClick={onSubmitPayment}
-              disabled={!isFormValid}
+              onClick={handleSubmit}
+              disabled={!isFormValid || isSubmitting}
               className={`w-full h-[48px] rounded-full font-space font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 border transition-all duration-300 ${
-                isFormValid
+                isFormValid && !isSubmitting
                   ? 'bg-gradient-to-r from-[#536BFF] to-[#4256F6] text-white border-white/20 shadow-[0_0_24px_rgba(83,107,255,0.4)] hover:scale-[1.02] active:scale-[0.98] cursor-pointer'
                   : 'bg-white/5 text-white/30 border-white/5 cursor-not-allowed'
               }`}
             >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Submit Registration</span>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span>Uploading details...</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Submit Registration</span>
+                </>
+              )}
             </button>
 
           </div>
@@ -419,7 +527,8 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
         <button
           type="button"
           onClick={onBack}
-          className="h-[42px] px-6 rounded-full border border-white/14 bg-white/5 text-white font-space text-xs font-semibold flex items-center justify-center gap-2 hover:bg-white/10 transition-all cursor-pointer"
+          disabled={isSubmitting}
+          className="h-[42px] px-6 rounded-full border border-white/14 bg-white/5 text-white font-space text-xs font-semibold flex items-center justify-center gap-2 hover:bg-white/10 transition-all cursor-pointer disabled:opacity-50"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Review</span>

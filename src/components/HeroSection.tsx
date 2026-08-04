@@ -183,12 +183,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
           2K26
         </div>
 
-        {/* Event Title: 24-HOUR AI HACKATHON */}
+        {/* Event Title: 32-HOUR AI HACKATHON */}
         <h2 
           ref={eventTitleRef}
           className="font-space font-normal text-white tracking-[0.16em] sm:tracking-[0.20em] md:tracking-[0.24em] uppercase mb-1.5 sm:mb-2 md:mb-[10px] text-[13px] sm:text-[17px] md:text-[21px] lg:text-[24px]"
         >
-          24-HOUR AI HACKATHON
+          32-HOUR AI HACKATHON
         </h2>
 
         {/* Tagline: THINK • BUILD • INNOVATE */}
@@ -256,7 +256,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
               style={{ filter: 'drop-shadow(0 0 6px rgba(79,126,255,0.55))' }}
             />
             <span className="text-[13px] sm:text-[14px] md:text-[15px] font-medium leading-[22px] tracking-[0.01em] text-white/95 whitespace-nowrap">
-              24 HOURS
+              32 HOURS
             </span>
           </div>
         </div>

@@ -18,8 +18,11 @@ import { PaymentStep } from './PaymentStep';
 import { SubmittedStep } from './SubmittedStep';
 import { WhatsAppStep } from './WhatsAppStep';
 
+import { findRegistrationByUserEmail } from '../../lib/firebaseDb';
+
 interface RegistrationFlowProps {
   onBackToPortal: () => void;
+  userEmail?: string;
 }
 
 const INITIAL_MEMBERS: MemberData[] = [
@@ -32,9 +35,11 @@ const INITIAL_MEMBERS: MemberData[] = [
 
 export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
   onBackToPortal,
+  userEmail = '',
 }) => {
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('team_details');
   const [expandedMemberId, setExpandedMemberId] = useState<string>('1');
+  const [isExistingRegistrationChecked, setIsExistingRegistrationChecked] = useState(false);
 
   // Registration Form State
   const [registrationState, setRegistrationState] = useState<TeamRegistrationState>(() => {
@@ -61,6 +66,40 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
       }
     };
   });
+
+  // Check if user is already registered in database
+  useEffect(() => {
+    let isMounted = true;
+    async function checkExistingRegistration() {
+      if (!userEmail || isExistingRegistrationChecked) return;
+      try {
+        const existingTeam = await findRegistrationByUserEmail(userEmail);
+        if (existingTeam && isMounted) {
+          setRegistrationState(prev => ({
+            ...prev,
+            teamName: existingTeam.teamName,
+            members: existingTeam.members.length > 0 ? existingTeam.members : prev.members,
+            registrationId: existingTeam.id,
+            payment: {
+              transactionId: existingTeam.transactionId || '',
+              screenshotFile: null,
+              screenshotPreview: existingTeam.screenshotUrl || null,
+            }
+          }));
+          setCurrentStep('submitted');
+          setIsExistingRegistrationChecked(true);
+        }
+      } catch (e) {
+        console.warn("Existing registration check notice:", e);
+      }
+    }
+
+    checkExistingRegistration();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userEmail, isExistingRegistrationChecked]);
 
   // Autosave locally
   useEffect(() => {
@@ -101,9 +140,24 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
   };
 
   const requiredMembers = registrationState.members.slice(0, 4);
-  const isTeamValid = 
-    registrationState.teamName.trim().length >= 2 &&
-    requiredMembers.every(isMemberComplete);
+  const optionalMember = registrationState.members[4];
+
+  // 1. Leader + 3 members (4 members minimum) MUST all be completed
+  const requiredMembersComplete = requiredMembers.every(isMemberComplete);
+
+  // 2. Member 4 (Optional): If any input is started, it must be fully completed. If empty, it's valid.
+  const isOptionalTouched = Boolean(
+    optionalMember.name?.trim() || 
+    optionalMember.registerNumber?.trim() || 
+    optionalMember.phone?.trim()
+  );
+  const isOptionalMemberValid = !isOptionalTouched || isMemberComplete(optionalMember);
+
+  // 3. Team Name must be at least 2 characters
+  const isTeamNameValid = registrationState.teamName.trim().length >= 2;
+
+  // 4. Overall Team Validity (Team size < 4 is rejected)
+  const isTeamValid = isTeamNameValid && requiredMembersComplete && isOptionalMemberValid;
 
   // Steps definition for progress indicator
   const navSteps = [
@@ -128,16 +182,22 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
   const activeStepIndex = getStepIndex(currentStep);
   const progressPercent = (activeStepIndex / (navSteps.length - 1)) * 100;
 
-  const handleFinishPayment = () => {
-    const regId = `DFR2026-${Math.floor(1000 + Math.random() * 9000)}`;
-    setRegistrationState(prev => ({
-      ...prev,
-      registrationId: regId
-    }));
+  const handleFinishPayment = (newRegId?: string) => {
+    if (newRegId) {
+      setRegistrationState(prev => ({
+        ...prev,
+        registrationId: newRegId
+      }));
+    } else if (!registrationState.registrationId) {
+      const regId = `DFR2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      setRegistrationState(prev => ({
+        ...prev,
+        registrationId: regId
+      }));
+    }
     setCurrentStep('submitted');
   };
 
-  const optionalMember = registrationState.members[4];
   const isOptionalAdded = isMemberComplete(optionalMember);
   const totalMemberCount = registrationState.members.slice(0, 4).filter(isMemberComplete).length + (isOptionalAdded ? 1 : 0);
   const totalFee = totalMemberCount * 350;

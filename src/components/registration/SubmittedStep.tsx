@@ -77,11 +77,32 @@ export const SubmittedStep: React.FC<SubmittedStepProps> = ({
         <div className="p-4 rounded-[18px] bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs font-sans text-left space-y-1.5 max-w-lg mx-auto">
           <div className="flex items-center gap-2 font-mono font-bold uppercase text-amber-400 text-[11px]">
             <Clock className="w-4 h-4" />
-            <span>Verification Pending</span>
+            <span>Application Status: Pending Verification</span>
           </div>
           <p className="leading-relaxed text-white/70">
-            Your payment verification is pending. The organizing team will verify it shortly. A formal confirmation receipt will be sent via Email once verified.
+            Your registration & UPI payment details have been logged in the system. The organizing committee is verifying your submission.
           </p>
+        </div>
+
+        {/* Registered Team Roster Details */}
+        <div className="p-4 rounded-[18px] bg-white/[0.02] border border-white/10 text-left space-y-3 max-w-lg mx-auto">
+          <div className="flex items-center justify-between border-b border-white/10 pb-2">
+            <span className="text-xs font-mono font-bold text-[#8DA2FF] uppercase">Registered Team Roster</span>
+            <span className="text-[10px] font-mono text-white/50">{activeMembers.length} Members</span>
+          </div>
+          <div className="space-y-2">
+            {activeMembers.map((m, idx) => (
+              <div key={m.id || idx} className="flex items-center justify-between text-xs font-mono py-1 px-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                <div>
+                  <span className="text-[#8DA2FF] font-bold mr-2">[{m.role}]</span>
+                  <span className="text-white font-bold">{m.name}</span>
+                </div>
+                <div className="text-white/50 text-[11px]">
+                  {m.registerNumber} • {m.department} ({m.section})
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Action Buttons */}

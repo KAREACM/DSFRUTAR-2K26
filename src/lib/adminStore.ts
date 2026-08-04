@@ -1,4 +1,12 @@
 import { MemberData } from '../types/registration';
+import {
+  subscribeToFirestoreRegistrations,
+  approveRegistrationInFirestore,
+  rejectRegistrationInFirestore,
+  updateRegistrationInFirestore,
+  deleteRegistrationInFirestore,
+  seedDemoRegistrationsInFirestore
+} from './firebaseDb';
 
 export type PaymentStatus = 'pending' | 'approved' | 'rejected';
 
@@ -42,14 +50,14 @@ export interface AdminNotification {
 
 const INITIAL_TEAMS: TeamRecord[] = [
   {
-    id: 'DFR-8801',
+    id: 'DFR2026-0001',
     teamName: 'Binary Builders',
-    createdAt: '2026-08-12 10:15 AM',
+    createdAt: '12 Aug, 10:15 AM',
     memberCount: 5,
     paymentStatus: 'pending',
     transactionId: 'UPI/984201847201',
     amount: 1750,
-    submittedAt: '2026-08-12 11:43 AM',
+    submittedAt: '12 Aug, 11:43 AM',
     screenshotUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
     timeline: [
       { title: 'Registration Created', timestamp: '12 Aug, 10:15 AM', completed: true },
@@ -67,16 +75,16 @@ const INITIAL_TEAMS: TeamRecord[] = [
     ]
   },
   {
-    id: 'DFR-8802',
+    id: 'DFR2026-0002',
     teamName: 'AI Titans',
-    createdAt: '2026-08-12 10:17 AM',
+    createdAt: '12 Aug, 10:17 AM',
     memberCount: 4,
     paymentStatus: 'approved',
     transactionId: 'UPI/423985721349',
     amount: 1400,
-    submittedAt: '2026-08-12 10:25 AM',
-    approvedBy: 'Dr. P. Venkat Sai (Admin)',
-    approvedAt: '2026-08-12 10:30 AM',
+    submittedAt: '12 Aug, 10:25 AM',
+    approvedBy: 'Faculty Coordinator (Admin)',
+    approvedAt: '12 Aug, 10:30 AM',
     screenshotUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=600&q=80',
     timeline: [
       { title: 'Registration Created', timestamp: '12 Aug, 10:17 AM', completed: true },
@@ -93,41 +101,17 @@ const INITIAL_TEAMS: TeamRecord[] = [
     ]
   },
   {
-    id: 'DFR-8803',
-    teamName: 'Neural Ninjas',
-    createdAt: '2026-08-12 10:05 AM',
-    memberCount: 4,
-    paymentStatus: 'pending',
-    transactionId: 'UPI/112233445566',
-    amount: 1400,
-    submittedAt: '2026-08-12 10:12 AM',
-    screenshotUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80',
-    timeline: [
-      { title: 'Registration Created', timestamp: '12 Aug, 10:05 AM', completed: true },
-      { title: 'Payment Submitted', timestamp: '12 Aug, 10:12 AM', completed: true },
-      { title: 'Pending Verification', timestamp: '12 Aug, 10:12 AM', completed: true },
-      { title: 'Approved', timestamp: 'Pending', completed: false },
-      { title: 'Confirmation Sent', timestamp: 'Pending', completed: false },
-    ],
-    members: [
-      { id: 'm1', role: 'Leader', name: 'Arjun Das', registerNumber: '99240041501', phone: '+91 9765432109', year: '2nd Year', department: 'CSE', section: '25S04', residenceType: 'Hosteller', hostelName: 'BH-3 (Kalam Hall)', roomNumber: '408', wardenName: 'Dr. Subramanian', wardenPhone: '+91 9876500004' },
-      { id: 'm2', role: 'Member 1', name: 'Bhavna K', registerNumber: '99240041502', phone: '+91 9765432110', year: '2nd Year', department: 'CSE', section: '25S04', residenceType: 'Hosteller', hostelName: 'LH-2 (Yamuna Hostel)', roomNumber: '105', wardenName: 'Mrs. Shanthi', wardenPhone: '+91 9876500005' },
-      { id: 'm3', role: 'Member 2', name: 'Chirag Shah', registerNumber: '99240041503', phone: '+91 9765432111', year: '2nd Year', department: 'ECE', section: '25S01', residenceType: 'Day Scholar' },
-      { id: 'm4', role: 'Member 3', name: 'Divya Iyer', registerNumber: '99240041504', phone: '+91 9765432112', year: '2nd Year', department: 'CSE', section: '25S04', residenceType: 'Day Scholar' },
-    ]
-  },
-  {
-    id: 'DFR-8804',
+    id: 'DFR2026-0003',
     teamName: 'Cyber Knights',
-    createdAt: '2026-08-11 04:20 PM',
+    createdAt: '11 Aug, 04:20 PM',
     memberCount: 5,
     paymentStatus: 'rejected',
     transactionId: 'UPI/000099998888',
     amount: 1750,
-    submittedAt: '2026-08-11 04:30 PM',
+    submittedAt: '11 Aug, 04:30 PM',
     rejectReason: 'Invalid Screenshot (Illegible transaction receipt image provided)',
-    approvedBy: 'Dr. P. Venkat Sai (Admin)',
-    approvedAt: '2026-08-11 05:00 PM',
+    approvedBy: 'Faculty Coordinator (Admin)',
+    approvedAt: '11 Aug, 05:00 PM',
     screenshotUrl: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=600&q=80',
     timeline: [
       { title: 'Registration Created', timestamp: '11 Aug, 04:20 PM', completed: true },
@@ -143,32 +127,6 @@ const INITIAL_TEAMS: TeamRecord[] = [
       { id: 'm4', role: 'Member 3', name: 'Hari Krishnan', registerNumber: '99240041604', phone: '+91 9543210990', year: '3rd Year', department: 'ECE', section: '24S02', residenceType: 'Hosteller', hostelName: 'BH-2 (Nehru Hall)', roomNumber: '315', wardenName: 'Prof. Ramesh', wardenPhone: '+91 9876500002' },
       { id: 'm5', role: 'Member 4 (Optional)', isOptional: true, name: 'Ishita Roy', registerNumber: '99240041605', phone: '+91 9543210991', year: '3rd Year', department: 'IT', section: '24S05', residenceType: 'Day Scholar' },
     ]
-  },
-  {
-    id: 'DFR-8805',
-    teamName: 'Quantum Realm',
-    createdAt: '2026-08-11 02:10 PM',
-    memberCount: 4,
-    paymentStatus: 'approved',
-    transactionId: 'UPI/776655443322',
-    amount: 1400,
-    submittedAt: '2026-08-11 02:15 PM',
-    approvedBy: 'Dr. P. Venkat Sai (Admin)',
-    approvedAt: '2026-08-11 02:20 PM',
-    screenshotUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=600&q=80',
-    timeline: [
-      { title: 'Registration Created', timestamp: '11 Aug, 02:10 PM', completed: true },
-      { title: 'Payment Submitted', timestamp: '11 Aug, 02:15 PM', completed: true },
-      { title: 'Pending Verification', timestamp: '11 Aug, 02:15 PM', completed: true },
-      { title: 'Approved', timestamp: '11 Aug, 02:20 PM', completed: true },
-      { title: 'Confirmation Sent', timestamp: '11 Aug, 02:21 PM', completed: true },
-    ],
-    members: [
-      { id: 'm1', role: 'Leader', name: 'Jai Kumar', registerNumber: '99240041701', phone: '+91 9432109876', year: '1st Year', department: 'CSE', section: '26S01', residenceType: 'Hosteller', hostelName: 'BH-4 (Ramanujan Hall)', roomNumber: '102', wardenName: 'Prof. Naidu', wardenPhone: '+91 9876500006' },
-      { id: 'm2', role: 'Member 1', name: 'Kavya S', registerNumber: '99240041702', phone: '+91 9432109877', year: '1st Year', department: 'CSE', section: '26S01', residenceType: 'Hosteller', hostelName: 'LH-1 (Ganga Hostel)', roomNumber: '110', wardenName: 'Mrs. Lakshmi', wardenPhone: '+91 9876500003' },
-      { id: 'm3', role: 'Member 2', name: 'Lokesh N', registerNumber: '99240041703', phone: '+91 9432109878', year: '1st Year', department: 'AI & DS', section: '26S02', residenceType: 'Day Scholar' },
-      { id: 'm4', role: 'Member 3', name: 'Meera Nair', registerNumber: '99240041704', phone: '+91 9432109879', year: '1st Year', department: 'ECE', section: '26S03', residenceType: 'Day Scholar' },
-    ]
   }
 ];
 
@@ -180,9 +138,8 @@ const INITIAL_NOTIFICATIONS: AdminNotification[] = [
 ];
 
 const INITIAL_LOGS: AuditLog[] = [
-  { id: 'l1', adminName: 'Dr. P. Venkat Sai', action: 'Approve Payment', teamName: 'AI Titans', timestamp: '12 Aug, 10:30 AM', details: 'Transaction UPI/423985721349 verified' },
-  { id: 'l2', adminName: 'Dr. P. Venkat Sai', action: 'Reject Payment', teamName: 'Cyber Knights', timestamp: '11 Aug, 05:00 PM', details: 'Reason: Invalid Screenshot' },
-  { id: 'l3', adminName: 'Dr. P. Venkat Sai', action: 'Approve Payment', teamName: 'Quantum Realm', timestamp: '11 Aug, 02:20 PM', details: 'Transaction UPI/776655443322 verified' },
+  { id: 'l1', adminName: 'Faculty Coordinator', action: 'Approve Payment', teamName: 'AI Titans', timestamp: '12 Aug, 10:30 AM', details: 'Transaction UPI/423985721349 verified' },
+  { id: 'l2', adminName: 'Faculty Coordinator', action: 'Reject Payment', teamName: 'Cyber Knights', timestamp: '11 Aug, 05:00 PM', details: 'Reason: Invalid Screenshot' },
 ];
 
 const STORAGE_KEY_TEAMS = 'disfrutar_admin_teams';
@@ -243,3 +200,13 @@ export function saveStoredNotifs(notifs: AdminNotification[]): void {
     console.error('Failed to save notifications:', e);
   }
 }
+
+// Export Firebase helpers for store operations
+export {
+  subscribeToFirestoreRegistrations,
+  approveRegistrationInFirestore,
+  rejectRegistrationInFirestore,
+  updateRegistrationInFirestore,
+  deleteRegistrationInFirestore,
+  seedDemoRegistrationsInFirestore
+};

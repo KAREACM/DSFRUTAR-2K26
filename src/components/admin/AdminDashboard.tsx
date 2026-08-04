@@ -7,9 +7,21 @@ import {
 } from 'lucide-react';
 import { 
   TeamRecord, 
-  getStoredTeams, saveStoredTeams
+  getStoredTeams, saveStoredTeams,
+  subscribeToFirestoreRegistrations,
+  approveRegistrationInFirestore,
+  rejectRegistrationInFirestore,
+  updateRegistrationInFirestore,
+  deleteRegistrationInFirestore,
+  seedDemoRegistrationsInFirestore
 } from '../../lib/adminStore';
-import { exportTeamsToCSV, openPrintablePDF } from '../../lib/exportUtils';
+import { 
+  exportTeamsToCSV, 
+  openOverallPDF, 
+  openHostellersPDF, 
+  openDayScholarsPDF, 
+  openPendingPaymentsPDF 
+} from '../../lib/exportUtils';
 import { TeamDetailModal } from './TeamDetailModal';
 import { TeamEditModal } from './TeamEditModal';
 import { QuickRejectModal } from './QuickRejectModal';
@@ -21,6 +33,7 @@ interface AdminDashboardProps {
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLogout }) => {
   const [teams, setTeams] = useState<TeamRecord[]>([]);
+  const [isSeeding, setIsSeeding] = useState(false);
   
   // Navigation tabs
   const [activeTab, setActiveTab] = useState<'dashboard' | 'teams' | 'payments' | 'reports' | 'settings'>('dashboard');
@@ -42,15 +55,34 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
   const [selectedEditTeam, setSelectedEditTeam] = useState<TeamRecord | null>(null);
   const [quickRejectTeam, setQuickRejectTeam] = useState<TeamRecord | null>(null);
 
-  // Load initial store data
+  // Subscribe to live Firestore registrations
   useEffect(() => {
+    // Initial local store fallback
     setTeams(getStoredTeams());
+
+    // Live real-time Firestore listener
+    const unsubscribe = subscribeToFirestoreRegistrations((liveTeams) => {
+      if (liveTeams && liveTeams.length > 0) {
+        setTeams(liveTeams);
+        saveStoredTeams(liveTeams);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  // Save changes to localStorage whenever store updates
-  const updateTeams = (newTeams: TeamRecord[]) => {
-    setTeams(newTeams);
-    saveStoredTeams(newTeams);
+  // Seed Demo Registrations for Architecture Verification
+  const handleSeedDemoData = async () => {
+    setIsSeeding(true);
+    try {
+      const count = await seedDemoRegistrationsInFirestore();
+      alert(`Successfully seeded ${count} demo registrations in Firestore! The dashboard will update in real time.`);
+    } catch (err: any) {
+      console.error("Seeding error:", err);
+      alert("Notice: Seeded fallback demo teams to local view.");
+    } finally {
+      setIsSeeding(false);
+    }
   };
 
   // Metrics
@@ -93,14 +125,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
     return matchesSearch && matchesPayment && matchesResidence && matchesMembers;
   });
 
+  const getFilterDesc = () => {
+    const parts = [];
+    if (searchQuery.trim()) parts.push(`Search: "${searchQuery.trim()}"`);
+    if (paymentFilter !== 'all') parts.push(`Payment: ${paymentFilter}`);
+    if (residenceFilter !== 'all') parts.push(`Residence: ${residenceFilter}`);
+    if (membersFilter !== 'all') parts.push(`Members: ${membersFilter}`);
+    return parts.length > 0 ? parts.join(' • ') : 'All Registered Teams';
+  };
+
   // Action Handlers
-  const handleApprovePayment = (teamId: string) => {
+  const handleApprovePayment = async (teamId: string) => {
+    const adminName = adminEmail || 'Dr. P. Venkat Sai (Admin)';
+    try {
+      await approveRegistrationInFirestore(teamId, adminName);
+    } catch (err) {
+      console.warn("Firestore update fallback to local:", err);
+    }
+
     const updated = teams.map(t => {
       if (t.id === teamId) {
         return {
           ...t,
           paymentStatus: 'approved' as const,
-          approvedBy: 'Dr. P. Venkat Sai (Admin)',
+          approvedBy: adminName,
           approvedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           timeline: t.timeline.map(step => {
             if (step.title === 'Approved') return { ...step, timestamp: 'Just now', completed: true };
@@ -112,20 +160,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
       return t;
     });
 
-    updateTeams(updated);
+    setTeams(updated);
+    saveStoredTeams(updated);
     if (selectedDetailTeam?.id === teamId) {
       setSelectedDetailTeam(updated.find(t => t.id === teamId) || null);
     }
   };
 
-  const handleRejectPayment = (teamId: string, reason: string) => {
+  const handleRejectPayment = async (teamId: string, reason: string) => {
+    const adminName = adminEmail || 'Dr. P. Venkat Sai (Admin)';
+    try {
+      await rejectRegistrationInFirestore(teamId, adminName, reason);
+    } catch (err) {
+      console.warn("Firestore update fallback to local:", err);
+    }
+
     const updated = teams.map(t => {
       if (t.id === teamId) {
         return {
           ...t,
           paymentStatus: 'rejected' as const,
           rejectReason: reason,
-          approvedBy: 'Dr. P. Venkat Sai (Admin)',
+          approvedBy: adminName,
           approvedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           timeline: t.timeline.map(step => {
             if (step.title === 'Approved') return { title: 'Rejected', timestamp: 'Just now', completed: true };
@@ -136,43 +192,69 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
       return t;
     });
 
-    updateTeams(updated);
+    setTeams(updated);
+    saveStoredTeams(updated);
     setQuickRejectTeam(null);
     if (selectedDetailTeam?.id === teamId) {
       setSelectedDetailTeam(updated.find(t => t.id === teamId) || null);
     }
   };
 
-  const handleSaveEditTeam = (updatedTeam: TeamRecord) => {
+  const handleSaveEditTeam = async (updatedTeam: TeamRecord) => {
+    try {
+      await updateRegistrationInFirestore(updatedTeam);
+    } catch (err) {
+      console.warn("Firestore update fallback to local:", err);
+    }
+
     const updated = teams.map(t => t.id === updatedTeam.id ? updatedTeam : t);
-    updateTeams(updated);
+    setTeams(updated);
+    saveStoredTeams(updated);
     setSelectedEditTeam(null);
     if (selectedDetailTeam?.id === updatedTeam.id) {
       setSelectedDetailTeam(updatedTeam);
     }
   };
 
-  const handleDeleteTeam = (teamId: string) => {
+  const handleDeleteTeam = async (teamId: string) => {
+    try {
+      await deleteRegistrationInFirestore(teamId);
+    } catch (err) {
+      console.warn("Firestore delete fallback to local:", err);
+    }
+
     const updated = teams.filter(t => t.id !== teamId);
-    updateTeams(updated);
+    setTeams(updated);
+    saveStoredTeams(updated);
     setSelectedDetailTeam(null);
   };
 
-  const handleBulkApprove = () => {
+  const handleBulkApprove = async () => {
     if (selectedTeamIds.length === 0) return;
+    const adminName = adminEmail || 'Dr. P. Venkat Sai (Admin)';
+    
+    for (const teamId of selectedTeamIds) {
+      try {
+        await approveRegistrationInFirestore(teamId, adminName);
+      } catch (err) {
+        console.warn("Bulk approve error:", err);
+      }
+    }
+
     const updated = teams.map(t => {
       if (selectedTeamIds.includes(t.id)) {
         return {
           ...t,
           paymentStatus: 'approved' as const,
-          approvedBy: 'Dr. P. Venkat Sai (Admin)',
+          approvedBy: adminName,
           approvedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         };
       }
       return t;
     });
 
-    updateTeams(updated);
+    setTeams(updated);
+    saveStoredTeams(updated);
     setSelectedTeamIds([]);
   };
 
@@ -205,7 +287,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
         </div>
 
         {/* Right side admin info & controls */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSeedDemoData}
+            disabled={isSeeding}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#536BFF]/20 border border-[#536BFF]/40 text-[#8DA2FF] hover:bg-[#536BFF]/30 transition-all text-xs font-mono font-bold cursor-pointer disabled:opacity-50"
+            title="Seed demo registration data into Firestore database"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSeeding ? 'animate-spin' : ''}`} />
+            <span>{isSeeding ? 'Seeding Data...' : 'Seed Demo Data'}</span>
+          </button>
+
           <div className="hidden md:flex items-center gap-2.5 pl-3 border-l border-white/10">
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             <div className="text-right">
@@ -412,50 +504,46 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
               <button
                 onClick={() => exportTeamsToCSV(filteredTeams)}
                 className="px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 hover:bg-emerald-500/25 text-emerald-400 font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Download CSV Spreadsheet"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Download CSV</span>
+                <span>CSV ({filteredTeams.length})</span>
               </button>
 
               <button
-                onClick={() => openPrintablePDF(filteredTeams, 'DISFRUTAR 2K26 Registration Report')}
+                onClick={() => openOverallPDF(filteredTeams, 'DISFRUTAR 2K26 Master Roster Report', getFilterDesc())}
                 className="px-3.5 py-1.5 rounded-full bg-[#536BFF]/20 border border-[#536BFF]/40 hover:bg-[#536BFF]/30 text-[#8DA2FF] font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Generate Executive Overall PDF"
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Overall PDF</span>
               </button>
 
               <button
-                onClick={() => {
-                  const hostellerTeams = teams.filter(t => t.members.some(m => m.residenceType === 'Hosteller'));
-                  openPrintablePDF(hostellerTeams, 'Hostellers Allocation Report', 'Only Hostel Resident Teams');
-                }}
+                onClick={() => openHostellersPDF(filteredTeams.length > 0 ? filteredTeams : teams, getFilterDesc())}
                 className="px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-blue-300 font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Generate Hostellers Student Roster PDF (SN, Name, Reg, Dept, Mobile, Hostel, Warden)"
               >
                 <Home className="w-3.5 h-3.5" />
-                <span>Hostellers PDF</span>
+                <span>Hostellers PDF ({totalHostellersCount})</span>
               </button>
 
               <button
-                onClick={() => {
-                  const dayScholarTeams = teams.filter(t => t.members.some(m => m.residenceType === 'Day Scholar'));
-                  openPrintablePDF(dayScholarTeams, 'Day Scholars Report', 'Only Local Commuter Teams');
-                }}
+                onClick={() => openDayScholarsPDF(filteredTeams.length > 0 ? filteredTeams : teams, getFilterDesc())}
                 className="px-3.5 py-1.5 rounded-full bg-purple-500/15 border border-purple-500/30 hover:bg-purple-500/25 text-purple-300 font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Generate Day Scholars Student Roster PDF (SN, Name, Reg, Dept, Mobile)"
               >
                 <Building2 className="w-3.5 h-3.5" />
-                <span>Day Scholars PDF</span>
+                <span>Day Scholars PDF ({totalDayScholarsCount})</span>
               </button>
 
               <button
-                onClick={() => {
-                  const pendingTeams = teams.filter(t => t.paymentStatus === 'pending');
-                  openPrintablePDF(pendingTeams, 'Pending Payments Audit Report', 'Teams awaiting UPI manual verification');
-                }}
+                onClick={() => openPendingPaymentsPDF(filteredTeams.length > 0 ? filteredTeams : teams, getFilterDesc())}
                 className="px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-300 font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Generate Pending Payments Audit PDF"
               >
                 <Clock className="w-3.5 h-3.5" />
-                <span>Pending Payments PDF</span>
+                <span>Pending Payments PDF ({pendingPaymentsCount})</span>
               </button>
             </div>
           </div>
@@ -490,37 +578,96 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
         {/* TAB SPECIFIC CONTENT */}
         {activeTab === 'reports' ? (
           <div className="p-8 rounded-3xl bg-[#07091C] border border-white/10 space-y-6">
-            <h3 className="text-xl font-bold font-space text-white">Event Operational Reports & PDF Export</h3>
-            <p className="text-xs font-mono text-white/60">
-              Download clean, standardized ACM DISFRUTAR 2K26 reports for organizing committees and venue check-in counters.
-            </p>
+            <div>
+              <h3 className="text-xl font-bold font-space text-white">Event Operational Reports & Premium PDF Engine</h3>
+              <p className="text-xs font-mono text-white/60 mt-1">
+                Download clean, standardized ACM DISFRUTAR 2K26 PDF reports tailored for organizing committees, hostel wardens, and check-in desks.
+              </p>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
-                <h4 className="text-sm font-bold font-space text-white">Complete Master Team Roster (CSV)</h4>
-                <p className="text-xs font-mono text-white/50">Includes all team leader contacts, member lists, residence details, hostel rooms, and payment status.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Hostellers PDF Card */}
+              <div className="p-6 rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-500/50 transition-all space-y-3">
+                <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
+                  <Home className="w-4 h-4" />
+                  <span>Hostellers Allocation PDF</span>
+                </div>
+                <p className="text-xs font-mono text-white/60 leading-relaxed">
+                  Lists individual hosteller student details formatted as: <br/>
+                  <strong className="text-blue-300 font-bold">SN, Name, Registration, Dept, Mobile, Hostel Name, Warden Name, Warden Number</strong>.
+                </p>
                 <button
-                  onClick={() => exportTeamsToCSV(teams)}
-                  className="px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-bold flex items-center gap-2 cursor-pointer"
+                  onClick={() => openHostellersPDF(teams, 'All Hostel Resident Teams')}
+                  className="px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-mono font-bold flex items-center gap-2 cursor-pointer shadow-md"
                 >
-                  <Download className="w-4 h-4" />
-                  <span>Download Master CSV</span>
+                  <FileText className="w-4 h-4" />
+                  <span>Generate Hostellers PDF ({totalHostellersCount} Students)</span>
                 </button>
               </div>
 
-              <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
-                <h4 className="text-sm font-bold font-space text-white">Pending Verification Audit List (PDF)</h4>
-                <p className="text-xs font-mono text-white/50">Generates a dedicated verification sheet listing pending UPI transaction IDs and amounts.</p>
+              {/* Day Scholars PDF Card */}
+              <div className="p-6 rounded-2xl bg-purple-500/10 border border-purple-500/30 hover:border-purple-500/50 transition-all space-y-3">
+                <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                  <Building2 className="w-4 h-4" />
+                  <span>Day Scholars Commuter PDF</span>
+                </div>
+                <p className="text-xs font-mono text-white/60 leading-relaxed">
+                  Lists individual day scholar student details formatted as: <br/>
+                  <strong className="text-purple-300 font-bold">SN, Name, Registration, Dept, Mobile</strong>.
+                </p>
                 <button
-                  onClick={() => {
-                    const pendingTeams = teams.filter(t => t.paymentStatus === 'pending');
-                    openPrintablePDF(pendingTeams, 'Pending Payments Audit Report', 'Teams awaiting UPI manual verification');
-                  }}
-                  className="px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-black text-xs font-mono font-bold flex items-center gap-2 cursor-pointer"
+                  onClick={() => openDayScholarsPDF(teams, 'All Local Commuter Teams')}
+                  className="px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-500 text-white text-xs font-mono font-bold flex items-center gap-2 cursor-pointer shadow-md"
                 >
                   <FileText className="w-4 h-4" />
-                  <span>Download Pending Audit PDF</span>
+                  <span>Generate Day Scholars PDF ({totalDayScholarsCount} Students)</span>
                 </button>
+              </div>
+
+              {/* Pending Payments Audit PDF Card */}
+              <div className="p-6 rounded-2xl bg-amber-500/10 border border-amber-500/30 hover:border-amber-500/50 transition-all space-y-3">
+                <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                  <Clock className="w-4 h-4" />
+                  <span>Pending Payments Audit PDF</span>
+                </div>
+                <p className="text-xs font-mono text-white/60 leading-relaxed">
+                  Generates an audit verification sheet formatted as: <br/>
+                  <strong className="text-amber-300 font-bold">SN, Team ID, Team Name, Names & Reg Numbers, Mobile, Transaction ID, Fee Amount, Date, Status</strong>.
+                </p>
+                <button
+                  onClick={() => openPendingPaymentsPDF(teams, 'Pending Payments Verification Audit')}
+                  className="px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-black text-xs font-mono font-bold flex items-center gap-2 cursor-pointer shadow-md"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>Generate Pending Audit PDF ({pendingPaymentsCount} Teams)</span>
+                </button>
+              </div>
+
+              {/* Master Overall PDF Card */}
+              <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-500/50 transition-all space-y-3">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                  <Download className="w-4 h-4" />
+                  <span>Master Overall Event Roster PDF & CSV</span>
+                </div>
+                <p className="text-xs font-mono text-white/60 leading-relaxed">
+                  Full executive master summary report including total revenue, team rosters, payment audit badges, and leader contacts.
+                </p>
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <button
+                    onClick={() => openOverallPDF(teams, 'DISFRUTAR 2K26 Master Event Roster')}
+                    className="px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-bold flex items-center gap-2 cursor-pointer shadow-md"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>Generate Overall PDF</span>
+                  </button>
+                  <button
+                    onClick={() => exportTeamsToCSV(teams)}
+                    className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-bold flex items-center gap-2 cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download Master CSV</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

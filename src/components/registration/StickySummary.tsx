@@ -24,12 +24,19 @@ export const StickySummary: React.FC<StickySummaryProps> = ({
 
   const completedRequired = requiredMembers.filter(isMemberComplete).length;
   const isOptionalAdded = isMemberComplete(optionalMember);
+  const isOptionalTouched = Boolean(
+    optionalMember.name?.trim() || 
+    optionalMember.registerNumber?.trim() || 
+    optionalMember.phone?.trim()
+  );
+  const isOptionalMemberValid = !isOptionalTouched || isOptionalAdded;
   
   const totalMemberCount = completedRequired + (isOptionalAdded ? 1 : 0);
   const feePerPerson = 350;
   const totalFee = totalMemberCount * feePerPerson;
 
-  const isValidTeam = completedRequired === 4;
+  const isTeamNameValid = teamName.trim().length >= 2;
+  const isValidTeam = isTeamNameValid && completedRequired === 4 && isOptionalMemberValid;
 
   return (
     <div className="w-full bg-[#07091C]/90 border border-white/12 rounded-[22px] p-5 sm:p-6 backdrop-blur-[24px] shadow-[0_16px_48px_rgba(0,0,0,0.6)] space-y-5">

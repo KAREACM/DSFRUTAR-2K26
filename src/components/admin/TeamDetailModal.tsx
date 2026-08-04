@@ -4,7 +4,7 @@ import {
   Home, Phone, Building2, User, Download, Edit3, Trash2, ZoomIn, ShieldCheck, Calendar 
 } from 'lucide-react';
 import { TeamRecord } from '../../lib/adminStore';
-import { openPrintablePDF } from '../../lib/exportUtils';
+import { openSingleTeamPDF } from '../../lib/exportUtils';
 
 interface TeamDetailModalProps {
   team: TeamRecord;
@@ -36,7 +36,7 @@ export const TeamDetailModal: React.FC<TeamDetailModalProps> = ({
   };
 
   const handleDownloadPDF = () => {
-    openPrintablePDF([team], `Team Registration - ${team.teamName}`, `Team ID: ${team.id}`);
+    openSingleTeamPDF(team);
   };
 
   return (

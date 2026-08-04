@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Registrations collection rules for DISFRUTAR 2K26
+    match /registrations/{regId} {
+      allow read, write: if true;
+    }
+
+    // Counters collection for atomic sequential ID generation
+    match /counters/{docId} {
+      allow read, write: if true;
+    }
+
+    // Audit logs collection
+    match /auditLogs/{logId} {
+      allow read, write: if true;
+    }
+
+    // Default rule for all documents
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

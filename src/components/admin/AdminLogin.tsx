@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, Mail, ShieldAlert, ArrowLeft, KeyRound, CheckCircle2 } from 'lucide-react';
+import { signInAdminUser } from '../../lib/firebaseAuth';
 
 interface AdminLoginProps {
   onBack: () => void;
@@ -13,26 +14,26 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBack, onSuccessLogin }
   const [isLoading, setIsLoading] = useState(false);
 
   const handleQuickFill = () => {
-    setEmail('99240041356@klu.ac.in');
-    setPassword('disfrutar24k6');
+    setEmail('disfrutar2k26@klu.ac.in');
+    setPassword('disfrutar@2k26klu');
     setError('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    setTimeout(() => {
-      const cleanEmail = email.trim().toLowerCase();
-      if (cleanEmail === '99240041356@klu.ac.in' && password === 'disfrutar24k6') {
-        setIsLoading(false);
-        onSuccessLogin(cleanEmail);
-      } else {
-        setIsLoading(false);
-        setError('Invalid admin credentials. Please verify your email and password.');
-      }
-    }, 600);
+    const cleanEmail = email.trim().toLowerCase();
+
+    try {
+      await signInAdminUser(cleanEmail, password);
+      setIsLoading(false);
+      onSuccessLogin(cleanEmail);
+    } catch (err: any) {
+      setIsLoading(false);
+      setError(err.message || 'Invalid admin credentials. Please verify your email and password.');
+    }
   };
 
   return (
@@ -68,8 +69,8 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBack, onSuccessLogin }
         <div className="p-3.5 rounded-2xl bg-[#536BFF]/10 border border-[#536BFF]/25 flex items-center justify-between gap-3 text-xs font-mono text-white/80">
           <div className="space-y-0.5">
             <div className="text-[10px] text-white/50 uppercase font-bold">Organizer Credentials</div>
-            <div>Email: <span className="text-[#8DA2FF]">99240041356@klu.ac.in</span></div>
-            <div>Pass: <span className="text-[#8DA2FF]">disfrutar24k6</span></div>
+            <div>Email: <span className="text-[#8DA2FF]">disfrutar2k26@klu.ac.in</span></div>
+            <div>Pass: <span className="text-[#8DA2FF]">disfrutar@2k26klu</span></div>
           </div>
           <button
             type="button"

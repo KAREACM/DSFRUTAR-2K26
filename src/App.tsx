@@ -12,10 +12,10 @@ import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 
 export default function App() {
-  // 'playing' | 'fading' | 'completed'
   const [preloaderState, setPreloaderState] = useState<'playing' | 'fading' | 'completed'>('playing');
   const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'registration' | 'admin' | 'admin_dashboard'>('home');
   const [adminEmail, setAdminEmail] = useState('');
+  const [userEmail, setUserEmail] = useState('');
 
   // Listen for browser path changes (e.g. /admin)
   useEffect(() => {
@@ -97,7 +97,10 @@ export default function App() {
         ) : currentPage === 'login' ? (
           <LoginScreen 
             onBack={handleBackToHome} 
-            onSuccessLogin={() => setCurrentPage('registration')}
+            onSuccessLogin={(email) => {
+              if (email) setUserEmail(email);
+              setCurrentPage('registration');
+            }}
             onAdminSuccessLogin={(email) => {
               setAdminEmail(email);
               setCurrentPage('admin_dashboard');
@@ -107,6 +110,7 @@ export default function App() {
         ) : currentPage === 'registration' ? (
           <RegistrationFlow 
             onBackToPortal={handleBackToHome}
+            userEmail={userEmail}
           />
         ) : currentPage === 'admin' ? (
           <AdminLogin
