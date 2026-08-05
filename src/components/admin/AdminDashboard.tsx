@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ShieldAlert, LogOut, Search, Filter, Download, CheckCircle2, XCircle, 
-  Clock, Users, Home, Building2, RefreshCw, ArrowRight, 
+  Clock, Users, Home, Building2, RefreshCw, ArrowRight, X, Zap,
   CheckSquare, Square, FileText, Settings, ShieldCheck, UserCheck, LayoutDashboard,
-  LayoutGrid, List, Eye
+  LayoutGrid, List, Eye, Sparkles
 } from 'lucide-react';
 import { 
   TeamRecord, 
@@ -12,8 +12,7 @@ import {
   approveRegistrationInFirestore,
   rejectRegistrationInFirestore,
   updateRegistrationInFirestore,
-  deleteRegistrationInFirestore,
-  seedDemoRegistrationsInFirestore
+  deleteRegistrationInFirestore
 } from '../../lib/adminStore';
 import { 
   exportTeamsToCSV, 
@@ -33,7 +32,7 @@ interface AdminDashboardProps {
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLogout }) => {
   const [teams, setTeams] = useState<TeamRecord[]>([]);
-  const [isSeeding, setIsSeeding] = useState(false);
+  const [isLiveConnected, setIsLiveConnected] = useState<boolean>(true);
   
   // Navigation tabs
   const [activeTab, setActiveTab] = useState<'dashboard' | 'teams' | 'payments' | 'reports' | 'settings'>('dashboard');
@@ -62,28 +61,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
 
     // Live real-time Firestore listener
     const unsubscribe = subscribeToFirestoreRegistrations((liveTeams) => {
-      if (liveTeams && liveTeams.length > 0) {
+      if (liveTeams) {
         setTeams(liveTeams);
         saveStoredTeams(liveTeams);
+        setIsLiveConnected(true);
       }
     });
 
     return () => unsubscribe();
   }, []);
-
-  // Seed Demo Registrations for Architecture Verification
-  const handleSeedDemoData = async () => {
-    setIsSeeding(true);
-    try {
-      const count = await seedDemoRegistrationsInFirestore();
-      alert(`Successfully seeded ${count} demo registrations in Firestore! The dashboard will update in real time.`);
-    } catch (err: any) {
-      console.error("Seeding error:", err);
-      alert("Notice: Seeded fallback demo teams to local view.");
-    } finally {
-      setIsSeeding(false);
-    }
-  };
 
   // Metrics
   const totalTeamsCount = teams.length;
@@ -267,42 +253,44 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#050814] text-white font-sans relative overflow-x-hidden pb-16">
-      
+    <div className="min-h-screen w-full bg-[#040612] text-white font-sans relative overflow-x-hidden pb-16 selection:bg-[#536BFF]/30 selection:text-white">
+      {/* Dynamic Background Glows */}
+      <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#536BFF]/10 blur-[150px] rounded-full pointer-events-none z-0" />
+      <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none z-0" />
+
       {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-[#07091C]/95 border-b border-[#536BFF]/25 backdrop-blur-md px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 bg-[#07091C]/90 border-b border-[#536BFF]/30 backdrop-blur-xl px-4 sm:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#536BFF]/20 border border-[#536BFF]/40 text-[#8DA2FF] flex items-center justify-center font-bold shrink-0">
-            <ShieldCheck className="w-5 h-5 text-[#8DA2FF]" />
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#536BFF] to-[#3B50DF] text-white flex items-center justify-center font-bold shrink-0 shadow-[0_0_16px_rgba(83,107,255,0.4)]">
+            <ShieldCheck className="w-5 h-5 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-base sm:text-lg font-bold font-space text-white tracking-wide">DISFRUTAR 2K26</h1>
               <span className="text-[10px] font-mono font-bold bg-[#536BFF]/20 border border-[#536BFF]/40 text-[#8DA2FF] px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                Admin Portal
+                Admin Command Center
               </span>
             </div>
-            <p className="text-[11px] font-mono text-white/50">KARE ACM Command Center</p>
+            <p className="text-[11px] font-mono text-white/50">KARE ACM Student Chapter Enclave</p>
           </div>
         </div>
 
-        {/* Right side admin info & controls */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleSeedDemoData}
-            disabled={isSeeding}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#536BFF]/20 border border-[#536BFF]/40 text-[#8DA2FF] hover:bg-[#536BFF]/30 transition-all text-xs font-mono font-bold cursor-pointer disabled:opacity-50"
-            title="Seed demo registration data into Firestore database"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isSeeding ? 'animate-spin' : ''}`} />
-            <span>{isSeeding ? 'Seeding Data...' : 'Seed Demo Data'}</span>
-          </button>
+        {/* Right side status & controls */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Live Real-time Sync Indicator */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold shadow-[0_0_12px_rgba(52,211,153,0.15)]">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <Zap className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">REAL-TIME LIVE SYNC</span>
+          </div>
 
           <div className="hidden md:flex items-center gap-2.5 pl-3 border-l border-white/10">
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             <div className="text-right">
               <div className="text-xs font-bold text-white font-space">Dr. P. Venkat Sai</div>
-              <div className="text-[10px] font-mono text-emerald-400">Admin Lead ({adminEmail})</div>
+              <div className="text-[10px] font-mono text-emerald-400">{adminEmail || "disfrutar2k26@klu.ac.in"}</div>
             </div>
           </div>
 
@@ -317,14 +305,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
       </header>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-8 py-6 space-y-6">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-6 space-y-6">
         
         {/* Navigation Tabs Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
-          <nav className="flex items-center gap-2 bg-white/[0.03] p-1.5 rounded-full border border-white/10 overflow-x-auto max-w-full no-scrollbar">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <nav className="flex items-center gap-2 bg-white/[0.03] p-1.5 rounded-2xl border border-white/10 overflow-x-auto max-w-full no-scrollbar">
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`px-5 py-2 rounded-full text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              className={`px-4 sm:px-5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
                 activeTab === 'dashboard'
                   ? 'bg-[#536BFF] text-white shadow-lg shadow-[#536BFF]/30'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
@@ -336,7 +324,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
 
             <button
               onClick={() => { setActiveTab('teams'); setPaymentFilter('all'); }}
-              className={`px-5 py-2 rounded-full text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              className={`px-4 sm:px-5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
                 activeTab === 'teams'
                   ? 'bg-[#536BFF] text-white shadow-lg shadow-[#536BFF]/30'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
@@ -348,7 +336,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
 
             <button
               onClick={() => { setActiveTab('payments'); setPaymentFilter('pending'); }}
-              className={`px-5 py-2 rounded-full text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              className={`px-4 sm:px-5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
                 activeTab === 'payments'
                   ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/30'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
@@ -365,7 +353,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
 
             <button
               onClick={() => setActiveTab('reports')}
-              className={`px-5 py-2 rounded-full text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              className={`px-4 sm:px-5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
                 activeTab === 'reports'
                   ? 'bg-[#536BFF] text-white shadow-lg shadow-[#536BFF]/30'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
@@ -377,7 +365,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
 
             <button
               onClick={() => setActiveTab('settings')}
-              className={`px-5 py-2 rounded-full text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              className={`px-4 sm:px-5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
                 activeTab === 'settings'
                   ? 'bg-[#536BFF] text-white shadow-lg shadow-[#536BFF]/30'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
@@ -388,45 +376,44 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
             </button>
           </nav>
 
-          <div className="text-xs font-mono text-white/50 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>Real-time Sync Active</span>
+          <div className="text-xs font-mono text-white/60 flex items-center gap-2 self-end sm:self-center">
+            <span className="text-emerald-400 font-bold">{teams.length}</span> Total Registrations Live
           </div>
         </div>
 
-        {/* METRICS SUMMARY CARDS */}
+        {/* METRICS SUMMARY BENTO CARDS */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-[#536BFF]/40 transition-all space-y-1">
+          <div className="p-4 rounded-2xl bg-[#07091C]/80 border border-white/10 hover:border-[#536BFF]/40 transition-all backdrop-blur-md space-y-1">
             <span className="text-[10px] font-mono text-white/50 uppercase block font-bold">Total Teams</span>
             <div className="text-2xl font-bold font-space text-white">{totalTeamsCount}</div>
             <div className="text-[10px] font-mono text-[#8DA2FF]">Active Registered</div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-[#536BFF]/40 transition-all space-y-1">
+          <div className="p-4 rounded-2xl bg-[#07091C]/80 border border-white/10 hover:border-[#536BFF]/40 transition-all backdrop-blur-md space-y-1">
             <span className="text-[10px] font-mono text-white/50 uppercase block font-bold">Participants</span>
             <div className="text-2xl font-bold font-space text-white">{totalParticipantsCount}</div>
             <div className="text-[10px] font-mono text-[#8DA2FF]">Students Enrolled</div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 hover:border-amber-500/50 transition-all space-y-1">
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 hover:border-amber-500/50 transition-all backdrop-blur-md space-y-1">
             <span className="text-[10px] font-mono text-amber-300 uppercase block font-bold">Pending Payments</span>
             <div className="text-2xl font-bold font-space text-amber-400">{pendingPaymentsCount}</div>
             <div className="text-[10px] font-mono text-amber-300/70">Needs Verification</div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-500/50 transition-all space-y-1">
+          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-500/50 transition-all backdrop-blur-md space-y-1">
             <span className="text-[10px] font-mono text-emerald-300 uppercase block font-bold">Approved</span>
             <div className="text-2xl font-bold font-space text-emerald-400">{approvedCount}</div>
             <div className="text-[10px] font-mono text-emerald-300/70">Verified Teams</div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-500/50 transition-all space-y-1">
+          <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-500/50 transition-all backdrop-blur-md space-y-1">
             <span className="text-[10px] font-mono text-blue-300 uppercase block font-bold">Hostellers</span>
             <div className="text-2xl font-bold font-space text-blue-400">{totalHostellersCount}</div>
             <div className="text-[10px] font-mono text-blue-300/70">Hostel Residents</div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 hover:border-purple-500/50 transition-all space-y-1">
+          <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 hover:border-purple-500/50 transition-all backdrop-blur-md space-y-1">
             <span className="text-[10px] font-mono text-purple-300 uppercase block font-bold">Day Scholars</span>
             <div className="text-2xl font-bold font-space text-purple-400">{totalDayScholarsCount}</div>
             <div className="text-[10px] font-mono text-purple-300/70">Local Commuters</div>
@@ -434,7 +421,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
         </div>
 
         {/* SEARCH & FILTERS BAR */}
-        <div className="p-5 rounded-2xl bg-[#07091C] border border-white/10 space-y-4 shadow-lg">
+        <div className="p-5 rounded-3xl bg-[#07091C]/90 border border-white/12 space-y-4 backdrop-blur-xl shadow-2xl">
           <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
             
             {/* Search input */}
@@ -445,8 +432,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by team name, leader name, reg number, phone, or transaction ID..."
-                className="w-full h-[44px] pl-11 pr-4 rounded-full bg-white/[0.04] border border-white/12 focus:border-[#536BFF] text-xs text-white placeholder-white/30 outline-none transition-all"
+                className="w-full h-[44px] pl-11 pr-10 rounded-full bg-white/[0.04] border border-white/15 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF] text-xs text-white placeholder-white/30 outline-none transition-all font-sans"
               />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-white/40 hover:text-white"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
             {/* Filters dropdowns */}
@@ -457,7 +452,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
                 <select
                   value={paymentFilter}
                   onChange={(e) => setPaymentFilter(e.target.value as any)}
-                  className="h-[38px] px-3 rounded-full bg-[#0d122b] border border-white/15 text-xs text-white outline-none cursor-pointer"
+                  className="h-[38px] px-3.5 rounded-full bg-[#0d122b] border border-white/15 text-xs text-white outline-none cursor-pointer"
                 >
                   <option value="all">All Payments</option>
                   <option value="pending">Pending ({pendingPaymentsCount})</option>
@@ -471,7 +466,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
                 <select
                   value={residenceFilter}
                   onChange={(e) => setResidenceFilter(e.target.value as any)}
-                  className="h-[38px] px-3 rounded-full bg-[#0d122b] border border-white/15 text-xs text-white outline-none cursor-pointer"
+                  className="h-[38px] px-3.5 rounded-full bg-[#0d122b] border border-white/15 text-xs text-white outline-none cursor-pointer"
                 >
                   <option value="all">All Residence</option>
                   <option value="hosteller">Hostellers</option>
@@ -484,7 +479,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
                 <select
                   value={membersFilter}
                   onChange={(e) => setMembersFilter(e.target.value as any)}
-                  className="h-[38px] px-3 rounded-full bg-[#0d122b] border border-white/15 text-xs text-white outline-none cursor-pointer"
+                  className="h-[38px] px-3.5 rounded-full bg-[#0d122b] border border-white/15 text-xs text-white outline-none cursor-pointer"
                 >
                   <option value="all">All Counts</option>
                   <option value="4">4 Members</option>
@@ -522,7 +517,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
               <button
                 onClick={() => openHostellersPDF(filteredTeams.length > 0 ? filteredTeams : teams, getFilterDesc())}
                 className="px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 hover:bg-blue-500/25 text-blue-300 font-bold flex items-center gap-1.5 transition-all cursor-pointer"
-                title="Generate Hostellers Student Roster PDF (SN, Name, Reg, Dept, Mobile, Hostel, Warden)"
+                title="Generate Hostellers Student Roster PDF"
               >
                 <Home className="w-3.5 h-3.5" />
                 <span>Hostellers PDF ({totalHostellersCount})</span>
@@ -531,7 +526,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
               <button
                 onClick={() => openDayScholarsPDF(filteredTeams.length > 0 ? filteredTeams : teams, getFilterDesc())}
                 className="px-3.5 py-1.5 rounded-full bg-purple-500/15 border border-purple-500/30 hover:bg-purple-500/25 text-purple-300 font-bold flex items-center gap-1.5 transition-all cursor-pointer"
-                title="Generate Day Scholars Student Roster PDF (SN, Name, Reg, Dept, Mobile)"
+                title="Generate Day Scholars Student Roster PDF"
               >
                 <Building2 className="w-3.5 h-3.5" />
                 <span>Day Scholars PDF ({totalDayScholarsCount})</span>
@@ -551,7 +546,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
 
         {/* BULK ACTION BAR */}
         {selectedTeamIds.length > 0 && (
-          <div className="p-4 rounded-2xl bg-[#536BFF]/15 border border-[#536BFF]/40 flex items-center justify-between gap-4 animate-fade-in">
+          <div className="p-4 rounded-2xl bg-[#536BFF]/15 border border-[#536BFF]/40 flex items-center justify-between gap-4 animate-fade-in shadow-xl">
             <div className="text-xs font-mono text-white font-bold flex items-center gap-2">
               <CheckSquare className="w-4 h-4 text-[#8DA2FF]" />
               <span>{selectedTeamIds.length} Teams Selected for Bulk Verification</span>
@@ -560,7 +555,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSelectedTeamIds([])}
-                className="text-xs font-mono text-white/60 hover:text-white"
+                className="text-xs font-mono text-white/60 hover:text-white cursor-pointer"
               >
                 Deselect All
               </button>
@@ -577,9 +572,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
 
         {/* TAB SPECIFIC CONTENT */}
         {activeTab === 'reports' ? (
-          <div className="p-8 rounded-3xl bg-[#07091C] border border-white/10 space-y-6">
+          <div className="p-6 sm:p-8 rounded-3xl bg-[#07091C]/90 border border-white/12 space-y-6 backdrop-blur-xl shadow-2xl">
             <div>
-              <h3 className="text-xl font-bold font-space text-white">Event Operational Reports & Premium PDF Engine</h3>
+              <h3 className="text-xl font-bold font-space text-white">Event Operational Reports & Executive PDF Engine</h3>
               <p className="text-xs font-mono text-white/60 mt-1">
                 Download clean, standardized ACM DISFRUTAR 2K26 PDF reports tailored for organizing committees, hostel wardens, and check-in desks.
               </p>
@@ -672,7 +667,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
             </div>
           </div>
         ) : activeTab === 'settings' ? (
-          <div className="p-8 rounded-3xl bg-[#07091C] border border-white/10 space-y-6">
+          <div className="p-6 sm:p-8 rounded-3xl bg-[#07091C]/90 border border-white/12 space-y-6 backdrop-blur-xl shadow-2xl">
             <h3 className="text-xl font-bold font-space text-white">Admin Command Center Settings</h3>
             
             <div className="space-y-4 text-xs font-mono">
@@ -685,13 +680,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
 
               <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
                 <div className="text-[#8DA2FF] font-bold uppercase">Database Sync Engine</div>
-                <div className="text-emerald-400">Direct Frontend Reactive Storage Engine</div>
-                <div className="text-white/50">Synchronized across client registration sessions.</div>
+                <div className="text-emerald-400 font-bold flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Firestore Real-Time Reactive Sync Engine Active</span>
+                </div>
+                <div className="text-white/50">Listening to live student registrations and payment updates across all devices.</div>
               </div>
             </div>
           </div>
         ) : (
-          /* MAIN CLEAN UNCLUTTERED ROSTER TABLE / GRID */
+          /* MAIN ROSTER TABLE / GRID */
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
               <div className="flex items-center gap-3">
@@ -741,17 +739,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
             </div>
 
             {filteredTeams.length === 0 ? (
-              <div className="p-12 text-center rounded-3xl bg-[#07091C] border border-white/10 space-y-3">
-                <Search className="w-8 h-8 text-white/30 mx-auto" />
-                <div className="text-sm font-bold text-white font-space">No teams match your search or filters</div>
-                <p className="text-xs font-mono text-white/50">Try clearing your search query or choosing "All Payments".</p>
+              <div className="p-12 text-center rounded-3xl bg-[#07091C]/90 border border-white/10 space-y-4 backdrop-blur-xl shadow-xl">
+                <div className="w-14 h-14 rounded-2xl bg-[#536BFF]/15 border border-[#536BFF]/30 text-[#8DA2FF] flex items-center justify-center mx-auto">
+                  <Users className="w-7 h-7" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-base font-bold text-white font-space">
+                    {teams.length === 0 ? "No Registrations Found in Firestore" : "No Teams Match Search / Filter Criteria"}
+                  </div>
+                  <p className="text-xs font-mono text-white/50 max-w-md mx-auto">
+                    {teams.length === 0
+                      ? "As students submit registrations on DISFRUTAR 2K26, new teams will automatically appear here in real-time."
+                      : "Try resetting your search query or choosing 'All Payments' to view registered teams."}
+                  </p>
+                </div>
               </div>
             ) : viewMode === 'table' ? (
-              /* CLEAN DENSE TABLE VIEW */
-              <div className="rounded-2xl border border-white/10 bg-[#07091C] overflow-hidden shadow-xl">
+              /* CLEAN DENSE TABLE VIEW WITH RESPONSIVE SCROLLBAR */
+              <div className="rounded-2xl border border-white/12 bg-[#07091C]/90 overflow-hidden shadow-2xl backdrop-blur-xl">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs font-mono">
-                    <thead className="bg-white/[0.03] border-b border-white/10 text-white/50 uppercase text-[10px] tracking-wider">
+                    <thead className="bg-white/[0.04] border-b border-white/10 text-white/60 uppercase text-[10px] tracking-wider">
                       <tr>
                         <th className="p-3.5 w-10 text-center">
                           <input
@@ -784,8 +792,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
                         return (
                           <tr 
                             key={team.id}
-                            className={`hover:bg-white/[0.02] transition-colors ${
-                              isSelected ? 'bg-[#536BFF]/10' : ''
+                            className={`hover:bg-white/[0.03] transition-colors ${
+                              isSelected ? 'bg-[#536BFF]/12' : ''
                             }`}
                           >
                             <td className="p-3.5 text-center">
@@ -807,7 +815,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
                               <div className="text-[10px] text-white/50">{leader.registerNumber} • {leader.phone}</div>
                             </td>
                             <td className="p-3.5 whitespace-nowrap">
-                              <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-white font-bold">
+                              <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-white font-bold">
                                 {team.memberCount} Members
                               </span>
                             </td>
@@ -848,7 +856,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
                                 )}
                                 <button
                                   onClick={() => setSelectedDetailTeam(team)}
-                                  className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#536BFF] hover:text-white text-white/80 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                                  className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#536BFF] hover:text-white text-white/80 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer border border-white/10"
                                 >
                                   <Eye className="w-3.5 h-3.5" />
                                   <span>View</span>
@@ -872,10 +880,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
                   return (
                     <div
                       key={team.id}
-                      className={`p-5 rounded-2xl border transition-all duration-200 space-y-3 flex flex-col justify-between ${
+                      className={`p-5 rounded-3xl border transition-all duration-200 space-y-3 flex flex-col justify-between backdrop-blur-xl ${
                         isSelected 
-                          ? 'bg-[#536BFF]/10 border-[#536BFF]' 
-                          : 'bg-[#07091C] border-white/10 hover:border-[#536BFF]/50'
+                          ? 'bg-[#536BFF]/12 border-[#536BFF] shadow-[0_0_20px_rgba(83,107,255,0.2)]' 
+                          : 'bg-[#07091C]/90 border-white/10 hover:border-[#536BFF]/50 shadow-xl'
                       }`}
                     >
                       {/* Top row ID & status badge */}
@@ -905,7 +913,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
 
                       {/* Team Title & Leader Info */}
                       <div>
-                        <h4 className="text-lg font-bold font-space text-white group-hover:text-[#8DA2FF] transition-colors leading-snug">
+                        <h4 className="text-lg font-bold font-space text-white leading-snug">
                           {team.teamName}
                         </h4>
                         <p className="text-xs font-mono text-white/60 mt-1">
@@ -917,16 +925,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
                       </div>
 
                       {/* Details meta */}
-                      <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-[11px] font-mono">
+                      <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-white/[0.02] border border-white/5 text-[11px] font-mono">
                         <div>
-                          <span className="text-white/40 block">Members</span>
+                          <span className="text-white/40 block text-[10px]">Members</span>
                           <strong className="text-white">{team.memberCount} Members</strong>
                         </div>
                         <div>
-                          <span className="text-white/40 block">Txn Fee</span>
+                          <span className="text-white/40 block text-[10px]">Fee Amount</span>
                           <strong className="text-emerald-400">₹{team.amount}</strong>
                         </div>
-                        <div className="col-span-2 pt-1 border-t border-white/5 text-[10px] text-white/50 truncate">
+                        <div className="col-span-2 pt-1.5 border-t border-white/5 text-[10px] text-white/50 truncate">
                           Txn ID: <span className="text-[#8DA2FF] font-bold">{team.transactionId}</span>
                         </div>
                       </div>
@@ -959,7 +967,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
 
                         <button
                           onClick={() => setSelectedDetailTeam(team)}
-                          className="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-[#536BFF] hover:text-white text-white/80 text-xs font-mono font-bold flex items-center gap-1 transition-all cursor-pointer ml-auto"
+                          className="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-[#536BFF] hover:text-white text-white/80 text-xs font-mono font-bold flex items-center gap-1 transition-all cursor-pointer border border-white/10 ml-auto"
                         >
                           <span>View Details</span>
                           <ArrowRight className="w-3.5 h-3.5" />

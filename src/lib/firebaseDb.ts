@@ -293,7 +293,7 @@ export async function createRegistrationInFirestore(payload: {
  * Subscribe to real-time registrations updates from Firestore
  */
 export function subscribeToFirestoreRegistrations(callback: (teams: TeamRecord[]) => void) {
-  const q = query(collection(db, REGISTRATIONS_COLLECTION), orderBy("timestamp", "desc"));
+  const q = query(collection(db, REGISTRATIONS_COLLECTION));
 
   return onSnapshot(
     q,
@@ -304,7 +304,7 @@ export function subscribeToFirestoreRegistrations(callback: (teams: TeamRecord[]
           id: data.id || docSnap.id,
           teamName: data.teamName || "Unnamed Team",
           createdAt: data.createdAt || "Just now",
-          memberCount: data.memberCount || data.members?.length || 0,
+          memberCount: data.memberCount || (data.members ? data.members.length : 0),
           members: data.members || [],
           paymentStatus: data.paymentStatus || "pending",
           transactionId: data.transactionId || "",
@@ -317,6 +317,9 @@ export function subscribeToFirestoreRegistrations(callback: (teams: TeamRecord[]
           timeline: data.timeline || [],
         };
       });
+
+      // Sort teams in reverse chronological order (newest first)
+      teams.sort((a, b) => b.id.localeCompare(a.id));
 
       callback(teams);
     },
