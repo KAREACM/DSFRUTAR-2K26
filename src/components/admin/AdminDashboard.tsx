@@ -678,9 +678,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
             <div className="space-y-4 text-xs font-mono">
               <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
                 <div className="text-[#8DA2FF] font-bold uppercase">Administrator Credentials</div>
-                <div>Primary Email: <span className="text-white font-bold">99240041356@klu.ac.in</span></div>
-                <div>Access Password: <span className="text-white font-bold">disfrutar24k6</span></div>
-                <div className="text-white/40 pt-1">Session state is retained locally during organizer operations.</div>
+                <div>Primary Admin Email: <span className="text-white font-bold">{adminEmail || "disfrutar2k26@klu.ac.in"}</span></div>
+                <div>Access Authorization: <span className="text-emerald-400 font-bold">Encrypted Firebase Auth Enclave</span></div>
+                <div className="text-white/40 pt-1">Session state is protected and active for authorized organizer.</div>
               </div>
 
               <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">

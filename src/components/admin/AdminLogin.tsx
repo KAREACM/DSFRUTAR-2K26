@@ -65,21 +65,10 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBack, onSuccessLogin }
           </p>
         </div>
 
-        {/* Quick Credentials Info Box */}
-        <div className="p-3.5 rounded-2xl bg-[#536BFF]/10 border border-[#536BFF]/25 flex items-center justify-between gap-3 text-xs font-mono text-white/80">
-          <div className="space-y-0.5">
-            <div className="text-[10px] text-white/50 uppercase font-bold">Organizer Credentials</div>
-            <div>Email: <span className="text-[#8DA2FF]">disfrutar2k26@klu.ac.in</span></div>
-            <div>Pass: <span className="text-[#8DA2FF]">disfrutar@2k26klu</span></div>
-          </div>
-          <button
-            type="button"
-            onClick={handleQuickFill}
-            className="px-3 py-1.5 rounded-xl bg-[#536BFF] hover:bg-[#4258e6] text-white text-[11px] font-bold transition-all shadow-md flex items-center gap-1 shrink-0 cursor-pointer"
-          >
-            <KeyRound className="w-3 h-3" />
-            Auto Fill
-          </button>
+        {/* Admin Login Notice */}
+        <div className="p-3.5 rounded-2xl bg-[#536BFF]/10 border border-[#536BFF]/25 text-xs font-mono text-white/80 text-center">
+          <div className="text-[10px] text-white/50 uppercase font-bold">Authorized Admin Access Only</div>
+          <div className="text-[#8DA2FF] font-semibold mt-0.5">disfrutar2k26@klu.ac.in</div>
         </div>
 
         {error && (
@@ -100,7 +89,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBack, onSuccessLogin }
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="99240041356@klu.ac.in"
+                placeholder="disfrutar2k26@klu.ac.in"
                 className="w-full h-[46px] pl-11 pr-4 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/40 transition-all text-sm text-white placeholder-white/25 outline-none font-sans"
               />
             </div>

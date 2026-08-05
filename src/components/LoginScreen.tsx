@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { 
   Mail, 
@@ -9,7 +9,7 @@ import {
   Loader2,
   CheckCircle2
 } from 'lucide-react';
-import { signInStudent, signInStudentWithGoogle, signInAdminUser, isKluEmail, isAdminCredentials } from '../lib/firebaseAuth';
+import { signInStudent, signInStudentWithGoogle, handleGoogleRedirectResult, signInAdminUser, isKluEmail, isAdminCredentials } from '../lib/firebaseAuth';
 
 interface LoginScreenProps {
   onBack: () => void;
@@ -32,6 +32,30 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
   const submitBtnRef = useRef<HTMLButtonElement>(null);
   const googleBtnRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    handleGoogleRedirectResult()
+      .then((user) => {
+        if (user) {
+          setIsSuccess(true);
+          setTimeout(() => {
+            const cleanEmail = user.email ? user.email.trim().toLowerCase() : '';
+            if (cleanEmail === 'disfrutar2k26@klu.ac.in') {
+              if (onAdminSuccessLogin) onAdminSuccessLogin(cleanEmail);
+              else if (onSuccessLogin) onSuccessLogin(cleanEmail);
+              else onBack();
+            } else if (onSuccessLogin) {
+              onSuccessLogin(cleanEmail);
+            } else {
+              onBack();
+            }
+          }, 1000);
+        }
+      })
+      .catch((err) => {
+        setErrorMessage(err.message || 'Google Authentication failed.');
+      });
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>, ref: React.RefObject<HTMLButtonElement | null>) => {
     const btn = ref.current;
@@ -58,12 +82,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       setIsLoading(false);
       setIsSuccess(true);
       setTimeout(() => {
-        if (user.email && isAdminCredentials(user.email)) {
-          if (onAdminSuccessLogin) onAdminSuccessLogin(user.email);
-          else if (onSuccessLogin) onSuccessLogin(user.email);
+        const cleanEmail = user.email ? user.email.trim().toLowerCase() : '';
+        // Only exact admin email enjoys Admin privileges
+        if (cleanEmail === 'disfrutar2k26@klu.ac.in') {
+          if (onAdminSuccessLogin) onAdminSuccessLogin(cleanEmail);
+          else if (onSuccessLogin) onSuccessLogin(cleanEmail);
           else onBack();
         } else if (onSuccessLogin) {
-          onSuccessLogin(user.email || '');
+          onSuccessLogin(cleanEmail);
         } else {
           onBack();
         }
@@ -87,12 +113,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     setIsLoading(true);
     setErrorMessage('');
 
-    // Check if user entered Organizer / Admin credentials (e.g. disfrutar2k26@klu.ac.in / disfrutar@2k26klu)
+    // Check if user entered exact Admin credentials (disfrutar2k26@klu.ac.in / disfrutar@2k26klu)
     if (isAdminCredentials(cleanEmail, cleanPass)) {
       try {
         await signInAdminUser(cleanEmail, cleanPass);
       } catch (e) {
-        // Continue with fallback session
+        // Continue with session
       }
       setIsLoading(false);
       setIsSuccess(true);

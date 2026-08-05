@@ -7,7 +7,6 @@ import { Navbar } from './components/Navbar';
 import { Footer } from './components/ui/footer-section';
 import { LoginScreen } from './components/LoginScreen';
 import { RegistrationFlow } from './components/registration/RegistrationFlow';
-import { Banner } from './components/ui/banner';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 
@@ -64,15 +63,6 @@ export default function App() {
   return (
     <div className="relative w-full min-h-screen bg-[#050814] text-white">
       
-      {/* Top Rainbow Announcement Banner */}
-      {preloaderState !== 'playing' && currentPage === 'home' && (
-        <Banner id="disfrutar-live-banner" variant="rainbow" height="2.5rem">
-          <div className="flex items-center justify-center gap-3 text-xs font-mono">
-            <span>🎉 <strong className="text-white">DISFRUTAR 2K26 Registrations are LIVE!</strong> KARE ACM Chapter</span>
-          </div>
-        </Banner>
-      )}
-
       {/* Fixed Sticky Navigation Bar */}
       {preloaderState !== 'playing' && currentPage === 'home' && (
         <Navbar 
@@ -121,10 +111,28 @@ export default function App() {
             }}
           />
         ) : (
-          <AdminDashboard
-            adminEmail={adminEmail || '99240041356@klu.ac.in'}
-            onLogout={handleBackToHome}
-          />
+          adminEmail === 'disfrutar2k26@klu.ac.in' ? (
+            <AdminDashboard
+              adminEmail={adminEmail}
+              onLogout={() => {
+                setAdminEmail('');
+                handleBackToHome();
+              }}
+            />
+          ) : (
+            <LoginScreen 
+              onBack={handleBackToHome} 
+              onSuccessLogin={(email) => {
+                if (email) setUserEmail(email);
+                setCurrentPage('registration');
+              }}
+              onAdminSuccessLogin={(email) => {
+                setAdminEmail(email);
+                setCurrentPage('admin_dashboard');
+              }}
+              onGoToAdmin={handleGoToAdmin}
+            />
+          )
         )
       )}
 

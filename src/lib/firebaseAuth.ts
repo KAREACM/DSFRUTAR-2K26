@@ -2,6 +2,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -21,30 +23,17 @@ export function isKluEmail(email?: string | null): boolean {
 
 /**
  * Checks if email & password match Admin / Organizer credentials
- * Handles: disfrutar2k26@klu.ac.in / disfrutar@2k26klu
+ * Strictly restricted to: disfrutar2k26@klu.ac.in / disfrutar@2k26klu
  */
 export function isAdminCredentials(email?: string | null, password?: string | null): boolean {
   if (!email) return false;
   const cleanEmail = email.trim().toLowerCase();
   const cleanPass = password ? password.trim() : "";
 
-  const validAdminEmails = [
-    "disfrutar2k26@klu.ac.in",
-    "disfrutar24k6@klu.ac.in",
-    "99240041356@klu.ac.in",
-    "admin@klu.ac.in"
-  ];
+  const isExactAdminEmail = cleanEmail === "disfrutar2k26@klu.ac.in";
+  if (!password) return isExactAdminEmail;
 
-  const validAdminPasswords = [
-    "disfrutar@2k26klu",
-    "disfrutar24k6",
-    "admin123"
-  ];
-
-  const isEmailAdmin = validAdminEmails.includes(cleanEmail) || cleanEmail.startsWith("admin");
-  if (!password) return isEmailAdmin;
-
-  return isEmailAdmin && validAdminPasswords.includes(cleanPass);
+  return isExactAdminEmail && cleanPass === "disfrutar@2k26klu";
 }
 
 
@@ -64,6 +53,14 @@ export async function signInStudentWithGoogle(): Promise<User> {
 
     return user;
   } catch (error: any) {
+    if (
+      error.code === "auth/popup-blocked" ||
+      error.code === "auth/operation-not-allowed" ||
+      (error.message && error.message.includes("Cross-Origin-Opener-Policy"))
+    ) {
+      await signInWithRedirect(auth, googleProvider);
+      throw new Error("Redirecting to Google Sign-In...");
+    }
     if (error.code === "auth/popup-closed-by-user" || error.code === "auth/cancelled-popup-request") {
       throw new Error("Sign-in cancelled.");
     }
@@ -72,16 +69,36 @@ export async function signInStudentWithGoogle(): Promise<User> {
 }
 
 /**
+ * Handles redirect result when using signInWithRedirect fallback
+ */
+export async function handleGoogleRedirectResult(): Promise<User | null> {
+  try {
+    const result = await getRedirectResult(auth);
+    if (!result) return null;
+    const user = result.user;
+    if (!user.email || !isKluEmail(user.email)) {
+      await signOut(auth);
+      throw new Error("Please login using your University Email (@klu.ac.in)");
+    }
+    return user;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+/**
  * Sign in student user with email & password (@klu.ac.in)
  */
-export async function signInStudent(email: string, password = "studentDefaultPass123"): Promise<User> {
+export async function signInStudent(email: string, password?: string): Promise<User> {
   const cleanEmail = email.trim().toLowerCase();
   if (!isKluEmail(cleanEmail)) {
     throw new Error("Please login using your University Email (@klu.ac.in)");
   }
 
+  const passToUse = password && password.trim().length > 0 ? password.trim() : `klu_${cleanEmail.split("@")[0]}`;
+
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, password);
+    const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, passToUse);
     return userCredential.user;
   } catch (error: any) {
     // Auto-create student account in Firebase Auth if not registered
@@ -91,7 +108,7 @@ export async function signInStudent(email: string, password = "studentDefaultPas
       error.code === "auth/wrong-password"
     ) {
       try {
-        const newCredential = await createUserWithEmailAndPassword(auth, cleanEmail, password);
+        const newCredential = await createUserWithEmailAndPassword(auth, cleanEmail, passToUse);
         return newCredential.user;
       } catch (createErr: any) {
         throw new Error("Authentication failed. Please check credentials.");
@@ -103,13 +120,18 @@ export async function signInStudent(email: string, password = "studentDefaultPas
 
 /**
  * Authenticate Admin User on Firebase
- * Credentials: email: disfrutar24k6@klu.ac.in, pass: disfrutar@2k26klu
+ * Credentials strictly: email: disfrutar2k26@klu.ac.in, pass: disfrutar@2k26klu
  */
 export async function signInAdminUser(email: string, password: string): Promise<User> {
   const cleanEmail = email.trim().toLowerCase();
+  const cleanPass = password.trim();
+
+  if (!isAdminCredentials(cleanEmail, cleanPass)) {
+    throw new Error("Invalid admin credentials. Access restricted to authorized admin.");
+  }
 
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, password);
+    const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, cleanPass);
     return userCredential.user;
   } catch (error: any) {
     // If admin user is not in Firebase Auth yet, auto-create admin account in Firebase Auth
@@ -119,7 +141,7 @@ export async function signInAdminUser(email: string, password: string): Promise<
       error.code === "auth/wrong-password"
     ) {
       try {
-        const newCredential = await createUserWithEmailAndPassword(auth, cleanEmail, password);
+        const newCredential = await createUserWithEmailAndPassword(auth, cleanEmail, cleanPass);
         return newCredential.user;
       } catch (err: any) {
         // Fallback admin session user

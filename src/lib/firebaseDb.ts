@@ -48,36 +48,62 @@ export function sanitizeForFirestore<T>(obj: T): T {
   return cleanObj;
 }
 
+export interface RegistrationSearchResult {
+  team: TeamRecord;
+  matchedMember: MemberData | null;
+  matchedRole: string;
+}
+
 /**
  * Find an existing registration by user email / register number in Firestore or local store
+ * Matches both Team Leader and any Team Member (e.g. 99240051026 from 99240051026@klu.ac.in)
  */
-export async function findRegistrationByUserEmail(userEmail: string): Promise<TeamRecord | null> {
+export async function findRegistrationByUserEmail(userEmail: string): Promise<RegistrationSearchResult | null> {
   if (!userEmail) return null;
   const cleanEmail = userEmail.trim().toLowerCase();
-  const regNumberMatch = cleanEmail.split("@")[0];
+  const regNumberMatch = cleanEmail.split("@")[0].trim().toLowerCase();
 
   try {
     const q = query(collection(db, REGISTRATIONS_COLLECTION));
     const snapshot = await getDocs(q);
     for (const docSnap of snapshot.docs) {
       const data = docSnap.data() as TeamRecord;
-      if (data && data.members) {
+      if (data && data.members && Array.isArray(data.members)) {
+        let matchedMember: MemberData | null = null;
+        let matchedRole = "Team Member";
+
         const matches = data.members.some((m) => {
           if (!m) return false;
           const regNum = m.registerNumber ? m.registerNumber.trim().toLowerCase() : "";
           const phone = m.phone ? m.phone.trim().toLowerCase() : "";
           const name = m.name ? m.name.trim().toLowerCase() : "";
-          return (
+          const memEmail = (m as any).email ? (m as any).email.trim().toLowerCase() : "";
+
+          const isMatch = (
             regNum === cleanEmail ||
             regNum === regNumberMatch ||
+            memEmail === cleanEmail ||
             phone === cleanEmail ||
+            phone === regNumberMatch ||
             name === cleanEmail
           );
+
+          if (isMatch) {
+            matchedMember = m;
+            matchedRole = m.role || (m.id === '1' ? 'Leader' : 'Member');
+          }
+          return isMatch;
         });
+
         if (matches) {
-          return {
+          const teamRecord: TeamRecord = {
             ...data,
             id: data.id || docSnap.id,
+          };
+          return {
+            team: teamRecord,
+            matchedMember,
+            matchedRole
           };
         }
       }
@@ -89,13 +115,27 @@ export async function findRegistrationByUserEmail(userEmail: string): Promise<Te
   // Local store fallback
   try {
     const localTeams = getStoredTeams();
-    const found = localTeams.find((t) =>
-      t.members.some((m) => {
+    for (const t of localTeams) {
+      let matchedMember: MemberData | null = null;
+      let matchedRole = "Team Member";
+      const found = t.members.some((m) => {
+        if (!m) return false;
         const regNum = m.registerNumber ? m.registerNumber.trim().toLowerCase() : "";
-        return regNum === cleanEmail || regNum === regNumberMatch;
-      })
-    );
-    if (found) return found;
+        const isMatch = regNum === cleanEmail || regNum === regNumberMatch;
+        if (isMatch) {
+          matchedMember = m;
+          matchedRole = m.role || (m.id === '1' ? 'Leader' : 'Member');
+        }
+        return isMatch;
+      });
+      if (found) {
+        return {
+          team: t,
+          matchedMember,
+          matchedRole
+        };
+      }
+    }
   } catch (e) {
     // ignore
   }

@@ -67,25 +67,32 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
     };
   });
 
+  const [matchedRoleInfo, setMatchedRoleInfo] = useState<string>('');
+
   // Check if user is already registered in database
   useEffect(() => {
     let isMounted = true;
     async function checkExistingRegistration() {
       if (!userEmail || isExistingRegistrationChecked) return;
       try {
-        const existingTeam = await findRegistrationByUserEmail(userEmail);
-        if (existingTeam && isMounted) {
+        const searchResult = await findRegistrationByUserEmail(userEmail);
+        if (searchResult && isMounted) {
+          const { team: existingTeam, matchedRole, matchedMember } = searchResult;
           setRegistrationState(prev => ({
             ...prev,
             teamName: existingTeam.teamName,
             members: existingTeam.members.length > 0 ? existingTeam.members : prev.members,
             registrationId: existingTeam.id,
+            paymentStatus: existingTeam.paymentStatus,
             payment: {
               transactionId: existingTeam.transactionId || '',
               screenshotFile: null,
               screenshotPreview: existingTeam.screenshotUrl || null,
             }
           }));
+          const roleTitle = matchedRole || 'Team Member';
+          const regNumStr = matchedMember?.registerNumber ? ` (${matchedMember.registerNumber})` : '';
+          setMatchedRoleInfo(`${roleTitle}${regNumStr}`);
           setCurrentStep('submitted');
           setIsExistingRegistrationChecked(true);
         }
@@ -280,7 +287,11 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
               <Check className="w-3.5 h-3.5" />
             </div>
             <span className="text-xs font-mono text-white/90">
-              Student Verified • <strong className="text-white">KARE ACM Hackathon Portal</strong>
+              {matchedRoleInfo ? (
+                <>Verified Role: <strong className="text-[#8DA2FF] font-bold">{matchedRoleInfo}</strong> • <span className="text-white/70">KARE ACM Hackathon</span></>
+              ) : (
+                <>Student Verified ({userEmail || 'KLU Student'}) • <strong className="text-white">KARE ACM Hackathon Portal</strong></>
+              )}
             </span>
           </div>
 
