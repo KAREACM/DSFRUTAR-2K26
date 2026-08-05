@@ -13,7 +13,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
   const verticalLineRef = useRef<HTMLDivElement>(null);
   const horizontalLineRef = useRef<HTMLDivElement>(null);
 
-  // Window dimension listener for exact pixel alignment with canvas particles
+  // Window dimension listener for exact pixel alignment
   const [dimensions, setDimensions] = useState(() => ({
     w: typeof window !== 'undefined' ? window.innerWidth : 1200,
     h: typeof window !== 'undefined' ? window.innerHeight : 800,
@@ -39,15 +39,15 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
       const elapsedTime = Math.max(0, t - charDelay);
       const progress = Math.min(1.0, elapsedTime / 0.35);
       const eased = 1 - Math.pow(1 - progress, 3);
-      const yOffset = (1 - eased) * 22;
-      const scale = 0.8 + eased * 0.2;
-      const blur = (1 - eased) * 8;
+      const yOffset = (1 - eased) * 18;
+      const scale = 0.82 + eased * 0.18;
+      const blur = (1 - eased) * 6;
       const opacity = eased;
 
       return (
         <span
           key={`${keyPrefix}-${char}-${index}`}
-          className="inline-block transition-all ease-out"
+          className="inline-block transition-all ease-out shrink-0"
           style={{
             transform: `translateY(${yOffset}px) scale(${scale})`,
             filter: `blur(${blur}px)`,
@@ -61,8 +61,8 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
     });
   };
 
-  const titleDisfrutar = useMemo(() => splitTextIntoSpans('DISFRUTAR', 5.9, 0.04, 'disfrutar'), [t]);
-  const titleYear = useMemo(() => splitTextIntoSpans('2K26', 6.35, 0.05, 'year'), [t]);
+  const titleDisfrutar = useMemo(() => splitTextIntoSpans('DISFRUTAR', 5.9, 0.035, 'disfrutar'), [t]);
+  const titleYear = useMemo(() => splitTextIntoSpans('2K26', 6.25, 0.04, 'year'), [t]);
 
   // Early return after all hooks are declared
   if (t < 3.7) return null;
@@ -78,7 +78,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
   const logoScale = 1.0 - shiftEased * 0.58;
   
   // Upward elevation Y-offset: starts at 0px and glides smoothly up
-  const targetElevation = Math.min(Math.max(dimensions.h * 0.22, 140), 190);
+  const targetElevation = Math.min(Math.max(dimensions.h * 0.22, 130), 180);
   const logoYOffset = -shiftEased * targetElevation;
 
   // 3. Vertical laser crosshair line (5.0s to 5.6s)
@@ -95,7 +95,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
 
   // Calculate top offset for text stack so it rests right below elevated logo
   const elevatedLogoBottom = (dimensions.h / 2) - targetElevation + (bounds.boundingSize * 0.42 / 2);
-  const textStackTop = elevatedLogoBottom + 24;
+  const textStackTop = Math.max(elevatedLogoBottom + 18, dimensions.h * 0.42);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-20 overflow-hidden">
@@ -158,7 +158,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
 
       {/* TYPOGRAPHY & HERO CONTENT STACK */}
       <div
-        className="fixed left-1/2 -translate-x-1/2 flex flex-col items-center justify-start w-full max-w-5xl px-4 pointer-events-none text-center transition-opacity duration-500 z-20"
+        className="fixed left-1/2 -translate-x-1/2 flex flex-col items-center justify-start w-full max-w-6xl px-4 pointer-events-none text-center transition-opacity duration-500 z-20"
         style={{
           top: `${textStackTop}px`,
           opacity: t >= 5.3 ? 1 : 0,
@@ -172,7 +172,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
             transform: `translateY(${headerTranslateY}px)`,
           }}
         >
-          <div className="flex items-center justify-center gap-2.5">
+          <div className="flex items-center justify-center gap-2.5 whitespace-nowrap">
             <span className="w-1.5 h-1.5 rounded-full bg-[#4F7EFF] shadow-[0_0_8px_#4F7EFF] animate-pulse" />
             <p className="text-[11px] sm:text-xs md:text-sm font-bold tracking-[0.32em] text-[#80A5FF] uppercase font-jakarta">
               KARE ACM STUDENT CHAPTER
@@ -182,42 +182,42 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
           
           <p
             className="text-[10px] sm:text-xs tracking-[0.55em] text-white/75 uppercase font-mono font-black"
-            style={{ marginTop: '10px' }}
+            style={{ marginTop: '8px' }}
           >
             PRESENTS
           </p>
         </div>
 
-        {/* B. HERO TITLE: DISFRUTAR (with wide letter spacing tracking-[0.24em]) */}
+        {/* B. HERO TITLE: DISFRUTAR (flex-nowrap, whitespace-nowrap, gap-x letter spacing) */}
         <div
           className="relative w-full flex items-center justify-center px-2"
-          style={{ marginTop: '28px' }}
+          style={{ marginTop: '22px' }}
         >
           {/* Horizontal Cinematic Flare Line Behind DISFRUTAR */}
           <div
             ref={horizontalLineRef}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[2px] pointer-events-none z-0 transition-all duration-300"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-[2px] pointer-events-none z-0 transition-all duration-300"
             style={{
-              background: 'linear-gradient(90deg, transparent 0%, rgba(79, 126, 255, 0.4) 20%, #4F7EFF 50%, rgba(79, 126, 255, 0.4) 80%, transparent 100%)',
+              background: 'linear-gradient(90deg, transparent 0%, rgba(79, 126, 255, 0.4) 15%, #4F7EFF 50%, rgba(79, 126, 255, 0.4) 85%, transparent 100%)',
               boxShadow: '0 0 16px rgba(79, 126, 255, 0.9), 0 0 35px rgba(79, 126, 255, 0.5)',
               opacity: hLineEased,
               transform: `translate(-50%, -50%) scaleX(${hLineEased})`,
             }}
           >
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[6px] rounded-full bg-white blur-[2px] shadow-[0_0_25px_#4F7EFF]" />
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[6px] rounded-full bg-white blur-[2px] shadow-[0_0_25px_#4F7EFF]" />
           </div>
 
-          <h1 className="relative z-10 font-black font-syne text-white leading-none select-none text-center tracking-[0.22em] sm:tracking-[0.28em] md:tracking-[0.32em] text-[clamp(2.2rem,6.2vw,5.2rem)] drop-shadow-[0_0_35px_rgba(79,126,255,0.65)]">
+          <h1 className="relative z-10 font-black font-syne text-white leading-none select-none text-center flex flex-nowrap items-center justify-center gap-x-[0.16em] sm:gap-x-[0.24em] md:gap-x-[0.28em] text-[clamp(1.8rem,5.2vw,4.5rem)] drop-shadow-[0_0_35px_rgba(79,126,255,0.7)] whitespace-nowrap">
             {titleDisfrutar}
           </h1>
         </div>
 
-        {/* C. SUBTITLE YEAR: 2K26 (Centered on its own line below DISFRUTAR with wide letter spacing tracking-[0.48em]) */}
+        {/* C. SUBTITLE YEAR: 2K26 (Centered on its own line below DISFRUTAR, flex-nowrap, gap-x letter spacing) */}
         <div
           className="relative w-full flex items-center justify-center px-2"
-          style={{ marginTop: '14px' }}
+          style={{ marginTop: '12px' }}
         >
-          <div className="relative z-10 font-black font-syne text-transparent bg-clip-text bg-gradient-to-r from-[#4F7EFF] via-[#80A5FF] to-white leading-none select-none text-center tracking-[0.42em] sm:tracking-[0.52em] text-[clamp(1.5rem,3.8vw,3.2rem)] drop-shadow-[0_0_30px_rgba(79,126,255,0.85)]">
+          <div className="relative z-10 font-black font-syne text-transparent bg-clip-text bg-gradient-to-r from-[#4F7EFF] via-[#80A5FF] to-white leading-none select-none text-center flex flex-nowrap items-center justify-center gap-x-[0.35em] sm:gap-x-[0.45em] md:gap-x-[0.52em] text-[clamp(1.2rem,3.4vw,2.8rem)] drop-shadow-[0_0_30px_rgba(79,126,255,0.85)] whitespace-nowrap">
             {titleYear}
           </div>
         </div>
