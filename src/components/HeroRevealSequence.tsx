@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles } from 'lucide-react';
+import gsap from 'gsap';
 import { getParticleLogoBounds } from '../lib/logoTargets';
 
 interface HeroRevealSequenceProps {
@@ -9,6 +9,9 @@ interface HeroRevealSequenceProps {
 
 export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentTime }) => {
   const t = currentTime;
+
+  const verticalLineRef = useRef<HTMLDivElement>(null);
+  const horizontalLineRef = useRef<HTMLDivElement>(null);
 
   // Window dimension listener for exact pixel alignment with canvas particles
   const [dimensions, setDimensions] = useState(() => ({
@@ -29,21 +32,21 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
     return getParticleLogoBounds(dimensions.w, dimensions.h);
   }, [dimensions.w, dimensions.h]);
 
-  // 4. Phase 7: Character stagger helper for title with enhanced 3D rise & blur reveal
-  const splitTextIntoSpans = (text: string, baseDelay: number, charStagger: number = 0.03) => {
+  // Phase 7: GSAP-inspired character stagger helper for title with enhanced 3D rise & blur reveal
+  const splitTextIntoSpans = (text: string, baseDelay: number, charStagger: number = 0.035, keyPrefix: string = 'text') => {
     return text.split('').map((char, index) => {
       const charDelay = baseDelay + index * charStagger;
       const elapsedTime = Math.max(0, t - charDelay);
       const progress = Math.min(1.0, elapsedTime / 0.35);
       const eased = 1 - Math.pow(1 - progress, 3);
-      const yOffset = (1 - eased) * 20;
-      const scale = 0.82 + eased * 0.18;
-      const blur = (1 - eased) * 6;
+      const yOffset = (1 - eased) * 22;
+      const scale = 0.8 + eased * 0.2;
+      const blur = (1 - eased) * 8;
       const opacity = eased;
 
       return (
         <span
-          key={`${char}-${index}`}
+          key={`${keyPrefix}-${char}-${index}`}
           className="inline-block transition-all ease-out"
           style={{
             transform: `translateY(${yOffset}px) scale(${scale})`,
@@ -58,10 +61,10 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
     });
   };
 
-  const titleDisfrutar = useMemo(() => splitTextIntoSpans('DISFRUTAR', 5.9, 0.03), [t]);
-  const titleYear = useMemo(() => splitTextIntoSpans('2K26', 6.25, 0.035), [t]);
+  const titleDisfrutar = useMemo(() => splitTextIntoSpans('DISFRUTAR', 5.9, 0.04, 'disfrutar'), [t]);
+  const titleYear = useMemo(() => splitTextIntoSpans('2K26', 6.35, 0.05, 'year'), [t]);
 
-  // Early return after all hooks are declared to strictly satisfy Rules of Hooks
+  // Early return after all hooks are declared
   if (t < 3.7) return null;
 
   // 1. Logo opacity (3.7s to 4.3s)
@@ -71,29 +74,45 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
   const shiftProgress = Math.min(1.0, Math.max(0, (t - 4.5) / 0.8));
   const shiftEased = 1 - Math.pow(1 - shiftProgress, 3); // Smooth cubic ease-out
   
-  // Scale decreases smoothly from 1.0 (dead center match to particle matrix) down to 0.42 (compact header logo)
+  // Scale decreases smoothly from 1.0 down to 0.42
   const logoScale = 1.0 - shiftEased * 0.58;
   
-  // Upward elevation Y-offset: starts at 0px (exact dead center) and glides smoothly up
+  // Upward elevation Y-offset: starts at 0px and glides smoothly up
   const targetElevation = Math.min(Math.max(dimensions.h * 0.22, 140), 190);
   const logoYOffset = -shiftEased * targetElevation;
 
-  // 3. Presenter Header opacity & offset (5.3s to 5.9s)
+  // 3. Vertical laser crosshair line (5.0s to 5.6s)
+  const vLineProgress = t >= 5.0 ? Math.min(1.0, (t - 5.0) / 0.6) : 0;
+  const vLineEased = 1 - Math.pow(1 - vLineProgress, 3);
+
+  // 4. Presenter Header opacity & offset (5.3s to 5.8s)
   const headerOpacity = t >= 5.3 ? Math.min(1.0, (t - 5.3) / 0.5) : 0;
   const headerTranslateY = (1 - headerOpacity) * 12;
 
-  // 5. Subtitle pill badge opacity (6.6s to 7.2s)
-  const subOpacity = t >= 6.6 ? Math.min(1.0, (t - 6.6) / 0.5) : 0;
-  const subTranslateY = (1 - subOpacity) * 12;
+  // 5. Horizontal lens flare line (5.7s to 6.3s)
+  const hLineProgress = t >= 5.7 ? Math.min(1.0, (t - 5.7) / 0.6) : 0;
+  const hLineEased = 1 - Math.pow(1 - hLineProgress, 3);
 
-  // Calculate top offset for text stack so it rests right below the elevated logo
+  // Calculate top offset for text stack so it rests right below elevated logo
   const elevatedLogoBottom = (dimensions.h / 2) - targetElevation + (bounds.boundingSize * 0.42 / 2);
-  const textStackTop = elevatedLogoBottom + 28; // 28px gap below logo
+  const textStackTop = elevatedLogoBottom + 24;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-20 overflow-hidden">
       
-      {/* 1. KARE ACM LOGO: Fixed at exact dead center (50vw, 50vh) & exact particle bounding box */}
+      {/* Vertical Cinematic Laser Line through center axis */}
+      <div
+        ref={verticalLineRef}
+        className="fixed left-1/2 -translate-x-1/2 top-0 bottom-0 w-[1.5px] pointer-events-none z-10 origin-center transition-all duration-300"
+        style={{
+          background: 'linear-gradient(180deg, transparent 0%, rgba(79, 126, 255, 0.25) 15%, #4F7EFF 50%, rgba(79, 126, 255, 0.25) 85%, transparent 100%)',
+          boxShadow: '0 0 10px rgba(79, 126, 255, 0.8), 0 0 20px rgba(79, 126, 255, 0.4)',
+          opacity: vLineEased * 0.85,
+          transform: `scaleY(${vLineEased})`,
+        }}
+      />
+
+      {/* KARE ACM LOGO: Fixed at dead center & elevated */}
       <div
         className="fixed top-1/2 left-1/2 flex items-center justify-center pointer-events-none z-30 transition-transform duration-75 ease-out"
         style={{
@@ -126,7 +145,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
           />
         )}
 
-        {/* KARE ACM Logo Image - Exactly fills bounding box with zero position or scale jump */}
+        {/* KARE ACM Logo Image */}
         <img
           src="/acm_logo.png"
           alt="KARE ACM Student Chapter Logo"
@@ -137,15 +156,15 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
         />
       </div>
 
-      {/* 2. TYPOGRAPHY & HERO CONTENT STACK: Positioned with perfect vertical rhythm below elevated logo */}
+      {/* TYPOGRAPHY & HERO CONTENT STACK */}
       <div
-        className="fixed left-1/2 -translate-x-1/2 flex flex-col items-center justify-start w-full max-w-4xl px-4 pointer-events-none text-center transition-opacity duration-500 z-20"
+        className="fixed left-1/2 -translate-x-1/2 flex flex-col items-center justify-start w-full max-w-5xl px-4 pointer-events-none text-center transition-opacity duration-500 z-20"
         style={{
           top: `${textStackTop}px`,
           opacity: t >= 5.3 ? 1 : 0,
         }}
       >
-        {/* A. PRESENTER HEADER (KARE ACM STUDENT CHAPTER PRESENTS) - Phase 6 (5.3s) */}
+        {/* A. PRESENTER HEADER */}
         <div
           className="flex flex-col items-center transition-all duration-500 ease-out"
           style={{
@@ -153,53 +172,53 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
             transform: `translateY(${headerTranslateY}px)`,
           }}
         >
-          <div className="flex items-center justify-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#4F7EFF] animate-pulse" />
-            <p className="text-[11px] sm:text-xs md:text-sm font-bold tracking-[0.28em] text-[#80A5FF] uppercase font-jakarta">
+          <div className="flex items-center justify-center gap-2.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4F7EFF] shadow-[0_0_8px_#4F7EFF] animate-pulse" />
+            <p className="text-[11px] sm:text-xs md:text-sm font-bold tracking-[0.32em] text-[#80A5FF] uppercase font-jakarta">
               KARE ACM STUDENT CHAPTER
             </p>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#4F7EFF] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4F7EFF] shadow-[0_0_8px_#4F7EFF] animate-pulse" />
           </div>
           
           <p
-            className="text-[10px] sm:text-xs tracking-[0.6em] text-white/80 uppercase font-mono font-black"
-            style={{ marginTop: '10px' }} // 10px below KARE ACM STUDENT CHAPTER per spec
+            className="text-[10px] sm:text-xs tracking-[0.55em] text-white/75 uppercase font-mono font-black"
+            style={{ marginTop: '10px' }}
           >
             PRESENTS
           </p>
         </div>
 
-        {/* B. HERO TITLE (DISFRUTAR 2K26) - Phase 7 (5.9s) */}
-        {/* 40px below PRESENTS per spec, responsive clamp font size to eliminate overflow/clipping */}
+        {/* B. HERO TITLE: DISFRUTAR (with wide letter spacing tracking-[0.24em]) */}
         <div
-          className="w-full flex items-center justify-center px-2"
-          style={{ marginTop: '36px' }}
+          className="relative w-full flex items-center justify-center px-2"
+          style={{ marginTop: '28px' }}
         >
-          <h1 className="font-black font-syne tracking-tight text-white leading-none select-none text-center flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-5 text-[clamp(2.2rem,6.5vw,5.5rem)]">
-            <span className="inline-block drop-shadow-[0_0_35px_rgba(79,126,255,0.55)]">
-              {titleDisfrutar}
-            </span>
-            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#4F7EFF] via-[#80A5FF] to-white drop-shadow-[0_0_30px_rgba(79,126,255,0.65)]">
-              {titleYear}
-            </span>
+          {/* Horizontal Cinematic Flare Line Behind DISFRUTAR */}
+          <div
+            ref={horizontalLineRef}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[2px] pointer-events-none z-0 transition-all duration-300"
+            style={{
+              background: 'linear-gradient(90deg, transparent 0%, rgba(79, 126, 255, 0.4) 20%, #4F7EFF 50%, rgba(79, 126, 255, 0.4) 80%, transparent 100%)',
+              boxShadow: '0 0 16px rgba(79, 126, 255, 0.9), 0 0 35px rgba(79, 126, 255, 0.5)',
+              opacity: hLineEased,
+              transform: `translate(-50%, -50%) scaleX(${hLineEased})`,
+            }}
+          >
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[6px] rounded-full bg-white blur-[2px] shadow-[0_0_25px_#4F7EFF]" />
+          </div>
+
+          <h1 className="relative z-10 font-black font-syne text-white leading-none select-none text-center tracking-[0.22em] sm:tracking-[0.28em] md:tracking-[0.32em] text-[clamp(2.2rem,6.2vw,5.2rem)] drop-shadow-[0_0_35px_rgba(79,126,255,0.65)]">
+            {titleDisfrutar}
           </h1>
         </div>
 
-        {/* C. SUBTITLE PILL BADGE (24-HOUR NATIONAL AI HACKATHON) - (6.6s) */}
-        {/* ~28px below title per spec */}
+        {/* C. SUBTITLE YEAR: 2K26 (Centered on its own line below DISFRUTAR with wide letter spacing tracking-[0.48em]) */}
         <div
-          className="transition-all duration-500 ease-out"
-          style={{
-            marginTop: '28px',
-            opacity: subOpacity,
-            transform: `translateY(${subTranslateY}px)`,
-          }}
+          className="relative w-full flex items-center justify-center px-2"
+          style={{ marginTop: '14px' }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#050814]/60 border border-[#4F7EFF]/35 backdrop-blur-md shadow-xl">
-            <Sparkles className="w-3.5 h-3.5 text-[#4F7EFF] animate-pulse" />
-            <p className="text-[11px] sm:text-xs md:text-sm font-semibold tracking-[0.22em] text-white/90 uppercase font-jakarta whitespace-nowrap">
-              32-HOUR NATIONAL AI HACKATHON
-            </p>
+          <div className="relative z-10 font-black font-syne text-transparent bg-clip-text bg-gradient-to-r from-[#4F7EFF] via-[#80A5FF] to-white leading-none select-none text-center tracking-[0.42em] sm:tracking-[0.52em] text-[clamp(1.5rem,3.8vw,3.2rem)] drop-shadow-[0_0_30px_rgba(79,126,255,0.85)]">
+            {titleYear}
           </div>
         </div>
 
@@ -207,3 +226,4 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
     </div>
   );
 };
+
