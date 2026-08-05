@@ -48,31 +48,31 @@ export const BootExperience: React.FC<BootExperienceProps> = ({ onComplete, clas
 
   return (
     <div 
-      className={`relative w-screen h-screen overflow-hidden bg-[#06080B] text-white selection:bg-[#50A7D8] ${className || ''}`}
+      className={`relative w-screen h-screen overflow-hidden bg-[#050814] text-white selection:bg-[#4F7EFF] ${className || ''}`}
       style={style}
     >
       
-      {/* 1. Background Depth - Large Soft Upper Radial Gradient (1200px radius at 50% 35%) */}
+      {/* 1. Background Depth - Cinematic Ambient Radial Gradient */}
       <div 
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(1200px circle at 50% 35%, rgba(100, 160, 255, 0.035), transparent 70%)',
+          background: 'radial-gradient(1200px circle at 50% 35%, rgba(79, 126, 255, 0.05), transparent 70%)',
         }}
       />
 
-      {/* 2. Center Ambient Light - Extremely Subtle Radial Illumination Behind Logo (700px radius at 50% 50%) */}
+      {/* 2. Center Ambient Light - Core Royal Blue Illumination Behind Logo */}
       <div 
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(700px circle at 50% 50%, rgba(80, 170, 255, 0.08), transparent 70%)',
+          background: 'radial-gradient(700px circle at 50% 50%, rgba(79, 126, 255, 0.12), transparent 70%)',
         }}
       />
 
-      {/* 3. Vignette Layer - 55% Opacity Edge Darkening & Light Falloff for Pure OLED Depth */}
+      {/* 3. OLED Vignette Layer - Darkening & Light Falloff for Pure OLED Depth */}
       <div 
         className="absolute inset-0 pointer-events-none z-[1]"
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.55) 100%)',
+          background: 'radial-gradient(ellipse at center, transparent 35%, rgba(2, 3, 8, 0.85) 100%)',
         }}
       />
 

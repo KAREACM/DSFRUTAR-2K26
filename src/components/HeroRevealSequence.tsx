@@ -110,7 +110,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
           style={{
             width: '100%',
             height: '100%',
-            background: 'radial-gradient(circle, rgba(80, 167, 216, 0.45) 0%, rgba(56, 158, 211, 0.15) 55%, transparent 80%)',
+            background: 'radial-gradient(circle, rgba(79, 126, 255, 0.45) 0%, rgba(79, 126, 255, 0.15) 55%, transparent 80%)',
             filter: 'blur(26px)',
             opacity: logoOpacity,
           }}
@@ -122,7 +122,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
             initial={{ scale: 0.8, opacity: 0.8 }}
             animate={{ scale: 1.45, opacity: 0 }}
             transition={{ duration: 1.1, repeat: Infinity, ease: 'easeOut' }}
-            className="absolute rounded-full border border-[#50A7D8]/60 w-full h-full"
+            className="absolute rounded-full border border-[#4F7EFF]/60 w-full h-full"
           />
         )}
 
@@ -130,7 +130,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
         <img
           src="/acm_logo.png"
           alt="KARE ACM Student Chapter Logo"
-          className="w-full h-full object-contain filter drop-shadow-[0_0_28px_rgba(80,167,216,0.7)]"
+          className="w-full h-full object-contain filter drop-shadow-[0_0_28px_rgba(79,126,255,0.75)]"
           onError={(e) => {
             (e.target as HTMLElement).style.display = 'none';
           }}
@@ -154,11 +154,11 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
           }}
         >
           <div className="flex items-center justify-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#50A7D8] animate-pulse" />
-            <p className="text-[11px] sm:text-xs md:text-sm font-bold tracking-[0.28em] text-[#70C5F5] uppercase font-jakarta">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4F7EFF] animate-pulse" />
+            <p className="text-[11px] sm:text-xs md:text-sm font-bold tracking-[0.28em] text-[#80A5FF] uppercase font-jakarta">
               KARE ACM STUDENT CHAPTER
             </p>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#50A7D8] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4F7EFF] animate-pulse" />
           </div>
           
           <p
@@ -176,10 +176,10 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
           style={{ marginTop: '36px' }}
         >
           <h1 className="font-black font-syne tracking-tight text-white leading-none select-none text-center flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-5 text-[clamp(2.2rem,6.5vw,5.5rem)]">
-            <span className="inline-block drop-shadow-[0_0_35px_rgba(80,167,216,0.55)]">
+            <span className="inline-block drop-shadow-[0_0_35px_rgba(79,126,255,0.55)]">
               {titleDisfrutar}
             </span>
-            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#50A7D8] via-[#70C5F5] to-white drop-shadow-[0_0_30px_rgba(80,167,216,0.65)]">
+            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#4F7EFF] via-[#80A5FF] to-white drop-shadow-[0_0_30px_rgba(79,126,255,0.65)]">
               {titleYear}
             </span>
           </h1>
@@ -195,8 +195,8 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
             transform: `translateY(${subTranslateY}px)`,
           }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-[#50A7D8]/35 backdrop-blur-md shadow-xl">
-            <Sparkles className="w-3.5 h-3.5 text-[#50A7D8] animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#050814]/60 border border-[#4F7EFF]/35 backdrop-blur-md shadow-xl">
+            <Sparkles className="w-3.5 h-3.5 text-[#4F7EFF] animate-pulse" />
             <p className="text-[11px] sm:text-xs md:text-sm font-semibold tracking-[0.22em] text-white/90 uppercase font-jakarta whitespace-nowrap">
               32-HOUR NATIONAL AI HACKATHON
             </p>

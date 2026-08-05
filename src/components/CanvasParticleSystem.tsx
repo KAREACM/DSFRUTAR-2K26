@@ -41,7 +41,7 @@ export const CanvasParticleSystem: React.FC<CanvasParticleSystemProps> = ({
           x: cx,
           y: cy,
           group: i % 5,
-          color: 'rgba(80, 167, 216, 0.8)',
+          color: 'rgba(79, 126, 255, 0.8)',
           originalX: cx,
           originalY: cy,
         };
@@ -61,12 +61,12 @@ export const CanvasParticleSystem: React.FC<CanvasParticleSystemProps> = ({
         const cp2x = cx + Math.cos(angle2) * dist2;
         const cp2y = cy + Math.sin(angle2) * dist2;
 
-        // Colors matching brand: Sky blue and bright white
+        // Colors matching brand: Royal electric blue and bright white
         let colorStr = target.color;
         if (target.group === 0) {
-          colorStr = Math.random() > 0.3 ? 'rgba(80, 167, 216, 0.85)' : 'rgba(56, 158, 211, 0.9)';
+          colorStr = Math.random() > 0.3 ? 'rgba(79, 126, 255, 0.88)' : 'rgba(99, 140, 255, 0.92)';
         } else {
-          colorStr = Math.random() > 0.2 ? 'rgba(255, 255, 255, 0.95)' : 'rgba(224, 242, 254, 0.9)';
+          colorStr = Math.random() > 0.2 ? 'rgba(255, 255, 255, 0.95)' : 'rgba(225, 235, 255, 0.9)';
         }
 
         newParticles.push({
@@ -275,7 +275,7 @@ export const CanvasParticleSystem: React.FC<CanvasParticleSystemProps> = ({
           ring.radius += ring.speed;
           ring.alpha *= 0.95;
 
-          ctx.strokeStyle = `rgba(80, 167, 216, ${ring.alpha.toFixed(2)})`;
+          ctx.strokeStyle = `rgba(79, 126, 255, ${ring.alpha.toFixed(2)})`;
           ctx.lineWidth = 1.5;
           ctx.beginPath();
           ctx.arc(cx, cy, ring.radius, 0, Math.PI * 2);

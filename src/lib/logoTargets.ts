@@ -55,13 +55,13 @@ export function generateLogoTargets(
   const diamondR = logoScale * 0.46;
   const circleR = logoScale * 0.35;
 
-  // Group 0: Outer Diamond (Rotated Square in ACM Sky Blue #50A7D8)
+  // Group 0: Outer Diamond (Rotated Square in Electric Royal Blue #4F7EFF)
   const ctxDiamond = createSubCanvas();
   ctxDiamond.save();
   ctxDiamond.translate(cx, cy);
   ctxDiamond.rotate(Math.PI / 4); // 45 degree diamond
   const rectSize = (diamondR * 2) / 1.414;
-  ctxDiamond.fillStyle = '#50A7D8';
+  ctxDiamond.fillStyle = '#4F7EFF';
   ctxDiamond.fillRect(-rectSize / 2, -rectSize / 2, rectSize, rectSize);
   ctxDiamond.restore();
 
@@ -132,11 +132,11 @@ export function generateLogoTargets(
     return pts;
   };
 
-  const ptsDiamond = extractPoints(ctxDiamond, 0, 'rgba(80, 167, 216, 0.75)');
+  const ptsDiamond = extractPoints(ctxDiamond, 0, 'rgba(79, 126, 255, 0.78)');
   const ptsCircle = extractPoints(ctxCircle, 1, 'rgba(255, 255, 255, 0.95)');
   const ptsKare = extractPoints(ctxKare, 2, 'rgba(255, 255, 255, 0.98)');
   const ptsAcm = extractPoints(ctxAcm, 3, 'rgba(255, 255, 255, 0.98)');
-  const ptsChapter = extractPoints(ctxChapter, 4, 'rgba(224, 242, 254, 0.95)');
+  const ptsChapter = extractPoints(ctxChapter, 4, 'rgba(225, 235, 255, 0.95)');
 
   // Proportional allocation: Diamond (30%), Circle (25%), KARE (15%), ACM (18%), STUDENT CHAPTER (12%)
   const distribution = [
@@ -189,7 +189,7 @@ export function fallbackParametricTargets(width: number, height: number, count: 
       x: tx,
       y: ty,
       group: i % 5,
-      color: i % 2 === 0 ? 'rgba(255, 255, 255, 0.9)' : 'rgba(80, 167, 216, 0.8)',
+      color: i % 2 === 0 ? 'rgba(255, 255, 255, 0.9)' : 'rgba(79, 126, 255, 0.8)',
       originalX: tx,
       originalY: ty,
     });
