@@ -37,7 +37,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBack, onSuccessLogin }
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#050814] flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans">
+    <div className="min-h-screen w-full bg-[#050814] flex flex-col justify-center items-center p-4 py-8 sm:py-12 relative overflow-y-auto font-sans">
       {/* Background glow effects */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#536BFF]/15 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[300px] h-[300px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none" />
@@ -45,7 +45,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBack, onSuccessLogin }
       {/* Top back button */}
       <button
         onClick={onBack}
-        className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 transition-all text-xs font-mono"
+        className="mb-6 sm:absolute sm:top-6 sm:left-6 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-white/80 hover:text-white hover:bg-white/10 transition-all text-xs font-mono cursor-pointer shrink-0 z-20"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Portal</span>

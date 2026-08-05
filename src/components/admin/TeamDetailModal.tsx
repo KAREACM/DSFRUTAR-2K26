@@ -257,14 +257,14 @@ export const TeamDetailModal: React.FC<TeamDetailModalProps> = ({
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                  <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 text-xs font-mono">
                     <div>
                       <span className="text-white/40 text-[10px] block uppercase">Reg Number</span>
-                      <strong className="text-white">{m.registerNumber || 'N/A'}</strong>
+                      <strong className="text-white break-all">{m.registerNumber || 'N/A'}</strong>
                     </div>
                     <div>
                       <span className="text-white/40 text-[10px] block uppercase">Mobile Phone</span>
-                      <strong className="text-[#8DA2FF]">{m.phone || 'N/A'}</strong>
+                      <strong className="text-[#8DA2FF] break-all">{m.phone || 'N/A'}</strong>
                     </div>
                     <div>
                       <span className="text-white/40 text-[10px] block uppercase">Year & Dept</span>

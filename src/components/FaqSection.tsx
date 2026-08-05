@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, HelpCircle, Sparkles, MessageSquare, CheckCircle2, Calendar, Award, Users, Laptop, DollarSign, FileText, Gift } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface FaqItem {
   id: string;
@@ -11,6 +15,104 @@ interface FaqItem {
 
 export const FaqSection: React.FC = () => {
   const [openId, setOpenId] = useState<string | null>('faq-1');
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const badgeRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const subtextRef = useRef<HTMLParagraphElement>(null);
+  const accordionContainerRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // 1. Header Elements Sequence Reveal
+      const headerTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+        },
+      });
+
+      if (badgeRef.current) {
+        headerTl.fromTo(
+          badgeRef.current,
+          { opacity: 0, y: 22, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power3.out' }
+        );
+      }
+
+      if (headingRef.current) {
+        headerTl.fromTo(
+          headingRef.current,
+          { opacity: 0, y: 32 },
+          { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' },
+          '-=0.3'
+        );
+      }
+
+      if (subtextRef.current) {
+        headerTl.fromTo(
+          subtextRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' },
+          '-=0.4'
+        );
+      }
+
+      // 2. Staggered FAQ Card Entrance (Content does not reflect all at once)
+      if (accordionContainerRef.current) {
+        const faqCards = accordionContainerRef.current.querySelectorAll('.faq-card-item');
+
+        gsap.fromTo(
+          faqCards,
+          { opacity: 0, y: 45, scale: 0.97 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.65,
+            stagger: 0.08,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: accordionContainerRef.current,
+              start: 'top 83%',
+              toggleActions: 'play none none none',
+            },
+          }
+        );
+      }
+
+      // 3. CTA Banner Reveal
+      if (ctaRef.current) {
+        gsap.fromTo(
+          ctaRef.current,
+          { opacity: 0, y: 40, scale: 0.96 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.75,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: ctaRef.current,
+              start: 'top 88%',
+              toggleActions: 'play none none none',
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      ctx.revert();
+    };
+  }, []);
 
   const faqItems: FaqItem[] = [
     {
@@ -158,6 +260,7 @@ export const FaqSection: React.FC = () => {
   return (
     <section
       id="faq"
+      ref={sectionRef}
       className="relative w-full bg-[#040612] text-white py-[90px] lg:py-[115px] px-5 sm:px-10 lg:px-[80px] font-space overflow-hidden border-t border-b border-[#182544]/60 select-none"
     >
       {/* Luminous Animated Background (Register Button Palette) */}
@@ -197,7 +300,10 @@ export const FaqSection: React.FC = () => {
         {/* Section Header */}
         <div className="flex flex-col items-center text-center mb-[44px] lg:mb-[58px]">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#536BFF]/12 border border-[#536BFF]/35 backdrop-blur-md mb-4 shadow-[0_0_16px_rgba(83,107,255,0.25)]">
+          <div
+            ref={badgeRef}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#536BFF]/12 border border-[#536BFF]/35 backdrop-blur-md mb-4 shadow-[0_0_16px_rgba(83,107,255,0.25)]"
+          >
             <HelpCircle className="w-3.5 h-3.5 text-[#536BFF]" />
             <span className="text-[11px] font-bold tracking-[0.18em] uppercase text-white font-space">
               Got Questions?
@@ -205,23 +311,29 @@ export const FaqSection: React.FC = () => {
           </div>
 
           {/* Heading */}
-          <h2 className="text-[30px] sm:text-[38px] md:text-[46px] font-bold text-white tracking-tight leading-[1.12]">
+          <h2
+            ref={headingRef}
+            className="text-[30px] sm:text-[38px] md:text-[46px] font-bold text-white tracking-tight leading-[1.12]"
+          >
             Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#8DA2FF] to-[#536BFF]">Questions</span>
           </h2>
-          <p className="mt-3.5 text-[14px] sm:text-[16px] text-white/65 max-w-[620px] font-sans leading-relaxed">
+          <p
+            ref={subtextRef}
+            className="mt-3.5 text-[14px] sm:text-[16px] text-white/65 max-w-[620px] font-sans leading-relaxed"
+          >
             Everything you need to know before registering for DISFRUTAR 2K26.
           </p>
         </div>
 
         {/* Accordion List */}
-        <div className="space-y-3 sm:space-y-3.5">
+        <div ref={accordionContainerRef} className="space-y-3 sm:space-y-3.5">
           {faqItems.map((faq, index) => {
             const isOpen = openId === faq.id;
 
             return (
               <div
                 key={faq.id}
-                className={`group relative rounded-[18px] transition-all duration-300 border overflow-hidden ${
+                className={`faq-card-item group relative rounded-[18px] transition-all duration-300 border overflow-hidden ${
                   isOpen
                     ? 'bg-[#07091C]/92 border-[#536BFF]/50 shadow-[0_8px_32px_rgba(83,107,255,0.18)]'
                     : 'bg-[#07091C]/55 border-white/10 hover:border-white/22 hover:bg-[#07091C]/78'
@@ -298,7 +410,10 @@ export const FaqSection: React.FC = () => {
         </div>
 
         {/* Still Have Questions CTA Banner */}
-        <div className="mt-12 p-6 sm:p-8 rounded-[24px] bg-gradient-to-r from-[#07091C] via-[#0B0F2A] to-[#07091C] border border-[#536BFF]/30 shadow-[0_12px_40px_rgba(0,0,0,0.6)] flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden">
+        <div
+          ref={ctaRef}
+          className="mt-12 p-6 sm:p-8 rounded-[24px] bg-gradient-to-r from-[#07091C] via-[#0B0F2A] to-[#07091C] border border-[#536BFF]/30 shadow-[0_12px_40px_rgba(0,0,0,0.6)] flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden"
+        >
           {/* Subtle Ambient Radial Light */}
           <div
             className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full blur-[80px] pointer-events-none"

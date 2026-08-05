@@ -321,7 +321,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminEmail, onLo
         
         {/* Navigation Tabs Bar */}
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
-          <nav className="flex items-center gap-2 bg-white/[0.03] p-1.5 rounded-full border border-white/10 overflow-x-auto max-w-full">
+          <nav className="flex items-center gap-2 bg-white/[0.03] p-1.5 rounded-full border border-white/10 overflow-x-auto max-w-full no-scrollbar">
             <button
               onClick={() => setActiveTab('dashboard')}
               className={`px-5 py-2 rounded-full text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${

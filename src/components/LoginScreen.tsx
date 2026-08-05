@@ -159,10 +159,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   };
 
   return (
-    <div className="relative h-screen w-full text-white flex items-center justify-center font-space overflow-hidden select-none px-4">
+    <div className="relative min-h-screen w-full text-white flex flex-col items-center justify-center font-space overflow-y-auto select-none px-4 py-8 sm:py-12">
       
       {/* 1. Master Depth Background System matching DESIGN.md */}
-      <div className="absolute inset-0 bg-[#06080B] z-0" />
+      <div className="absolute inset-0 bg-[#06080B] z-0 pointer-events-none" />
       
       {/* Upper Ambient Radial Glow */}
       <div 
@@ -209,7 +209,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.1, duration: 0.5 }}
-        className="absolute top-6 left-6 inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-white/8 bg-white/[0.04] backdrop-blur-md text-white/70 hover:text-white hover:border-white/18 hover:bg-white/[0.08] transition-all duration-300 text-xs sm:text-sm cursor-pointer z-20 group"
+        className="mb-6 sm:absolute sm:top-6 sm:left-6 inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/12 bg-white/[0.04] backdrop-blur-md text-white/80 hover:text-white hover:border-white/20 hover:bg-white/[0.08] transition-all duration-300 text-xs sm:text-sm cursor-pointer z-20 group shrink-0"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
         <span>Back to Portal</span>
@@ -220,7 +220,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         initial={{ opacity: 0, y: 30, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-md bg-[#07091C]/80 border border-white/12 rounded-[24px] p-6 sm:p-8 backdrop-blur-[24px] shadow-[0_24px_64px_rgba(0,0,0,0.85)] z-10 overflow-hidden"
+        className="relative w-full max-w-md bg-[#07091C]/80 border border-white/12 rounded-[24px] p-5 sm:p-8 backdrop-blur-[24px] shadow-[0_24px_64px_rgba(0,0,0,0.85)] z-10 overflow-hidden my-auto"
       >
         {/* Glowing border accents */}
         <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-[#536BFF]/70 to-transparent blur-[0.5px]" />

@@ -312,10 +312,10 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
         >
           {/* STEP 1: TEAM DETAILS */}
           {currentStep === 'team_details' && (
-            <div className="max-w-3xl mx-auto space-y-6 pb-28">
+            <div className="max-w-3xl mx-auto space-y-6 pb-44 sm:pb-36">
               
               {/* Team Name Input Card */}
-              <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-6 backdrop-blur-[24px] space-y-3">
+              <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-4 sm:p-6 backdrop-blur-[24px] space-y-3">
                 <label htmlFor="teamNameInput" className="block text-xs font-mono font-bold uppercase tracking-wider text-white/70 pl-2">
                   Team Name *
                 </label>
@@ -327,7 +327,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
                     value={registrationState.teamName}
                     onChange={(e) => setRegistrationState(prev => ({ ...prev, teamName: e.target.value }))}
                     placeholder="e.g. Binary Builders"
-                    className="w-full h-[48px] pl-11 pr-5 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 transition-all text-sm text-white placeholder-white/25 outline-none font-sans"
+                    className="w-full h-[46px] sm:h-[48px] pl-11 pr-5 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 transition-all text-sm text-white placeholder-white/25 outline-none font-sans"
                   />
                 </div>
               </div>
@@ -338,7 +338,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
                   <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white/70">
                     Team Members (4 Minimum, 5 Max)
                   </h3>
-                  <span className="text-[11px] font-mono text-white/40">Collapsible Cards</span>
+                  <span className="text-[10px] sm:text-[11px] font-mono text-white/40">Collapsible Cards</span>
                 </div>
 
                 <div className="space-y-3">
@@ -355,16 +355,16 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
               </div>
 
               {/* Enhanced Fixed Bottom Navigation Bar with Live Readiness Bars & Total Amount */}
-              <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#07091C]/95 border-t border-white/15 backdrop-blur-2xl px-4 py-3.5 sm:py-4 shadow-[0_-12px_48px_rgba(0,0,0,0.9)]">
-                <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#07091C]/95 border-t border-white/15 backdrop-blur-2xl px-3 sm:px-6 py-3 sm:py-4 shadow-[0_-12px_48px_rgba(0,0,0,0.9)]">
+                <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
                   
                   {/* Readiness Progress Bars & Price Summary */}
-                  <div className="w-full sm:w-auto space-y-1.5 text-center sm:text-left">
-                    <div className="flex items-center justify-center sm:justify-start gap-2">
-                      <span className="font-space font-bold text-sm text-white">
+                  <div className="w-full sm:w-auto space-y-1 text-center sm:text-left">
+                    <div className="flex items-center justify-between sm:justify-start gap-2">
+                      <span className="font-space font-bold text-xs sm:text-sm text-white truncate max-w-[200px] sm:max-w-none">
                         {registrationState.teamName ? registrationState.teamName : 'Team Name Required'}
                       </span>
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold uppercase shrink-0 ${
                         isTeamValid 
                           ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
                           : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
@@ -373,14 +373,14 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
                       </span>
                     </div>
 
-                    {/* Member Readiness 5 Green Bars */}
-                    <div className="flex items-center justify-center sm:justify-start gap-1.5 py-0.5">
+                    {/* Member Readiness Green Bars */}
+                    <div className="flex items-center justify-center sm:justify-start gap-1 py-0.5 flex-wrap">
                       {registrationState.members.map((m, idx) => {
                         const complete = isMemberComplete(m);
                         return (
                           <div
                             key={m.id}
-                            className={`h-2 w-8 sm:w-10 rounded-full transition-all duration-300 ${
+                            className={`h-1.5 sm:h-2 w-6 sm:w-10 rounded-full transition-all duration-300 ${
                               complete 
                                 ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]' 
                                 : idx === 4 
@@ -391,14 +391,14 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
                           />
                         );
                       })}
-                      <span className="text-[11px] font-mono text-white/70 ml-2 font-bold">
+                      <span className="text-[10px] sm:text-[11px] font-mono text-white/70 ml-1 font-bold">
                         {requiredMembers.filter(isMemberComplete).length}/4 Verified
                       </span>
                     </div>
 
-                    <p className="text-[11px] font-mono text-white/50">
-                      Total Payable: <strong className="text-base text-white font-space font-bold">₹{totalFee}</strong>
-                      <span className="text-white/40 text-[10px] ml-1">(₹350 × {totalMemberCount})</span>
+                    <p className="text-[10px] sm:text-[11px] font-mono text-white/50">
+                      Total Payable: <strong className="text-sm sm:text-base text-white font-space font-bold">₹{totalFee}</strong>
+                      <span className="text-white/40 text-[9px] sm:text-[10px] ml-1">(₹350 × {totalMemberCount})</span>
                     </p>
                   </div>
 
@@ -407,13 +407,13 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
                     type="button"
                     onClick={() => setCurrentStep('review')}
                     disabled={!isTeamValid}
-                    className={`w-full sm:w-auto h-[48px] px-8 rounded-full font-space font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 border ${
+                    className={`w-full sm:w-auto h-[44px] sm:h-[48px] px-6 sm:px-8 rounded-full font-space font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 border ${
                       isTeamValid
                         ? 'bg-gradient-to-r from-[#536BFF] to-[#4256F6] text-white border-white/20 hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_24px_rgba(83,107,255,0.4)]'
                         : 'bg-white/5 text-white/30 border-white/5 cursor-not-allowed'
                     }`}
                   >
-                    <CreditCard className="w-4 h-4" />
+                    <CreditCard className="w-4 h-4 shrink-0" />
                     <span>Save & Continue to Review →</span>
                   </button>
 

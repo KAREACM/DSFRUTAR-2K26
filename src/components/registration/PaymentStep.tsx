@@ -293,14 +293,14 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
           {/* Deep Link Quick App Launcher Buttons */}
           <div className="space-y-2">
             <span className="text-[11px] font-mono uppercase tracking-widest text-white/50 block">Direct UPI Pay Launchers</span>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-2.5">
               <a
                 href={upiDeepLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="h-[42px] px-3 rounded-full bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 text-xs font-space text-white font-medium cursor-pointer"
               >
-                <Smartphone className="w-3.5 h-3.5 text-[#536BFF]" />
+                <Smartphone className="w-3.5 h-3.5 text-[#536BFF] shrink-0" />
                 <span>Google Pay</span>
               </a>
 
@@ -308,9 +308,9 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
                 href={upiDeepLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-[42px] px-3 rounded-full bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 text-xs font-space text-white font-medium cursor-pointer"
+                className="h-[42px] px-3 rounded-full bg-white/[0.04] border border-white/10 hover:border-[#25D366]/40 hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 text-xs font-space text-white font-medium cursor-pointer"
               >
-                <Smartphone className="w-3.5 h-3.5 text-purple-400" />
+                <Smartphone className="w-3.5 h-3.5 text-purple-400 shrink-0" />
                 <span>PhonePe</span>
               </a>
 
@@ -320,7 +320,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
                 rel="noopener noreferrer"
                 className="h-[42px] px-3 rounded-full bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 text-xs font-space text-white font-medium cursor-pointer"
               >
-                <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
+                <Smartphone className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                 <span>Paytm / Any UPI</span>
               </a>
 
@@ -330,7 +330,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
                 rel="noopener noreferrer"
                 className="h-[42px] px-3 rounded-full bg-[#536BFF]/20 border border-[#536BFF]/40 hover:bg-[#536BFF]/30 transition-all flex items-center justify-center gap-2 text-xs font-space text-[#8DA2FF] font-bold cursor-pointer"
               >
-                <ExternalLink className="w-3.5 h-3.5" />
+                <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                 <span>Open UPI App</span>
               </a>
             </div>

@@ -107,14 +107,14 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
                     {m.name}
                   </h4>
                   
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono text-white/70 bg-white/[0.02] p-3 rounded-xl border border-white/5">
+                  <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 text-xs font-mono text-white/70 bg-white/[0.02] p-3 rounded-xl border border-white/5">
                     <div>
                       <span className="text-white/40 text-[10px] block uppercase">Reg Number</span>
-                      <strong className="text-white font-mono text-xs">{m.registerNumber}</strong>
+                      <strong className="text-white font-mono text-xs break-all">{m.registerNumber}</strong>
                     </div>
                     <div>
                       <span className="text-white/40 text-[10px] block uppercase">Mobile No</span>
-                      <strong className="text-[#8DA2FF] font-mono text-xs">{m.phone || 'N/A'}</strong>
+                      <strong className="text-[#8DA2FF] font-mono text-xs break-all">{m.phone || 'N/A'}</strong>
                     </div>
                     <div>
                       <span className="text-white/40 text-[10px] block uppercase">Year & Dept</span>
