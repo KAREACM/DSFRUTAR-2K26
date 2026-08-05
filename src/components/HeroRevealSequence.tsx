@@ -77,8 +77,8 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
   // Scale decreases smoothly from 1.0 down to 0.42
   const logoScale = 1.0 - shiftEased * 0.58;
   
-  // Upward elevation Y-offset: starts at 0px and glides smoothly up
-  const targetElevation = Math.min(Math.max(dimensions.h * 0.22, 130), 180);
+  // Upward elevation Y-offset: starts at 0px and glides smoothly up (adapted for mobile viewport height)
+  const targetElevation = Math.min(Math.max(dimensions.h * 0.20, 85), 180);
   const logoYOffset = -shiftEased * targetElevation;
 
   // 3. Vertical laser crosshair line (5.0s to 5.6s)
@@ -95,7 +95,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
 
   // Calculate top offset for text stack so it rests right below elevated logo
   const elevatedLogoBottom = (dimensions.h / 2) - targetElevation + (bounds.boundingSize * 0.42 / 2);
-  const textStackTop = Math.max(elevatedLogoBottom + 18, dimensions.h * 0.42);
+  const textStackTop = Math.max(elevatedLogoBottom + (dimensions.h < 640 ? 12 : 20), dimensions.h * 0.40);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-20 overflow-hidden">
@@ -158,7 +158,7 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
 
       {/* TYPOGRAPHY & HERO CONTENT STACK */}
       <div
-        className="fixed left-1/2 -translate-x-1/2 flex flex-col items-center justify-start w-full max-w-6xl px-4 pointer-events-none text-center transition-opacity duration-500 z-20"
+        className="fixed left-1/2 -translate-x-1/2 flex flex-col items-center justify-start w-full max-w-6xl px-3 sm:px-4 pointer-events-none text-center transition-opacity duration-500 z-20"
         style={{
           top: `${textStackTop}px`,
           opacity: t >= 5.3 ? 1 : 0,
@@ -172,17 +172,17 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
             transform: `translateY(${headerTranslateY}px)`,
           }}
         >
-          <div className="flex items-center justify-center gap-2.5 whitespace-nowrap">
+          <div className="flex items-center justify-center gap-2 sm:gap-2.5 whitespace-nowrap">
             <span className="w-1.5 h-1.5 rounded-full bg-[#4F7EFF] shadow-[0_0_8px_#4F7EFF] animate-pulse" />
-            <p className="text-[11px] sm:text-xs md:text-sm font-bold tracking-[0.32em] text-[#80A5FF] uppercase font-jakarta">
+            <p className="text-[10px] sm:text-xs md:text-sm font-bold tracking-[0.2em] sm:tracking-[0.32em] text-[#80A5FF] uppercase font-jakarta">
               KARE ACM STUDENT CHAPTER
             </p>
             <span className="w-1.5 h-1.5 rounded-full bg-[#4F7EFF] shadow-[0_0_8px_#4F7EFF] animate-pulse" />
           </div>
           
           <p
-            className="text-[10px] sm:text-xs tracking-[0.55em] text-white/75 uppercase font-mono font-black"
-            style={{ marginTop: '8px' }}
+            className="text-[9px] sm:text-xs tracking-[0.4em] sm:tracking-[0.55em] text-white/75 uppercase font-mono font-black"
+            style={{ marginTop: '6px' }}
           >
             PRESENTS
           </p>
@@ -190,13 +190,13 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
 
         {/* B. HERO TITLE: DISFRUTAR (flex-nowrap, whitespace-nowrap, gap-x letter spacing) */}
         <div
-          className="relative w-full flex items-center justify-center px-2"
-          style={{ marginTop: '22px' }}
+          className="relative w-full flex items-center justify-center px-1 sm:px-2"
+          style={{ marginTop: dimensions.h < 640 ? '14px' : '22px' }}
         >
           {/* Horizontal Cinematic Flare Line & Ambient Background Aura Behind DISFRUTAR */}
           <div
             ref={horizontalLineRef}
-            className="absolute left-1/2 top-1/2 w-full max-w-5xl h-[50px] pointer-events-none z-0 flex items-center justify-center transition-opacity duration-300"
+            className="absolute left-1/2 top-1/2 w-full max-w-[92vw] sm:max-w-5xl h-[50px] pointer-events-none z-0 flex items-center justify-center transition-opacity duration-300"
             style={{
               opacity: hLineEased,
               transform: `translate(-50%, -50%) scaleX(${hLineEased})`,
@@ -222,20 +222,20 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
             />
 
             {/* Micro Flare Core Dot */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[80px] h-[2px] bg-white rounded-full blur-[1px] shadow-[0_0_15px_#4F7EFF]" />
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[60px] sm:w-[80px] h-[2px] bg-white rounded-full blur-[1px] shadow-[0_0_15px_#4F7EFF]" />
           </div>
 
-          <h1 className="relative z-10 font-black font-syne text-white leading-none select-none text-center flex flex-nowrap items-center justify-center gap-x-[0.16em] sm:gap-x-[0.24em] md:gap-x-[0.28em] text-[clamp(1.8rem,5.2vw,4.5rem)] drop-shadow-[0_0_35px_rgba(79,126,255,0.7)] whitespace-nowrap">
+          <h1 className="relative z-10 font-black font-syne text-white leading-none select-none text-center flex flex-nowrap items-center justify-center gap-x-[0.08em] sm:gap-x-[0.24em] md:gap-x-[0.28em] text-[clamp(1.35rem,6.2vw,4.5rem)] drop-shadow-[0_0_35px_rgba(79,126,255,0.7)] whitespace-nowrap">
             {titleDisfrutar}
           </h1>
         </div>
 
         {/* C. SUBTITLE YEAR: 2K26 (Centered on its own line below DISFRUTAR, flex-nowrap, gap-x letter spacing) */}
         <div
-          className="relative w-full flex items-center justify-center px-2"
-          style={{ marginTop: '12px' }}
+          className="relative w-full flex items-center justify-center px-1 sm:px-2"
+          style={{ marginTop: dimensions.h < 640 ? '8px' : '12px' }}
         >
-          <div className="relative z-10 font-black font-syne text-transparent bg-clip-text bg-gradient-to-r from-[#4F7EFF] via-[#80A5FF] to-white leading-none select-none text-center flex flex-nowrap items-center justify-center gap-x-[0.35em] sm:gap-x-[0.45em] md:gap-x-[0.52em] text-[clamp(1.2rem,3.4vw,2.8rem)] drop-shadow-[0_0_30px_rgba(79,126,255,0.85)] whitespace-nowrap">
+          <div className="relative z-10 font-black font-syne text-transparent bg-clip-text bg-gradient-to-r from-[#4F7EFF] via-[#80A5FF] to-white leading-none select-none text-center flex flex-nowrap items-center justify-center gap-x-[0.2em] sm:gap-x-[0.45em] md:gap-x-[0.52em] text-[clamp(0.95rem,4.2vw,2.8rem)] drop-shadow-[0_0_30px_rgba(79,126,255,0.85)] whitespace-nowrap">
             {titleYear}
           </div>
         </div>

@@ -39,6 +39,7 @@ export interface Particle {
   alpha: number;
   size: number; // 2px square as per spec
   color: string; // rgba white or purple
+  rgbValues?: string; // Pre-parsed 'r, g, b' for 60 FPS render performance
   speed: number;
   orbitAngle: number;
   orbitRadius: number;

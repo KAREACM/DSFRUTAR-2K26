@@ -24,7 +24,8 @@ export const CanvasParticleSystem: React.FC<CanvasParticleSystemProps> = ({
   const prevTimeRef = useRef<number>(0);
   const pulseRingsRef = useRef<{ radius: number; maxRadius: number; alpha: number; speed: number }[]>([]);
 
-  const particleCount = performanceMode === 'high' ? 2500 : 1200;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const particleCount = performanceMode === 'high' ? (isMobile ? 1100 : 2500) : (isMobile ? 650 : 1200);
 
   // Initialize canvas particle dataset
   const initParticles = useCallback(
@@ -63,10 +64,23 @@ export const CanvasParticleSystem: React.FC<CanvasParticleSystemProps> = ({
 
         // Colors matching brand: Royal electric blue and bright white
         let colorStr = target.color;
+        let rgbVals = '79, 126, 255';
         if (target.group === 0) {
-          colorStr = Math.random() > 0.3 ? 'rgba(79, 126, 255, 0.88)' : 'rgba(99, 140, 255, 0.92)';
+          if (Math.random() > 0.3) {
+            colorStr = 'rgba(79, 126, 255, 0.88)';
+            rgbVals = '79, 126, 255';
+          } else {
+            colorStr = 'rgba(99, 140, 255, 0.92)';
+            rgbVals = '99, 140, 255';
+          }
         } else {
-          colorStr = Math.random() > 0.2 ? 'rgba(255, 255, 255, 0.95)' : 'rgba(225, 235, 255, 0.9)';
+          if (Math.random() > 0.2) {
+            colorStr = 'rgba(255, 255, 255, 0.95)';
+            rgbVals = '255, 255, 255';
+          } else {
+            colorStr = 'rgba(225, 235, 255, 0.9)';
+            rgbVals = '225, 235, 255';
+          }
         }
 
         newParticles.push({
@@ -88,16 +102,17 @@ export const CanvasParticleSystem: React.FC<CanvasParticleSystemProps> = ({
           alpha: 0,
           size: 2, // 2px square strictly per design specs
           color: colorStr,
+          rgbValues: rgbVals,
           speed: 0.6 + Math.random() * 0.8,
           orbitAngle: Math.random() * Math.PI * 2,
-          orbitRadius: 160 + Math.random() * 180, // Expanded outer radius to keep center 100% clean
+          orbitRadius: (isMobile ? 110 : 160) + Math.random() * (isMobile ? 120 : 180),
           orbitSpeed: (Math.random() - 0.5) * 0.02,
         });
       }
 
       particlesRef.current = newParticles;
     },
-    [particleCount]
+    [particleCount, isMobile]
   );
 
   // Handle Resize & Canvas Scaling
@@ -107,7 +122,8 @@ export const CanvasParticleSystem: React.FC<CanvasParticleSystemProps> = ({
       if (!canvas) return;
       const w = window.innerWidth;
       const h = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const mobileDevice = w < 768;
+      const dpr = Math.min(window.devicePixelRatio || 1, mobileDevice ? 1.5 : 2);
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       canvas.style.width = `${w}px`;
@@ -263,8 +279,8 @@ export const CanvasParticleSystem: React.FC<CanvasParticleSystemProps> = ({
 
       // Draw particle as crisp 2px square
       if (currentAlpha > 0.02) {
-        ctx.fillStyle = p.color.replace(/[\d\.]+\)$/, `${currentAlpha.toFixed(2)})`);
-        ctx.fillRect(Math.round(currX), Math.round(currY), 2, 2);
+        ctx.fillStyle = `rgba(${p.rgbValues || '79, 126, 255'}, ${currentAlpha.toFixed(2)})`;
+        ctx.fillRect((currX + 0.5) | 0, (currY + 0.5) | 0, 2, 2);
       }
     });
 
