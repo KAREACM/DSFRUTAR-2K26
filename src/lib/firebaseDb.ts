@@ -329,10 +329,7 @@ export function subscribeToFirestoreRegistrations(callback: (teams: TeamRecord[]
   );
 }
 
-/**
- * Approve payment in Firestore
- */
-export function approveRegistrationInFirestore(teamId: string, adminName: string): Promise<void> {
+export async function approveRegistrationInFirestore(teamId: string, adminName: string): Promise<void> {
   const docRef = doc(db, REGISTRATIONS_COLLECTION, teamId);
   const now = new Date().toLocaleString("en-US", {
     month: "short",
@@ -342,21 +339,54 @@ export function approveRegistrationInFirestore(teamId: string, adminName: string
     hour12: true,
   });
 
-  return updateDoc(docRef, {
-    paymentStatus: "approved",
-    approvedBy: adminName,
-    approvedAt: now,
-    "timeline.3.completed": true,
-    "timeline.3.timestamp": now,
-    "timeline.4.completed": true,
-    "timeline.4.timestamp": now,
-  });
+  try {
+    const docSnap = await getDoc(docRef);
+    let updatedTimeline = [
+      { title: "Registration Created", timestamp: now, completed: true },
+      { title: "Payment Submitted", timestamp: now, completed: true },
+      { title: "Pending Verification", timestamp: now, completed: true },
+      { title: "Approved", timestamp: now, completed: true },
+      { title: "Confirmation Sent", timestamp: now, completed: true },
+    ];
+
+    if (docSnap.exists()) {
+      const existingTimeline = docSnap.data().timeline || [];
+      updatedTimeline = [
+        existingTimeline[0] || { title: "Registration Created", timestamp: now, completed: true },
+        existingTimeline[1] || { title: "Payment Submitted", timestamp: now, completed: true },
+        existingTimeline[2] || { title: "Pending Verification", timestamp: now, completed: true },
+        { title: "Approved", timestamp: now, completed: true },
+        { title: "Confirmation Sent", timestamp: now, completed: true },
+      ];
+    }
+
+    await updateDoc(docRef, {
+      paymentStatus: "approved",
+      approvedBy: adminName,
+      approvedAt: now,
+      rejectReason: "",
+      timeline: updatedTimeline,
+    });
+  } catch (err) {
+    console.warn("Error updating Firestore approval:", err);
+    // Fallback setDoc merge
+    await setDoc(
+      docRef,
+      {
+        paymentStatus: "approved",
+        approvedBy: adminName,
+        approvedAt: now,
+        rejectReason: "",
+      },
+      { merge: true }
+    );
+  }
 }
 
 /**
  * Reject payment in Firestore
  */
-export function rejectRegistrationInFirestore(
+export async function rejectRegistrationInFirestore(
   teamId: string,
   adminName: string,
   reason: string
@@ -370,15 +400,48 @@ export function rejectRegistrationInFirestore(
     hour12: true,
   });
 
-  return updateDoc(docRef, {
-    paymentStatus: "rejected",
-    approvedBy: adminName,
-    approvedAt: now,
-    rejectReason: reason,
-    "timeline.3.completed": true,
-    "timeline.3.title": "Rejected",
-    "timeline.3.timestamp": now,
-  });
+  try {
+    const docSnap = await getDoc(docRef);
+    let updatedTimeline = [
+      { title: "Registration Created", timestamp: now, completed: true },
+      { title: "Payment Submitted", timestamp: now, completed: true },
+      { title: "Pending Verification", timestamp: now, completed: true },
+      { title: "Rejected", timestamp: now, completed: true },
+      { title: "Confirmation Sent", timestamp: "N/A", completed: false },
+    ];
+
+    if (docSnap.exists()) {
+      const existingTimeline = docSnap.data().timeline || [];
+      updatedTimeline = [
+        existingTimeline[0] || { title: "Registration Created", timestamp: now, completed: true },
+        existingTimeline[1] || { title: "Payment Submitted", timestamp: now, completed: true },
+        existingTimeline[2] || { title: "Pending Verification", timestamp: now, completed: true },
+        { title: "Rejected", timestamp: now, completed: true },
+        { title: "Confirmation Sent", timestamp: "N/A", completed: false },
+      ];
+    }
+
+    await updateDoc(docRef, {
+      paymentStatus: "rejected",
+      approvedBy: adminName,
+      approvedAt: now,
+      rejectReason: reason,
+      timeline: updatedTimeline,
+    });
+  } catch (err) {
+    console.warn("Error updating Firestore rejection:", err);
+    // Fallback setDoc merge
+    await setDoc(
+      docRef,
+      {
+        paymentStatus: "rejected",
+        approvedBy: adminName,
+        approvedAt: now,
+        rejectReason: reason,
+      },
+      { merge: true }
+    );
+  }
 }
 
 /**

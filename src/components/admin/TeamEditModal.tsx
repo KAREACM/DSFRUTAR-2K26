@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Save, Building2, Phone, User, Edit3 } from 'lucide-react';
 import { TeamRecord } from '../../lib/adminStore';
 import { MemberData } from '../../types/registration';
@@ -15,6 +15,15 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
   const [amount, setAmount] = useState(team.amount);
   const [paymentStatus, setPaymentStatus] = useState(team.paymentStatus);
   const [members, setMembers] = useState<MemberData[]>(JSON.parse(JSON.stringify(team.members)));
+
+  // Close on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const handleMemberChange = (idx: number, field: keyof MemberData, val: any) => {
     const updated = [...members];
@@ -37,16 +46,22 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md font-sans overflow-y-auto">
-      <div className="w-full max-w-3xl max-h-[90vh] bg-[#0a0f28] border border-[#536BFF]/40 rounded-3xl p-6 sm:p-8 shadow-2xl relative space-y-6 overflow-y-auto my-auto">
+    <div 
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl font-sans overflow-y-auto"
+    >
+      <div className="w-full max-w-3xl max-h-[90vh] bg-[#07091C]/95 border border-[#536BFF]/40 rounded-3xl p-5 sm:p-8 shadow-2xl relative space-y-6 overflow-y-auto my-auto text-white backdrop-blur-2xl">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-white/50 hover:text-white p-1.5 rounded-full bg-white/5 hover:bg-white/10"
+          className="absolute top-5 right-5 text-white/50 hover:text-white p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all cursor-pointer"
+          title="Close Modal (Esc)"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+        <div className="flex items-center gap-3 border-b border-white/10 pb-4 pr-8">
           <div className="w-10 h-10 rounded-2xl bg-[#536BFF]/20 border border-[#536BFF]/40 text-[#8DA2FF] flex items-center justify-center shrink-0">
             <Edit3 className="w-5 h-5" />
           </div>
@@ -66,7 +81,7 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
                 required
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
-                className="w-full h-[40px] px-3.5 rounded-xl bg-white/[0.05] border border-white/15 text-xs text-white outline-none focus:border-[#536BFF]"
+                className="w-full h-[44px] px-3.5 rounded-xl bg-white/[0.05] border border-white/15 text-xs text-white outline-none focus:border-[#536BFF]"
               />
             </div>
 
@@ -77,7 +92,7 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
                 required
                 value={transactionId}
                 onChange={(e) => setTransactionId(e.target.value)}
-                className="w-full h-[40px] px-3.5 rounded-xl bg-white/[0.05] border border-white/15 text-xs text-white outline-none focus:border-[#536BFF]"
+                className="w-full h-[44px] px-3.5 rounded-xl bg-white/[0.05] border border-white/15 text-xs text-white outline-none focus:border-[#536BFF]"
               />
             </div>
 
@@ -86,7 +101,7 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
               <select
                 value={paymentStatus}
                 onChange={(e) => setPaymentStatus(e.target.value as any)}
-                className="w-full h-[40px] px-3 rounded-xl bg-[#07091C] border border-white/15 text-xs text-white outline-none focus:border-[#536BFF]"
+                className="w-full h-[44px] px-3 rounded-xl bg-[#07091C] border border-white/15 text-xs text-white outline-none focus:border-[#536BFF] cursor-pointer"
               >
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
@@ -115,7 +130,7 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
                       type="text"
                       value={m.name}
                       onChange={(e) => handleMemberChange(idx, 'name', e.target.value)}
-                      className="w-full h-[36px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white outline-none"
+                      className="w-full h-[40px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white outline-none"
                     />
                   </div>
 
@@ -125,7 +140,7 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
                       type="text"
                       value={m.registerNumber}
                       onChange={(e) => handleMemberChange(idx, 'registerNumber', e.target.value)}
-                      className="w-full h-[36px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white outline-none"
+                      className="w-full h-[40px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white outline-none"
                     />
                   </div>
 
@@ -135,7 +150,7 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
                       type="text"
                       value={m.phone}
                       onChange={(e) => handleMemberChange(idx, 'phone', e.target.value)}
-                      className="w-full h-[36px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white outline-none"
+                      className="w-full h-[40px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white outline-none"
                     />
                   </div>
                 </div>
@@ -147,7 +162,7 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
                       type="text"
                       value={m.year}
                       onChange={(e) => handleMemberChange(idx, 'year', e.target.value)}
-                      className="w-full h-[36px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white outline-none"
+                      className="w-full h-[40px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white outline-none"
                     />
                   </div>
 
@@ -157,7 +172,7 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
                       type="text"
                       value={m.department}
                       onChange={(e) => handleMemberChange(idx, 'department', e.target.value)}
-                      className="w-full h-[36px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white outline-none"
+                      className="w-full h-[40px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white outline-none"
                     />
                   </div>
 
@@ -168,7 +183,7 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
                       value={m.section || ''}
                       onChange={(e) => handleMemberChange(idx, 'section', e.target.value)}
                       placeholder="24S01"
-                      className="w-full h-[36px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white uppercase outline-none"
+                      className="w-full h-[40px] px-3 rounded-lg bg-white/[0.05] border border-white/10 text-xs text-white uppercase outline-none"
                     />
                   </div>
                 </div>
@@ -176,17 +191,17 @@ export const TeamEditModal: React.FC<TeamEditModalProps> = ({ team, onClose, onS
             ))}
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-white/10">
             <button
               type="button"
               onClick={onClose}
-              className="h-[42px] px-6 rounded-full border border-white/20 text-white/70 hover:text-white font-space text-xs font-bold hover:bg-white/5 cursor-pointer"
+              className="w-full sm:w-auto h-[44px] px-6 rounded-full border border-white/20 text-white/70 hover:text-white font-space text-xs font-bold hover:bg-white/5 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="h-[42px] px-6 rounded-full bg-[#536BFF] hover:bg-[#4258e6] text-white font-space text-xs font-bold flex items-center gap-2 shadow-lg shadow-[#536BFF]/30 cursor-pointer"
+              className="w-full sm:w-auto h-[44px] px-6 rounded-full bg-[#536BFF] hover:bg-[#4258e6] text-white font-space text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#536BFF]/30 cursor-pointer"
             >
               <Save className="w-4 h-4" />
               <span>Save Changes</span>
