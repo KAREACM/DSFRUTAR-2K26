@@ -193,18 +193,36 @@ export const HeroRevealSequence: React.FC<HeroRevealSequenceProps> = ({ currentT
           className="relative w-full flex items-center justify-center px-2"
           style={{ marginTop: '22px' }}
         >
-          {/* Horizontal Cinematic Flare Line Behind DISFRUTAR */}
+          {/* Horizontal Cinematic Flare Line & Ambient Background Aura Behind DISFRUTAR */}
           <div
             ref={horizontalLineRef}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-[2px] pointer-events-none z-0 transition-all duration-300"
+            className="absolute left-1/2 top-1/2 w-full max-w-5xl h-[50px] pointer-events-none z-0 flex items-center justify-center transition-opacity duration-300"
             style={{
-              background: 'linear-gradient(90deg, transparent 0%, rgba(79, 126, 255, 0.4) 15%, #4F7EFF 50%, rgba(79, 126, 255, 0.4) 85%, transparent 100%)',
-              boxShadow: '0 0 16px rgba(79, 126, 255, 0.9), 0 0 35px rgba(79, 126, 255, 0.5)',
               opacity: hLineEased,
               transform: `translate(-50%, -50%) scaleX(${hLineEased})`,
+              transformOrigin: 'center center',
             }}
           >
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[6px] rounded-full bg-white blur-[2px] shadow-[0_0_25px_#4F7EFF]" />
+            {/* Soft Ambient Radial Light Aura centered behind DISFRUTAR */}
+            <div 
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'radial-gradient(ellipse 600px 50px at 50% 50%, rgba(79, 126, 255, 0.35), transparent 75%)',
+                filter: 'blur(10px)',
+              }}
+            />
+
+            {/* Sleek Horizontal Laser Beam */}
+            <div 
+              className="w-full h-[1.5px] pointer-events-none"
+              style={{
+                background: 'linear-gradient(90deg, transparent 0%, rgba(79, 126, 255, 0.25) 15%, #4F7EFF 50%, rgba(79, 126, 255, 0.25) 85%, transparent 100%)',
+                boxShadow: '0 0 12px rgba(79, 126, 255, 0.85), 0 0 24px rgba(79, 126, 255, 0.4)',
+              }}
+            />
+
+            {/* Micro Flare Core Dot */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[80px] h-[2px] bg-white rounded-full blur-[1px] shadow-[0_0_15px_#4F7EFF]" />
           </div>
 
           <h1 className="relative z-10 font-black font-syne text-white leading-none select-none text-center flex flex-nowrap items-center justify-center gap-x-[0.16em] sm:gap-x-[0.24em] md:gap-x-[0.28em] text-[clamp(1.8rem,5.2vw,4.5rem)] drop-shadow-[0_0_35px_rgba(79,126,255,0.7)] whitespace-nowrap">
