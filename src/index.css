@@ -12,6 +12,7 @@ html {
   --bs-font-space: 'Space Grotesk', 'Inter', sans-serif;
   --bs-font-syne: 'Syne', sans-serif;
   --bs-font-outfit: 'Outfit', sans-serif;
+  --bs-font-instrument: 'Instrument Serif', Georgia, 'Times New Roman', serif;
 }
 
 @layer utilities {
@@ -26,6 +27,9 @@ html {
   }
   .font-space {
     font-family: var(--bs-font-space);
+  }
+  .font-instrument {
+    font-family: var(--bs-font-instrument);
   }
   
   /* Bootstrap fluid typography helpers */
@@ -295,4 +299,100 @@ body {
   );
   background-size: 200% 100%;
   mix-blend-mode: color-dodge;
+}
+
+/* ── Mentor / Guest Section ── */
+@keyframes badgeRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  50% {
+    transform: translateY(-80px) translateX(20px);
+  }
+}
+
+@keyframes mentorGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(75, 126, 255, 0.06), 0 0 60px rgba(75, 126, 255, 0.03);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(75, 126, 255, 0.12), 0 0 80px rgba(75, 126, 255, 0.06);
+  }
+}
+
+.mentor-card {
+  animation: mentorGlowPulse 6s ease-in-out infinite;
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+              box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.mentor-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 0 40px rgba(75, 126, 255, 0.18), 0 0 100px rgba(75, 126, 255, 0.08), 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.mentor-card:hover .mentor-portrait {
+  transform: scale(1.03);
+}
+
+.mentor-portrait {
+  transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.badge-rotate {
+  animation: badgeRotate 30s linear infinite;
+}
+
+.mentor-particle {
+  animation: particleFloat 8s ease-in-out infinite;
+}
+
+/* ── Hardware Acceleration & Mobile 60 FPS Optimization ── */
+.gpu-accelerate {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+@media (max-width: 768px) {
+  /* Reduce heavy backdrop blurs on mobile GPU compositing layers to maintain 60 FPS */
+  .backdrop-blur-\[16px\],
+  .backdrop-blur-\[20px\],
+  .backdrop-blur-\[22px\],
+  .backdrop-blur-\[28px\],
+  .spec-panel {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+
+  /* Reduce heavy background orb filter blurs on mobile screen viewports */
+  .blur-\[120px\],
+  .blur-\[130px\],
+  .blur-\[140px\],
+  .blur-\[150px\],
+  .blur-\[160px\],
+  .blur-\[180px\] {
+    filter: blur(40px) !important;
+  }
+
+  /* Force hardware acceleration on key animated containers */
+  .timeline-item,
+  .faq-card-item,
+  .mentor-card {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+
+  /* Disable heavy hover shadow calculations on touch screens */
+  .mentor-card:hover {
+    transform: none;
+    box-shadow: 0 0 20px rgba(75, 126, 255, 0.06);
+  }
 }

@@ -103,6 +103,30 @@ class BootAudioSynthesizer {
     }
   }
 
+  public triggerBeatPulse(intensity: number = 1.0) {
+    if (this.isMuted || !this.ctx || !this.masterGain) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(110 * intensity, now);
+      osc.frequency.exponentialRampToValueAtTime(55, now + 0.15);
+
+      gain.gain.setValueAtTime(0.08 * intensity, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(now);
+      osc.stop(now + 0.15);
+    } catch {
+      /* ignore */
+    }
+  }
+
   public triggerLogoAssemblyStep(stepIndex: number) {
     if (this.isMuted || !this.ctx || !this.masterGain) return;
     try {

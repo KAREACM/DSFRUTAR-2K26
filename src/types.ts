@@ -44,6 +44,14 @@ export interface Particle {
   orbitAngle: number;
   orbitRadius: number;
   orbitSpeed: number;
+  // Beat Particle Properties
+  beatPhase?: number;
+  beatFreq?: number;
+  beatAmp?: number;
+  beatRingIndex?: number;
+  beatAngle?: number;
+  beatBaseRadius?: number;
+  pulseScale?: number;
 }
 
 export interface BootSystemMetrics {

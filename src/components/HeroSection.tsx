@@ -43,6 +43,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
     if (!isVisible || !heroRef.current) return;
 
     const ctx = gsap.context(() => {
+      const isMobile = window.innerWidth < 768;
       const tl = gsap.timeline({
         defaults: { ease: 'power3.out' }
       });
@@ -50,8 +51,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
       // Initial state reset
       gsap.set([lineLeftRef.current, lineRightRef.current], { scaleX: 0, opacity: 0 });
       gsap.set(presenterTextRef.current, { opacity: 0, y: 10 });
-      gsap.set('.char-letter', { y: 30, opacity: 0, filter: 'blur(10px)', scale: 0.95 });
-      gsap.set(yearRef.current, { scale: 0.8, opacity: 0, filter: 'blur(8px)' });
+      gsap.set('.char-letter', { y: 30, opacity: 0, filter: isMobile ? 'none' : 'blur(10px)', scale: 0.95 });
+      gsap.set(yearRef.current, { scale: 0.8, opacity: 0, filter: isMobile ? 'none' : 'blur(8px)' });
       gsap.set([eventTitleRef.current, taglineRef.current], { y: 20, opacity: 0 });
       gsap.set(cardRef.current, { y: 30, opacity: 0, scale: 0.97 });
       gsap.set(ctaRef.current, { y: 20, opacity: 0 });
@@ -73,7 +74,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
       tl.to('.char-letter', {
         y: 0,
         opacity: 1,
-        filter: 'blur(0px)',
+        filter: isMobile ? 'none' : 'blur(0px)',
         scale: 1,
         duration: 0.6,
         stagger: 0.03,
@@ -84,7 +85,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
       tl.to(yearRef.current, {
         scale: 1,
         opacity: 1,
-        filter: 'blur(0px)',
+        filter: isMobile ? 'none' : 'blur(0px)',
         duration: 0.6,
         ease: 'back.out(1.5)'
       }, "-=0.3");

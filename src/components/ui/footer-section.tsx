@@ -64,11 +64,11 @@ export function Footer() {
 					}
 				},
 				{ 
-					title: 'Rounds Info', 
-					href: '#rounds',
+					title: 'Our Prizes', 
+					href: '#prizes',
 					onClick: (e) => {
 						e.preventDefault();
-						const elem = document.getElementById('rounds');
+						const elem = document.getElementById('prizes') || document.getElementById('prize');
 						if (elem) {
 							const y = elem.getBoundingClientRect().top + window.pageYOffset - 85;
 							window.scrollTo({ top: y, behavior: 'smooth' });
@@ -81,6 +81,18 @@ export function Footer() {
 					onClick: (e) => {
 						e.preventDefault();
 						const elem = document.getElementById('faq');
+						if (elem) {
+							const y = elem.getBoundingClientRect().top + window.pageYOffset - 85;
+							window.scrollTo({ top: y, behavior: 'smooth' });
+						}
+					}
+				},
+				{ 
+					title: 'Contact Us', 
+					href: '#contact',
+					onClick: (e) => {
+						e.preventDefault();
+						const elem = document.getElementById('contact');
 						if (elem) {
 							const y = elem.getBoundingClientRect().top + window.pageYOffset - 85;
 							window.scrollTo({ top: y, behavior: 'smooth' });
@@ -120,7 +132,7 @@ export function Footer() {
 	];
 
 	return (
-		<footer className="relative w-full border-t border-[#18233C]/60 bg-[#040612] px-6 py-12 lg:py-16 overflow-hidden select-none">
+		<footer id="contact" className="relative w-full border-t border-[#18233C]/60 bg-[#040612] px-6 py-12 lg:py-16 overflow-hidden select-none">
 			{/* Radial Background matching the Register Button Theme (Glowing Indigo/Royal Blue) */}
 			<div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
 				<div 

@@ -463,7 +463,16 @@ export const AboutSection: React.FC = () => {
           className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-[28px] items-stretch"
         >
           {/* LEFT CARD: Photo + Bottom Stats Panel */}
-          <div className="group bg-[#07091C]/80 border border-white/12 rounded-[24px] backdrop-blur-[16px] overflow-hidden shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[5px] hover:border-[#4F7EFF]/50 hover:shadow-[0_20px_60px_rgba(79,126,255,0.18)] lg:h-[480px]">
+          <div className="group relative bg-[#07091C]/65 border border-white/10 rounded-[24px] backdrop-blur-[16px] overflow-hidden shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[4px] hover:bg-[#07091C]/92 hover:border-[#536BFF]/50 hover:shadow-[0_12px_40px_rgba(83,107,255,0.22)] lg:h-[480px]">
+            {/* Top Inner Highlight Line matching FAQ Active State */}
+            <div
+              className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30"
+              style={{
+                background:
+                  'linear-gradient(90deg, transparent 0%, rgba(83,107,255,0.95) 50%, transparent 100%)',
+              }}
+            />
+
             {/* Top Photo */}
             <div className="p-3 flex-1 flex flex-col overflow-hidden">
               <div
@@ -485,7 +494,7 @@ export const AboutSection: React.FC = () => {
               <div className="flex items-center justify-center gap-3 px-3 border-r border-white/10">
                 <div
                   ref={rocketIconRef}
-                  className="w-[44px] h-[44px] rounded-full bg-[#4F7EFF]/15 border border-[#4F7EFF]/40 flex items-center justify-center text-[#4F7EFF] shrink-0 shadow-[0_0_18px_rgba(79,126,255,0.35)]"
+                  className="w-[44px] h-[44px] rounded-full bg-[#4F7EFF]/15 border border-[#4F7EFF]/40 flex items-center justify-center text-[#4F7EFF] shrink-0 shadow-[0_0_18px_rgba(79,126,255,0.35)] group-hover:bg-[#536BFF] group-hover:text-white group-hover:border-[#536BFF] group-hover:shadow-[0_0_18px_rgba(83,107,255,0.6)] transition-all duration-300"
                 >
                   <Rocket className="w-5 h-5 stroke-[2]" />
                 </div>
@@ -506,7 +515,7 @@ export const AboutSection: React.FC = () => {
               <div className="flex items-center justify-center gap-3 px-3">
                 <div
                   ref={usersIconRef}
-                  className="w-[44px] h-[44px] rounded-full bg-[#4F7EFF]/15 border border-[#4F7EFF]/40 flex items-center justify-center text-[#4F7EFF] shrink-0 shadow-[0_0_18px_rgba(79,126,255,0.35)]"
+                  className="w-[44px] h-[44px] rounded-full bg-[#4F7EFF]/15 border border-[#4F7EFF]/40 flex items-center justify-center text-[#4F7EFF] shrink-0 shadow-[0_0_18px_rgba(79,126,255,0.35)] group-hover:bg-[#536BFF] group-hover:text-white group-hover:border-[#536BFF] group-hover:shadow-[0_0_18px_rgba(83,107,255,0.6)] transition-all duration-300"
                 >
                   <Users className="w-5 h-5 stroke-[2]" />
                 </div>
@@ -526,10 +535,19 @@ export const AboutSection: React.FC = () => {
           </div>
 
           {/* CENTER CARD: How It Works */}
-          <div className="group bg-[#07091C]/80 border border-white/12 rounded-[24px] p-6 lg:p-[30px] backdrop-blur-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[5px] hover:border-[#4F7EFF]/50 hover:shadow-[0_20px_60px_rgba(79,126,255,0.18)] lg:h-[480px]">
+          <div className="group relative bg-[#07091C]/65 border border-white/10 rounded-[24px] p-6 lg:p-[30px] backdrop-blur-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[4px] hover:bg-[#07091C]/92 hover:border-[#536BFF]/50 hover:shadow-[0_12px_40px_rgba(83,107,255,0.22)] lg:h-[480px] overflow-hidden">
+            {/* Top Inner Highlight Line matching FAQ Active State */}
+            <div
+              className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30"
+              style={{
+                background:
+                  'linear-gradient(90deg, transparent 0%, rgba(83,107,255,0.95) 50%, transparent 100%)',
+              }}
+            />
+
             {/* Card Header */}
-            <div className="flex items-center gap-3.5 mb-4">
-              <div className="w-[46px] h-[46px] rounded-full bg-[#4F7EFF]/15 border border-[#4F7EFF]/40 flex items-center justify-center text-[#4F7EFF] shrink-0 shadow-[0_0_18px_rgba(79,126,255,0.35)]">
+            <div className="flex items-center gap-3.5 mb-4 relative z-10">
+              <div className="w-[46px] h-[46px] rounded-full bg-[#4F7EFF]/15 border border-[#4F7EFF]/40 flex items-center justify-center text-[#4F7EFF] shrink-0 shadow-[0_0_18px_rgba(79,126,255,0.35)] group-hover:bg-[#536BFF] group-hover:text-white group-hover:border-[#536BFF] group-hover:shadow-[0_0_18px_rgba(83,107,255,0.6)] transition-all duration-300">
                 <Lightbulb className="w-5 h-5 stroke-[2]" />
               </div>
               <h3 className="text-[22px] lg:text-[25px] font-bold text-white tracking-tight">
@@ -538,7 +556,7 @@ export const AboutSection: React.FC = () => {
             </div>
 
             {/* Vertical Timeline List */}
-            <div className="relative flex-1 flex flex-col justify-between my-1">
+            <div className="relative flex-1 flex flex-col justify-between my-1 z-10">
               {/* Vertical Line */}
               <div
                 ref={howItWorksLineRef}
@@ -552,7 +570,7 @@ export const AboutSection: React.FC = () => {
                     className="relative flex items-start gap-3.5 z-10 my-0.5"
                   >
                     {/* Number Badge */}
-                    <div className="step-badge w-[36px] h-[36px] rounded-full bg-[#07091C] border-2 border-[#4F7EFF] text-[#4F7EFF] font-bold text-[13px] flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(79,126,255,0.35)]">
+                    <div className="step-badge w-[36px] h-[36px] rounded-full bg-[#07091C] border-2 border-[#4F7EFF] text-[#4F7EFF] font-bold text-[13px] flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(79,126,255,0.35)] group-hover:border-[#536BFF] group-hover:text-white group-hover:bg-[#536BFF] group-hover:shadow-[0_0_14px_rgba(83,107,255,0.55)] transition-all duration-300">
                       {step.step}
                     </div>
 
@@ -572,11 +590,20 @@ export const AboutSection: React.FC = () => {
           </div>
 
           {/* RIGHT CARD: Built on Trust */}
-          <div className="group bg-[#07091C]/80 border border-white/12 rounded-[24px] p-6 lg:p-[30px] backdrop-blur-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[5px] hover:border-[#4F7EFF]/50 hover:shadow-[0_20px_60px_rgba(79,126,255,0.18)] lg:h-[480px]">
-            <div>
+          <div className="group relative bg-[#07091C]/65 border border-white/10 rounded-[24px] p-6 lg:p-[30px] backdrop-blur-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[4px] hover:bg-[#07091C]/92 hover:border-[#536BFF]/50 hover:shadow-[0_12px_40px_rgba(83,107,255,0.22)] lg:h-[480px] overflow-hidden">
+            {/* Top Inner Highlight Line matching FAQ Active State */}
+            <div
+              className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30"
+              style={{
+                background:
+                  'linear-gradient(90deg, transparent 0%, rgba(83,107,255,0.95) 50%, transparent 100%)',
+              }}
+            />
+
+            <div className="relative z-10">
               {/* Header */}
               <div className="flex items-center gap-3.5 mb-3">
-                <div className="w-[46px] h-[46px] rounded-full bg-[#4F7EFF]/15 border border-[#4F7EFF]/40 flex items-center justify-center text-[#4F7EFF] shrink-0 shadow-[0_0_18px_rgba(79,126,255,0.35)]">
+                <div className="w-[46px] h-[46px] rounded-full bg-[#4F7EFF]/15 border border-[#4F7EFF]/40 flex items-center justify-center text-[#4F7EFF] shrink-0 shadow-[0_0_18px_rgba(79,126,255,0.35)] group-hover:bg-[#536BFF] group-hover:text-white group-hover:border-[#536BFF] group-hover:shadow-[0_0_18px_rgba(83,107,255,0.6)] transition-all duration-300">
                   <ShieldCheck className="w-5 h-5 stroke-[2]" />
                 </div>
                 <h3 className="text-[22px] lg:text-[25px] font-bold text-white tracking-tight">
@@ -592,7 +619,7 @@ export const AboutSection: React.FC = () => {
             </div>
 
             {/* 2x2 Image Grid Gallery */}
-            <div ref={trustGalleryRef} className="grid grid-cols-2 gap-3 mt-auto">
+            <div ref={trustGalleryRef} className="grid grid-cols-2 gap-3 mt-auto relative z-10">
               {/* Image 1 */}
               <div className="relative h-[95px] lg:h-[105px] rounded-[14px] overflow-hidden border border-white/10 shadow-sm group/img">
                 <img

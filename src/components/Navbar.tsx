@@ -16,7 +16,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isVisible = true, onRegisterClic
   const headerRef = useRef<HTMLElement>(null);
   const navBtnRef = useRef<HTMLButtonElement>(null);
 
-  const navItems = ['Home', 'About', 'Rounds', 'FAQ', 'Contact'];
+  const navItems = ['Home', 'About', 'Guests', 'Prize', 'FAQ', 'Contact'];
 
   const handleNavBtnMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const btn = navBtnRef.current;
@@ -37,16 +37,23 @@ export const Navbar: React.FC<NavbarProps> = ({ isVisible = true, onRegisterClic
 
   // Scroll position listener for active tab highlighting and header background shift
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 25) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
+    let ticking = false;
+
+    const updateActiveTab = () => {
+      const isScrolled = window.scrollY > 25;
+      setScrolled((prev) => (prev !== isScrolled ? isScrolled : prev));
+
+      // 1. Check if user has scrolled near the bottom of the page -> set Contact active
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      if (window.scrollY + windowHeight >= documentHeight - 80) {
+        setActiveTab('Contact');
+        ticking = false;
+        return;
       }
 
-      // Calculate active section based on scroll offset
       const scrollPos = window.scrollY + 140;
-      const sections = ['home', 'about', 'rounds', 'faq', 'contact'];
+      const sections = ['home', 'about', 'guests', 'prizes', 'prize', 'faq', 'contact'];
 
       for (const sectionId of sections) {
         const elem = document.getElementById(sectionId);
@@ -54,16 +61,33 @@ export const Navbar: React.FC<NavbarProps> = ({ isVisible = true, onRegisterClic
           const top = elem.offsetTop;
           const height = elem.offsetHeight;
           if (scrollPos >= top && scrollPos < top + height) {
-            const capitalized = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
-            setActiveTab(capitalized);
+            let tabName = 'Home';
+            if (sectionId === 'prizes' || sectionId === 'prize') {
+              tabName = 'Prize';
+            } else if (sectionId === 'faq') {
+              tabName = 'FAQ';
+            } else if (sectionId === 'contact') {
+              tabName = 'Contact';
+            } else {
+              tabName = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
+            }
+            setActiveTab((prev) => (prev !== tabName ? tabName : prev));
             break;
           }
         }
       }
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateActiveTab);
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    updateActiveTab();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

@@ -261,8 +261,16 @@ export const FaqSection: React.FC = () => {
     <section
       id="faq"
       ref={sectionRef}
-      className="relative w-full bg-[#040612] text-white py-[90px] lg:py-[115px] px-5 sm:px-10 lg:px-[80px] font-space overflow-hidden border-t border-b border-[#182544]/60 select-none"
+      className="relative w-full bg-[#040612] text-white py-[90px] lg:py-[115px] px-5 sm:px-10 lg:px-[80px] font-space overflow-hidden border-b border-[#182544]/60 select-none"
     >
+      {/* Top Transition Light Halo receiving flow from Beat section */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[320px] pointer-events-none z-0 opacity-80 blur-[120px]"
+        style={{
+          background: 'radial-gradient(ellipse at top, rgba(83, 107, 255, 0.35) 0%, rgba(79, 126, 255, 0.12) 60%, transparent 85%)',
+        }}
+      />
+
       {/* Luminous Animated Background (Register Button Palette) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <div

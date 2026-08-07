@@ -3,6 +3,8 @@ import { BootExperience } from './components/BootExperience';
 import { HeroSection } from './components/HeroSection';
 import { AboutSection } from './components/AboutSection';
 import { FaqSection } from './components/FaqSection';
+import { MentorsSection } from './components/MentorsSection';
+import { PrizesSection } from './components/PrizesSection';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/ui/footer-section';
 import { LoginScreen } from './components/LoginScreen';
@@ -81,6 +83,8 @@ export default function App() {
               onRegisterClick={() => setCurrentPage('login')}
             />
             <AboutSection />
+            <MentorsSection />
+            <PrizesSection />
             <FaqSection />
             <Footer />
           </>
