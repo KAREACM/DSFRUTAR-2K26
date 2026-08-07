@@ -5,10 +5,7 @@ import {
   CreditCard, 
   Users, 
   CheckCircle2, 
-  AlertTriangle, 
-  Edit3, 
   ShieldAlert, 
-  Building2, 
   Home, 
   UserCheck
 } from 'lucide-react';
@@ -20,7 +17,7 @@ interface ReviewStepProps {
   onConfirm: () => void;
 }
 
-export const ReviewStep: React.FC<ReviewStepProps> = ({
+const ReviewStepComponent: React.FC<ReviewStepProps> = ({
   state,
   onBack,
   onConfirm,
@@ -32,7 +29,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   const totalAmount = memberCount * 350;
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-4xl mx-auto space-y-6 gpu-accelerate">
       
       {/* Header Banner */}
       <div className="text-center space-y-2">
@@ -49,7 +46,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
       </div>
 
       {/* Team Summary Card */}
-      <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-6 sm:p-8 backdrop-blur-[24px] shadow-[0_24px_64px_rgba(0,0,0,0.8)] space-y-6">
+      <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-6 sm:p-8 backdrop-blur-[24px] shadow-[0_24px_64px_rgba(0,0,0,0.8)] space-y-6 registration-card">
         
         {/* Team Meta Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
@@ -86,7 +83,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
             }
 
             return (
-              <div key={m.id} className="p-5 rounded-[20px] bg-white/[0.04] border border-white/12 space-y-4 hover:border-white/20 transition-all shadow-lg">
+              <div key={m.id} className="p-5 rounded-[20px] bg-white/[0.04] border border-white/12 space-y-4 hover:border-white/20 transition-all shadow-lg gpu-accelerate">
                 
                 {/* Header Badge */}
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
@@ -222,12 +219,13 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
       {/* Confirmation Modal */}
       <AnimatePresence>
         {showConfirmModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md gpu-accelerate">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md bg-[#0c102b] border border-[#536BFF]/50 rounded-[24px] p-6 sm:p-8 shadow-[0_32px_80px_rgba(0,0,0,0.9)] space-y-5 text-center overflow-hidden"
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-md bg-[#0c102b] border border-[#536BFF]/50 rounded-[24px] p-6 sm:p-8 shadow-[0_32px_80px_rgba(0,0,0,0.9)] space-y-5 text-center overflow-hidden gpu-accelerate"
             >
               <div className="w-12 h-12 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto">
                 <ShieldAlert className="w-6 h-6" />
@@ -283,3 +281,5 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
     </div>
   );
 };
+
+export const ReviewStep = React.memo(ReviewStepComponent);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { CheckCircle2, Download, MessageCircle, Clock, Copy, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Download, MessageCircle, Clock, Copy } from 'lucide-react';
 import { TeamRegistrationState } from '../../types/registration';
 import { downloadReceipt } from '../../utils/generateReceipt';
 
@@ -9,7 +9,7 @@ interface SubmittedStepProps {
   onNext: () => void;
 }
 
-export const SubmittedStep: React.FC<SubmittedStepProps> = ({
+const SubmittedStepComponent: React.FC<SubmittedStepProps> = ({
   state,
   onNext,
 }) => {
@@ -25,13 +25,13 @@ export const SubmittedStep: React.FC<SubmittedStepProps> = ({
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6">
+    <div className="w-full max-w-2xl mx-auto space-y-6 gpu-accelerate">
       
       <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="bg-[#07091C]/80 border border-emerald-500/30 rounded-[28px] p-8 sm:p-10 backdrop-blur-[24px] shadow-[0_32px_80px_rgba(0,0,0,0.85)] text-center space-y-6 relative overflow-hidden"
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="bg-[#07091C]/80 border border-emerald-500/30 rounded-[28px] p-8 sm:p-10 backdrop-blur-[24px] shadow-[0_32px_80px_rgba(0,0,0,0.85)] text-center space-y-6 relative overflow-hidden gpu-accelerate registration-card"
       >
         {/* Glow accent */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent blur-[0.5px]" />
@@ -40,8 +40,8 @@ export const SubmittedStep: React.FC<SubmittedStepProps> = ({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-          className="w-20 h-20 rounded-full bg-emerald-500/15 border-2 border-emerald-500/40 flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_40px_rgba(52,211,153,0.3)]"
+          transition={{ delay: 0.15, type: 'spring', stiffness: 220 }}
+          className="w-20 h-20 rounded-full bg-emerald-500/15 border-2 border-emerald-500/40 flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_40px_rgba(52,211,153,0.3)] gpu-accelerate"
         >
           <CheckCircle2 className="w-10 h-10" />
         </motion.div>
@@ -131,3 +131,5 @@ export const SubmittedStep: React.FC<SubmittedStepProps> = ({
     </div>
   );
 };
+
+export const SubmittedStep = React.memo(SubmittedStepComponent);

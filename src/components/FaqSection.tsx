@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, HelpCircle, Sparkles, MessageSquare, CheckCircle2, Calendar, Award, Users, Laptop, DollarSign, FileText, Gift } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -29,7 +28,7 @@ export const FaqSection: React.FC = () => {
       const headerTl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 80%',
+          start: 'top 85%',
           toggleActions: 'play none none none',
         },
       });
@@ -38,7 +37,7 @@ export const FaqSection: React.FC = () => {
         headerTl.fromTo(
           badgeRef.current,
           { opacity: 0, y: 22, scale: 0.9 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power3.out' }
+          { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power3.out', clearProps: 'transform' }
         );
       }
 
@@ -46,7 +45,7 @@ export const FaqSection: React.FC = () => {
         headerTl.fromTo(
           headingRef.current,
           { opacity: 0, y: 32 },
-          { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' },
+          { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', clearProps: 'transform' },
           '-=0.3'
         );
       }
@@ -55,28 +54,29 @@ export const FaqSection: React.FC = () => {
         headerTl.fromTo(
           subtextRef.current,
           { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' },
+          { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', clearProps: 'transform' },
           '-=0.4'
         );
       }
 
-      // 2. Staggered FAQ Card Entrance (Content does not reflect all at once)
+      // 2. Staggered FAQ Card Entrance
       if (accordionContainerRef.current) {
         const faqCards = accordionContainerRef.current.querySelectorAll('.faq-card-item');
 
         gsap.fromTo(
           faqCards,
-          { opacity: 0, y: 45, scale: 0.97 },
+          { opacity: 0, y: 35, scale: 0.98 },
           {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: 0.65,
-            stagger: 0.08,
+            duration: 0.55,
+            stagger: 0.06,
             ease: 'power3.out',
+            clearProps: 'transform',
             scrollTrigger: {
               trigger: accordionContainerRef.current,
-              start: 'top 83%',
+              start: 'top 85%',
               toggleActions: 'play none none none',
             },
           }
@@ -87,16 +87,17 @@ export const FaqSection: React.FC = () => {
       if (ctaRef.current) {
         gsap.fromTo(
           ctaRef.current,
-          { opacity: 0, y: 40, scale: 0.96 },
+          { opacity: 0, y: 35, scale: 0.97 },
           {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: 0.75,
+            duration: 0.65,
             ease: 'power3.out',
+            clearProps: 'transform',
             scrollTrigger: {
               trigger: ctaRef.current,
-              start: 'top 88%',
+              start: 'top 90%',
               toggleActions: 'play none none none',
             },
           }
@@ -261,37 +262,41 @@ export const FaqSection: React.FC = () => {
     <section
       id="faq"
       ref={sectionRef}
-      className="relative w-full bg-[#040612] text-white py-[90px] lg:py-[115px] px-5 sm:px-10 lg:px-[80px] font-space overflow-hidden border-b border-[#182544]/60 select-none"
+      className="relative w-full bg-[#040612] text-white py-[90px] lg:py-[115px] px-5 sm:px-10 lg:px-[80px] font-space overflow-hidden border-b border-[#182544]/60 select-none contain-paint"
     >
       {/* Top Transition Light Halo receiving flow from Beat section */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[320px] pointer-events-none z-0 opacity-80 blur-[120px]"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] max-w-full h-[320px] pointer-events-none z-0 opacity-80 blur-[70px] sm:blur-[120px] transform-gpu"
         style={{
           background: 'radial-gradient(ellipse at top, rgba(83, 107, 255, 0.35) 0%, rgba(79, 126, 255, 0.12) 60%, transparent 85%)',
+          willChange: 'transform',
         }}
       />
 
-      {/* Luminous Animated Background (Register Button Palette) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {/* Luminous Background Orbs - Mobile Optimized 60FPS rendering */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 transform-gpu">
         <div
-          className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full blur-[140px] opacity-65 animate-mesh-3"
+          className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[900px] max-w-[120vw] h-[500px] rounded-full blur-[60px] sm:blur-[140px] opacity-65 animate-mesh-3 max-md:animate-none transform-gpu"
           style={{
             background:
               'radial-gradient(circle, rgba(83, 107, 255, 0.25) 0%, rgba(66, 86, 246, 0.15) 50%, rgba(4, 6, 18, 0) 80%)',
+            willChange: 'transform',
           }}
         />
         <div
-          className="absolute bottom-[-10%] right-[-5%] w-[650px] h-[650px] rounded-full blur-[150px] opacity-45 animate-mesh-2"
+          className="absolute bottom-[-10%] right-[-5%] w-[650px] max-w-[100vw] h-[650px] rounded-full blur-[60px] sm:blur-[150px] opacity-45 animate-mesh-2 max-md:animate-none transform-gpu"
           style={{
             background:
               'radial-gradient(circle, rgba(79, 126, 255, 0.20) 0%, rgba(56, 72, 224, 0.12) 55%, transparent 80%)',
+            willChange: 'transform',
           }}
         />
         <div
-          className="absolute top-[-5%] left-[-5%] w-[600px] h-[600px] rounded-full blur-[140px] opacity-40 animate-mesh-1"
+          className="absolute top-[-5%] left-[-5%] w-[600px] max-w-[100vw] h-[600px] rounded-full blur-[60px] sm:blur-[140px] opacity-40 animate-mesh-1 max-md:animate-none transform-gpu"
           style={{
             background:
               'radial-gradient(circle, rgba(66, 86, 246, 0.18) 0%, rgba(83, 107, 255, 0.10) 50%, transparent 75%)',
+            willChange: 'transform',
           }}
         />
         {/* Subtle Tech Grid Overlay */}
@@ -333,7 +338,7 @@ export const FaqSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Accordion List */}
+        {/* Accordion List - Optimized 60 FPS CSS Grid animation */}
         <div ref={accordionContainerRef} className="space-y-3 sm:space-y-3.5">
           {faqItems.map((faq, index) => {
             const isOpen = openId === faq.id;
@@ -341,7 +346,7 @@ export const FaqSection: React.FC = () => {
             return (
               <div
                 key={faq.id}
-                className={`faq-card-item group relative rounded-[18px] transition-all duration-300 border overflow-hidden ${
+                className={`faq-card-item group relative rounded-[18px] transition-[background-color,border-color,box-shadow] duration-250 ease-out border overflow-hidden transform-gpu ${
                   isOpen
                     ? 'bg-[#07091C]/92 border-[#536BFF]/50 shadow-[0_8px_32px_rgba(83,107,255,0.18)]'
                     : 'bg-[#07091C]/55 border-white/10 hover:border-white/22 hover:bg-[#07091C]/78'
@@ -350,7 +355,7 @@ export const FaqSection: React.FC = () => {
                 {/* Subtle Top Inner Highlight Line when Open */}
                 {isOpen && (
                   <div
-                    className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none"
+                    className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none z-10"
                     style={{
                       background:
                         'linear-gradient(90deg, transparent 0%, rgba(83,107,255,0.9) 50%, transparent 100%)',
@@ -361,13 +366,13 @@ export const FaqSection: React.FC = () => {
                 {/* Accordion Header Trigger */}
                 <button
                   onClick={() => toggleAccordion(faq.id)}
-                  className="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 cursor-pointer focus:outline-none"
+                  className="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 cursor-pointer focus:outline-none active:scale-[0.995] transition-transform duration-150"
                   aria-expanded={isOpen}
                 >
                   <div className="flex items-center gap-3.5 sm:gap-4 pr-2">
                     {/* Number Badge */}
                     <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 border ${
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-250 border ${
                         isOpen
                           ? 'bg-[#536BFF] text-white border-[#536BFF] shadow-[0_0_14px_rgba(83,107,255,0.55)]'
                           : 'bg-white/5 text-white/70 border-white/10 group-hover:bg-white/10 group-hover:text-white group-hover:border-white/20'
@@ -386,32 +391,29 @@ export const FaqSection: React.FC = () => {
 
                   {/* Expand/Collapse Chevron Indicator */}
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 border ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-[transform,background-color,border-color] duration-250 border transform-gpu ${
                       isOpen
                         ? 'bg-[#536BFF]/20 text-[#8DA2FF] border-[#536BFF]/40 rotate-180'
                         : 'bg-white/5 text-white/50 border-white/10 group-hover:text-white group-hover:border-white/20'
                     }`}
                   >
-                    <ChevronDown className="w-4 h-4 transition-transform duration-300" />
+                    <ChevronDown className="w-4 h-4" />
                   </div>
                 </button>
 
-                {/* Accordion Content Body */}
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: 'easeInOut' }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-5 pb-5 pt-1 sm:px-6 sm:pb-6 border-t border-white/8 font-sans">
-                        {faq.answer}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* Accordion Content Body - Native Hardware-Accelerated CSS Grid Transition */}
+                <div
+                  className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                  }`}
+                  style={{ willChange: 'grid-template-rows, opacity' }}
+                >
+                  <div className="overflow-hidden">
+                    <div className="px-5 pb-5 pt-1 sm:px-6 sm:pb-6 border-t border-white/8 font-sans">
+                      {faq.answer}
+                    </div>
+                  </div>
+                </div>
               </div>
             );
           })}
@@ -420,11 +422,11 @@ export const FaqSection: React.FC = () => {
         {/* Still Have Questions CTA Banner */}
         <div
           ref={ctaRef}
-          className="mt-12 p-6 sm:p-8 rounded-[24px] bg-gradient-to-r from-[#07091C] via-[#0B0F2A] to-[#07091C] border border-[#536BFF]/30 shadow-[0_12px_40px_rgba(0,0,0,0.6)] flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden"
+          className="mt-12 p-6 sm:p-8 rounded-[24px] bg-gradient-to-r from-[#07091C] via-[#0B0F2A] to-[#07091C] border border-[#536BFF]/30 shadow-[0_12px_40px_rgba(0,0,0,0.6)] flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden transform-gpu"
         >
           {/* Subtle Ambient Radial Light */}
           <div
-            className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full blur-[80px] pointer-events-none"
+            className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full blur-[60px] pointer-events-none transform-gpu"
             style={{ background: 'rgba(83,107,255,0.25)' }}
           />
 

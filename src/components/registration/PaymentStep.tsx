@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { 
   QrCode, 
   UploadCloud, 
@@ -26,7 +25,7 @@ interface PaymentStepProps {
   onSubmitPayment: (newRegId?: string) => void;
 }
 
-export const PaymentStep: React.FC<PaymentStepProps> = ({
+const PaymentStepComponent: React.FC<PaymentStepProps> = ({
   state,
   onChange,
   onBack,
@@ -190,7 +189,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
   const isFormValid = isTxIdValid && isFileUploaded;
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-4xl mx-auto space-y-6 gpu-accelerate">
       
       {/* Header Banner */}
       <div className="text-center space-y-2">
@@ -209,7 +208,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left Column: QR Code & Direct Deep Links (7 cols) */}
-        <div className="lg:col-span-7 bg-[#07091C]/80 border border-white/12 rounded-[24px] p-6 backdrop-blur-[24px] shadow-[0_24px_64px_rgba(0,0,0,0.8)] space-y-6">
+        <div className="lg:col-span-7 bg-[#07091C]/80 border border-white/12 rounded-[24px] p-6 backdrop-blur-[24px] shadow-[0_24px_64px_rgba(0,0,0,0.8)] space-y-6 gpu-accelerate registration-card">
           
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div className="flex items-center gap-2.5">
@@ -222,7 +221,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
           </div>
 
           {/* QR Code Canvas Frame */}
-          <div className="flex flex-col items-center justify-center p-6 rounded-[20px] bg-[#0c102b] border border-white/10 space-y-3">
+          <div className="flex flex-col items-center justify-center p-6 rounded-[20px] bg-[#0c102b] border border-white/10 space-y-3 gpu-accelerate">
             <div className="relative p-4 rounded-[16px] bg-white text-black shadow-[0_0_32px_rgba(83,107,255,0.3)]">
               {/* High precision SVG QR Code visualization */}
               <svg viewBox="0 0 200 200" className="w-44 h-44 sm:w-52 sm:h-52">
@@ -342,7 +341,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
         <div className="lg:col-span-5 space-y-5">
           
           {/* Invoice Summary Card */}
-          <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-5 backdrop-blur-[24px] space-y-4">
+          <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-5 backdrop-blur-[24px] space-y-4 registration-card">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <span className="text-xs font-space font-bold text-white">Invoice Summary</span>
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
@@ -367,7 +366,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
           </div>
 
           {/* Payment Verification Form */}
-          <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-5 backdrop-blur-[24px] space-y-4">
+          <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-5 backdrop-blur-[24px] space-y-4 registration-card">
             <h4 className="text-sm font-space font-bold text-white flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-[#8DA2FF]" />
               Payment Verification
@@ -384,7 +383,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
                 onChange={(e) => handleTransactionIdChange(e.target.value)}
                 placeholder="e.g. 123456789012"
                 disabled={isSubmitting}
-                className="w-full h-[44px] px-4 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 transition-all text-xs text-white placeholder-white/25 outline-none font-mono disabled:opacity-50"
+                className="registration-input w-full h-[44px] px-4 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 text-xs text-white placeholder-white/25 outline-none font-mono disabled:opacity-50"
               />
             </div>
 
@@ -538,3 +537,5 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
     </div>
   );
 };
+
+export const PaymentStep = React.memo(PaymentStepComponent);

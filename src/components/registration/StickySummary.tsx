@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, CheckCircle2, AlertTriangle, ShieldCheck, Sparkles, CreditCard } from 'lucide-react';
+import { Users, Sparkles, ShieldCheck } from 'lucide-react';
 import { MemberData } from '../../types/registration';
 
 interface StickySummaryProps {
@@ -7,7 +7,7 @@ interface StickySummaryProps {
   members: MemberData[];
 }
 
-export const StickySummary: React.FC<StickySummaryProps> = ({
+const StickySummaryComponent: React.FC<StickySummaryProps> = ({
   teamName,
   members,
 }) => {
@@ -39,7 +39,7 @@ export const StickySummary: React.FC<StickySummaryProps> = ({
   const isValidTeam = isTeamNameValid && completedRequired === 4 && isOptionalMemberValid;
 
   return (
-    <div className="w-full bg-[#07091C]/90 border border-white/12 rounded-[22px] p-5 sm:p-6 backdrop-blur-[24px] shadow-[0_16px_48px_rgba(0,0,0,0.6)] space-y-5">
+    <div className="w-full bg-[#07091C]/90 border border-white/12 rounded-[22px] p-5 sm:p-6 backdrop-blur-[24px] shadow-[0_16px_48px_rgba(0,0,0,0.6)] space-y-5 gpu-accelerate registration-card">
       
       {/* Title Header */}
       <div className="flex items-center justify-between border-b border-white/10 pb-4">
@@ -122,3 +122,5 @@ export const StickySummary: React.FC<StickySummaryProps> = ({
     </div>
   );
 };
+
+export const StickySummary = React.memo(StickySummaryComponent);

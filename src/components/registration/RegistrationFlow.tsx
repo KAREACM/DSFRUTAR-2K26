@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ArrowLeft, 
@@ -119,16 +119,16 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
     localStorage.setItem('disfrutar_registration_state', JSON.stringify(toSave));
   }, [registrationState]);
 
-  // Member update handler
-  const handleMemberChange = (updatedMember: MemberData) => {
+  // Stable member update handler with useCallback
+  const handleMemberChange = useCallback((updatedMember: MemberData) => {
     setRegistrationState(prev => ({
       ...prev,
       members: prev.members.map(m => m.id === updatedMember.id ? updatedMember : m)
     }));
-  };
+  }, []);
 
   // Check if member is complete (all required fields filled)
-  const isMemberComplete = (m: MemberData) => {
+  const isMemberComplete = useCallback((m: MemberData) => {
     if (!m) return false;
     const basic = 
       Boolean(m.name?.trim()) && 
@@ -144,13 +144,13 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
        Boolean(m.wardenName?.trim()) &&
        Boolean(m.wardenPhone?.trim()));
     return basic && hostel;
-  };
+  }, []);
 
-  const requiredMembers = registrationState.members.slice(0, 4);
+  const requiredMembers = useMemo(() => registrationState.members.slice(0, 4), [registrationState.members]);
   const optionalMember = registrationState.members[4];
 
   // 1. Leader + 3 members (4 members minimum) MUST all be completed
-  const requiredMembersComplete = requiredMembers.every(isMemberComplete);
+  const requiredMembersComplete = useMemo(() => requiredMembers.every(isMemberComplete), [requiredMembers, isMemberComplete]);
 
   // 2. Member 4 (Optional): If any input is started, it must be fully completed. If empty, it's valid.
   const isOptionalTouched = Boolean(
@@ -189,7 +189,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
   const activeStepIndex = getStepIndex(currentStep);
   const progressPercent = (activeStepIndex / (navSteps.length - 1)) * 100;
 
-  const handleFinishPayment = (newRegId?: string) => {
+  const handleFinishPayment = useCallback((newRegId?: string) => {
     if (newRegId) {
       setRegistrationState(prev => ({
         ...prev,
@@ -203,14 +203,14 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
       }));
     }
     setCurrentStep('submitted');
-  };
+  }, [registrationState.registrationId]);
 
   const isOptionalAdded = isMemberComplete(optionalMember);
-  const totalMemberCount = registrationState.members.slice(0, 4).filter(isMemberComplete).length + (isOptionalAdded ? 1 : 0);
+  const totalMemberCount = requiredMembers.filter(isMemberComplete).length + (isOptionalAdded ? 1 : 0);
   const totalFee = totalMemberCount * 350;
 
   return (
-    <div className="min-h-screen w-full bg-[#06080B] text-white font-space py-6 px-4 sm:px-6 lg:px-8 selection:bg-[#536BFF] selection:text-white overflow-x-hidden">
+    <div className="min-h-screen w-full bg-[#06080B] text-white font-space py-6 px-4 sm:px-6 lg:px-8 selection:bg-[#536BFF] selection:text-white overflow-x-hidden gpu-accelerate">
       
       {/* Top Navbar Header */}
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 mb-8">
@@ -240,13 +240,15 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
           {/* Background Connector Line */}
           <div className="absolute left-6 right-6 top-[18px] sm:top-[20px] h-1 bg-white/10 z-0 rounded-full" />
           
-          {/* Active Progress Connector Line */}
-          <motion.div 
-            className="absolute left-6 top-[18px] sm:top-[20px] h-1 bg-gradient-to-r from-[#536BFF] to-[#8DA2FF] z-0 rounded-full shadow-[0_0_12px_rgba(83,107,255,0.6)]"
-            initial={false}
-            animate={{ width: `${progressPercent}%` }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-          />
+          {/* Active Progress Connector Line (GPU ScaleX Animated) */}
+          <div className="absolute left-6 right-6 top-[18px] sm:top-[20px] h-1 z-0 overflow-hidden pointer-events-none">
+            <motion.div 
+              className="w-full h-full bg-gradient-to-r from-[#536BFF] to-[#8DA2FF] rounded-full shadow-[0_0_12px_rgba(83,107,255,0.6)] origin-left gpu-accelerate"
+              initial={false}
+              animate={{ scaleX: progressPercent / 100 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            />
+          </div>
 
           {navSteps.map((step, idx) => {
             const Icon = step.icon;
@@ -281,7 +283,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
 
       {/* Student Verification Toast Banner */}
       <div className="max-w-3xl mx-auto mb-8">
-        <div className="p-3.5 rounded-full bg-[#536BFF]/10 border border-[#536BFF]/30 flex items-center justify-between gap-3 px-5 backdrop-blur-md">
+        <div className="p-3.5 rounded-full bg-[#536BFF]/10 border border-[#536BFF]/30 flex items-center justify-between gap-3 px-5 backdrop-blur-md gpu-accelerate">
           <div className="flex items-center gap-2.5">
             <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
               <Check className="w-3.5 h-3.5" />
@@ -308,26 +310,27 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -15 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="gpu-accelerate"
         >
           {/* STEP 1: TEAM DETAILS */}
           {currentStep === 'team_details' && (
             <div className="max-w-3xl mx-auto space-y-6 pb-44 sm:pb-36">
               
               {/* Team Name Input Card */}
-              <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-4 sm:p-6 backdrop-blur-[24px] space-y-3">
+              <div className="bg-[#07091C]/80 border border-white/12 rounded-[24px] p-4 sm:p-6 backdrop-blur-[24px] space-y-3 registration-card">
                 <label htmlFor="teamNameInput" className="block text-xs font-mono font-bold uppercase tracking-wider text-white/70 pl-2">
                   Team Name *
                 </label>
                 <div className="relative">
-                  <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                  <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
                   <input
                     id="teamNameInput"
                     type="text"
                     value={registrationState.teamName}
                     onChange={(e) => setRegistrationState(prev => ({ ...prev, teamName: e.target.value }))}
                     placeholder="e.g. Binary Builders"
-                    className="w-full h-[46px] sm:h-[48px] pl-11 pr-5 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 transition-all text-sm text-white placeholder-white/25 outline-none font-sans"
+                    className="registration-input w-full h-[46px] sm:h-[48px] pl-11 pr-5 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 text-sm text-white placeholder-white/25 outline-none font-sans"
                   />
                 </div>
               </div>
@@ -355,7 +358,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
               </div>
 
               {/* Enhanced Fixed Bottom Navigation Bar with Live Readiness Bars & Total Amount */}
-              <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#07091C]/95 border-t border-white/15 backdrop-blur-2xl px-3 sm:px-6 py-3 sm:py-4 shadow-[0_-12px_48px_rgba(0,0,0,0.9)]">
+              <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#07091C]/95 border-t border-white/15 backdrop-blur-2xl px-3 sm:px-6 py-3 sm:py-4 shadow-[0_-12px_48px_rgba(0,0,0,0.9)] gpu-accelerate">
                 <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
                   
                   {/* Readiness Progress Bars & Price Summary */}

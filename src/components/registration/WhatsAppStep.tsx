@@ -6,7 +6,7 @@ interface WhatsAppStepProps {
   onReturnToDashboard: () => void;
 }
 
-export const WhatsAppStep: React.FC<WhatsAppStepProps> = ({
+const WhatsAppStepComponent: React.FC<WhatsAppStepProps> = ({
   onReturnToDashboard,
 }) => {
   const [joined, setJoined] = useState(false);
@@ -17,19 +17,19 @@ export const WhatsAppStep: React.FC<WhatsAppStepProps> = ({
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto space-y-6">
+    <div className="w-full max-w-xl mx-auto space-y-6 gpu-accelerate">
       
       <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="bg-[#07091C]/80 border border-[#25D366]/40 rounded-[28px] p-8 sm:p-10 backdrop-blur-[24px] shadow-[0_32px_80px_rgba(0,0,0,0.85)] text-center space-y-6 relative overflow-hidden"
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="bg-[#07091C]/80 border border-[#25D366]/40 rounded-[28px] p-8 sm:p-10 backdrop-blur-[24px] shadow-[0_32px_80px_rgba(0,0,0,0.85)] text-center space-y-6 relative overflow-hidden gpu-accelerate registration-card"
       >
         {/* Top Glow Accent */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-[#25D366]/70 to-transparent blur-[0.5px]" />
 
         {/* WhatsApp Icon Circle */}
-        <div className="w-20 h-20 rounded-full bg-[#25D366]/15 border-2 border-[#25D366]/40 flex items-center justify-center text-[#25D366] mx-auto shadow-[0_0_40px_rgba(37,211,102,0.3)]">
+        <div className="w-20 h-20 rounded-full bg-[#25D366]/15 border-2 border-[#25D366]/40 flex items-center justify-center text-[#25D366] mx-auto shadow-[0_0_40px_rgba(37,211,102,0.3)] gpu-accelerate">
           <MessageCircle className="w-10 h-10" />
         </div>
 
@@ -112,3 +112,5 @@ export const WhatsAppStep: React.FC<WhatsAppStepProps> = ({
     </div>
   );
 };
+
+export const WhatsAppStep = React.memo(WhatsAppStepComponent);
