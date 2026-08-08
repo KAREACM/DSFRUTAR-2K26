@@ -48,7 +48,7 @@ const MemberCardComponent: React.FC<MemberCardProps> = ({
      Boolean(member.wardenPhone?.trim()));
 
   const isComplete = isBasicFilled && isHostelFilled;
-  const isEmptyOptional = member.isOptional && member.name.trim() === '' && member.registerNumber.trim() === '';
+  const isEmptyOptional = Boolean(member.isOptional && (member.name || '').trim() === '' && (member.registerNumber || '').trim() === '');
 
   const handleInputChange = (field: keyof MemberData, value: any) => {
     onChange({

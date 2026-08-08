@@ -24,7 +24,7 @@ const ReviewStepComponent: React.FC<ReviewStepProps> = ({
 }) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  const activeMembers = state.members.filter(m => m.name.trim() !== '');
+  const activeMembers = (state?.members || []).filter(m => m && Boolean((m.name || '').trim()));
   const memberCount = activeMembers.length;
   const totalAmount = memberCount * 350;
 
@@ -52,7 +52,7 @@ const ReviewStepComponent: React.FC<ReviewStepProps> = ({
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
           <div>
             <span className="text-[11px] font-mono uppercase tracking-widest text-white/50 block">Team Name</span>
-            <h3 className="text-xl font-space font-bold text-white mt-0.5">{state.teamName}</h3>
+            <h3 className="text-xl font-space font-bold text-white mt-0.5">{state?.teamName || 'Registered Team'}</h3>
           </div>
 
           <div className="flex items-center gap-3 bg-white/[0.04] border border-white/10 px-4 py-2.5 rounded-full">
@@ -64,8 +64,8 @@ const ReviewStepComponent: React.FC<ReviewStepProps> = ({
 
         {/* Member Grid Summary */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {state.members.map((m, idx) => {
-            const isFilled = m.name.trim() !== '';
+          {(state?.members || []).map((m, idx) => {
+            const isFilled = Boolean(m && (m.name || '').trim() !== '');
             if (!isFilled) {
               return (
                 <div key={m.id} className="p-5 rounded-[20px] bg-white/[0.02] border border-dashed border-white/10 flex items-center justify-between opacity-50">

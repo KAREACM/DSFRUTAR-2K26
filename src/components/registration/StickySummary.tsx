@@ -12,22 +12,22 @@ const StickySummaryComponent: React.FC<StickySummaryProps> = ({
   members,
 }) => {
   // Calculate completed count
-  const requiredMembers = members.slice(0, 4);
-  const optionalMember = members[4];
+  const requiredMembers = (members || []).slice(0, 4);
+  const optionalMember = (members || [])[4];
 
   const isMemberComplete = (m: MemberData) => {
     if (!m) return false;
-    const basic = m.name.trim() !== '' && m.registerNumber.trim() !== '' && m.year !== '' && m.department !== '';
-    const hostel = m.residenceType === 'Day Scholar' || (m.hostelName?.trim() !== '' && m.roomNumber?.trim() !== '');
+    const basic = Boolean((m.name || '').trim()) && Boolean((m.registerNumber || '').trim()) && Boolean(m.year) && Boolean(m.department);
+    const hostel = m.residenceType === 'Day Scholar' || (Boolean((m.hostelName || '').trim()) && Boolean((m.roomNumber || '').trim()));
     return basic && hostel;
   };
 
   const completedRequired = requiredMembers.filter(isMemberComplete).length;
   const isOptionalAdded = isMemberComplete(optionalMember);
   const isOptionalTouched = Boolean(
-    optionalMember.name?.trim() || 
-    optionalMember.registerNumber?.trim() || 
-    optionalMember.phone?.trim()
+    (optionalMember?.name || '').trim() || 
+    (optionalMember?.registerNumber || '').trim() || 
+    (optionalMember?.phone || '').trim()
   );
   const isOptionalMemberValid = !isOptionalTouched || isOptionalAdded;
   
@@ -35,7 +35,7 @@ const StickySummaryComponent: React.FC<StickySummaryProps> = ({
   const feePerPerson = 350;
   const totalFee = totalMemberCount * feePerPerson;
 
-  const isTeamNameValid = teamName.trim().length >= 2;
+  const isTeamNameValid = (teamName || '').trim().length >= 2;
   const isValidTeam = isTeamNameValid && completedRequired === 4 && isOptionalMemberValid;
 
   return (

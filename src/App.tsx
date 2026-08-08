@@ -11,12 +11,46 @@ import { LoginScreen } from './components/LoginScreen';
 import { RegistrationFlow } from './components/registration/RegistrationFlow';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { listenToAuthState, handleGoogleRedirectResult } from './lib/firebaseAuth';
 
 export default function App() {
   const [preloaderState, setPreloaderState] = useState<'playing' | 'fading' | 'completed'>('playing');
   const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'registration' | 'admin' | 'admin_dashboard'>('home');
   const [adminEmail, setAdminEmail] = useState('');
   const [userEmail, setUserEmail] = useState('');
+
+  // Listen to Firebase Auth state & handle Google OAuth redirect at App level
+  useEffect(() => {
+    handleGoogleRedirectResult()
+      .then((user) => {
+        if (user && user.email) {
+          const cleanEmail = user.email.trim().toLowerCase();
+          if (cleanEmail === 'disfrutar2k26@klu.ac.in') {
+            setAdminEmail(cleanEmail);
+            setCurrentPage('admin_dashboard');
+          } else {
+            setUserEmail(cleanEmail);
+            setCurrentPage('registration');
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn("Google Redirect notice in App:", err);
+      });
+
+    const unsubscribe = listenToAuthState((user) => {
+      if (user && user.email) {
+        const cleanEmail = user.email.trim().toLowerCase();
+        if (cleanEmail === 'disfrutar2k26@klu.ac.in') {
+          setAdminEmail(cleanEmail);
+        } else {
+          setUserEmail(cleanEmail);
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Listen for browser path changes (e.g. /admin)
   useEffect(() => {

@@ -68,43 +68,54 @@ export async function findRegistrationByUserEmail(userEmail: string): Promise<Re
     const snapshot = await getDocs(q);
     for (const docSnap of snapshot.docs) {
       const data = docSnap.data() as TeamRecord;
-      if (data && data.members && Array.isArray(data.members)) {
+      if (data) {
+        const createdBy = (data as any).registeredByEmail ? (data as any).registeredByEmail.trim().toLowerCase() : "";
+        const isCreatedByMatch = Boolean(createdBy && (createdBy === cleanEmail || createdBy === regNumberMatch));
+
         let matchedMember: MemberData | null = null;
-        let matchedRole = "Team Member";
+        let matchedRole = "Team Leader / Member";
 
-        const matches = data.members.some((m) => {
-          if (!m) return false;
-          const regNum = m.registerNumber ? m.registerNumber.trim().toLowerCase() : "";
-          const phone = m.phone ? m.phone.trim().toLowerCase() : "";
-          const name = m.name ? m.name.trim().toLowerCase() : "";
-          const memEmail = (m as any).email ? (m as any).email.trim().toLowerCase() : "";
+        if (data.members && Array.isArray(data.members)) {
+          const matches = data.members.some((m) => {
+            if (!m) return false;
+            const regNum = m.registerNumber ? m.registerNumber.trim().toLowerCase() : "";
+            const phone = m.phone ? m.phone.trim().toLowerCase() : "";
+            const name = m.name ? m.name.trim().toLowerCase() : "";
+            const memEmail = (m as any).email ? (m as any).email.trim().toLowerCase() : "";
 
-          const isMatch = (
-            regNum === cleanEmail ||
-            regNum === regNumberMatch ||
-            memEmail === cleanEmail ||
-            phone === cleanEmail ||
-            phone === regNumberMatch ||
-            name === cleanEmail
-          );
+            const isMatch = (
+              (regNum && regNum === cleanEmail) ||
+              (regNum && regNum === regNumberMatch) ||
+              (regNum.length >= 4 && cleanEmail.includes(regNum)) ||
+              (regNumberMatch.length >= 4 && regNum.includes(regNumberMatch)) ||
+              (memEmail && memEmail === cleanEmail) ||
+              (phone && phone === cleanEmail) ||
+              (phone && phone === regNumberMatch) ||
+              (name.length >= 3 && cleanEmail.includes(name))
+            );
 
-          if (isMatch) {
-            matchedMember = m;
-            matchedRole = m.role || (m.id === '1' ? 'Leader' : 'Member');
+            if (isMatch) {
+              matchedMember = m;
+              matchedRole = m.role || (m.id === '1' ? 'Leader' : 'Member');
+            }
+            return isMatch;
+          });
+
+          if (matches || isCreatedByMatch) {
+            const teamRecord: TeamRecord = {
+              ...data,
+              id: data.id || docSnap.id,
+            };
+            if (!matchedMember && data.members.length > 0) {
+              matchedMember = data.members[0];
+              matchedRole = matchedMember?.role || 'Leader';
+            }
+            return {
+              team: teamRecord,
+              matchedMember,
+              matchedRole
+            };
           }
-          return isMatch;
-        });
-
-        if (matches) {
-          const teamRecord: TeamRecord = {
-            ...data,
-            id: data.id || docSnap.id,
-          };
-          return {
-            team: teamRecord,
-            matchedMember,
-            matchedRole
-          };
         }
       }
     }
@@ -116,19 +127,40 @@ export async function findRegistrationByUserEmail(userEmail: string): Promise<Re
   try {
     const localTeams = getStoredTeams();
     for (const t of localTeams) {
+      if (!t) continue;
+      const createdBy = (t as any).registeredByEmail ? (t as any).registeredByEmail.trim().toLowerCase() : "";
+      const isCreatedByMatch = Boolean(createdBy && (createdBy === cleanEmail || createdBy === regNumberMatch));
+
       let matchedMember: MemberData | null = null;
       let matchedRole = "Team Member";
-      const found = t.members.some((m) => {
+
+      const found = Boolean(t.members && Array.isArray(t.members) && t.members.some((m) => {
         if (!m) return false;
         const regNum = m.registerNumber ? m.registerNumber.trim().toLowerCase() : "";
-        const isMatch = regNum === cleanEmail || regNum === regNumberMatch;
+        const phone = m.phone ? m.phone.trim().toLowerCase() : "";
+        const memEmail = (m as any).email ? (m as any).email.trim().toLowerCase() : "";
+
+        const isMatch = (
+          (regNum && regNum === cleanEmail) ||
+          (regNum && regNum === regNumberMatch) ||
+          (regNum.length >= 4 && cleanEmail.includes(regNum)) ||
+          (regNumberMatch.length >= 4 && regNum.includes(regNumberMatch)) ||
+          (memEmail && memEmail === cleanEmail) ||
+          (phone && phone === cleanEmail) ||
+          (phone && phone === regNumberMatch)
+        );
         if (isMatch) {
           matchedMember = m;
           matchedRole = m.role || (m.id === '1' ? 'Leader' : 'Member');
         }
         return isMatch;
-      });
-      if (found) {
+      }));
+
+      if (found || isCreatedByMatch) {
+        if (!matchedMember && t.members && t.members.length > 0) {
+          matchedMember = t.members[0];
+          matchedRole = matchedMember?.role || 'Leader';
+        }
         return {
           team: t,
           matchedMember,
@@ -202,7 +234,9 @@ export async function createRegistrationInFirestore(payload: {
   amount: number;
   compressedFile?: File | null;
   dataUrl?: string | null;
+  registeredByEmail?: string;
 }): Promise<TeamRecord> {
+
   const counterDocRef = doc(db, COUNTERS_COLLECTION, "registrations");
 
   let regIdStr = "";
@@ -253,6 +287,7 @@ export async function createRegistrationInFirestore(payload: {
     amount: payload.amount,
     submittedAt: formattedDate,
     screenshotUrl: screenshotUrl,
+    registeredByEmail: payload.registeredByEmail || "",
     timeline: [
       { title: "Registration Created", timestamp: formattedDate, completed: true },
       { title: "Payment Submitted", timestamp: formattedDate, completed: true },

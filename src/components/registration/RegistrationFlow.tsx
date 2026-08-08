@@ -7,9 +7,7 @@ import {
   Users, 
   CreditCard, 
   CheckCircle2, 
-  Sparkles,
-  ShieldCheck,
-  Building
+  ShieldCheck 
 } from 'lucide-react';
 import { MemberData, TeamRegistrationState, RegistrationStep } from '../../types/registration';
 import { MemberCard } from './MemberCard';
@@ -81,7 +79,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
           setRegistrationState(prev => ({
             ...prev,
             teamName: existingTeam.teamName,
-            members: existingTeam.members.length > 0 ? existingTeam.members : prev.members,
+            members: existingTeam.members && existingTeam.members.length > 0 ? existingTeam.members : prev.members,
             registrationId: existingTeam.id,
             paymentStatus: existingTeam.paymentStatus,
             rejectReason: existingTeam.rejectReason,
@@ -124,7 +122,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
   const handleMemberChange = useCallback((updatedMember: MemberData) => {
     setRegistrationState(prev => ({
       ...prev,
-      members: prev.members.map(m => m.id === updatedMember.id ? updatedMember : m)
+      members: (prev.members || []).map(m => m.id === updatedMember.id ? updatedMember : m)
     }));
   }, []);
 
@@ -132,37 +130,37 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
   const isMemberComplete = useCallback((m: MemberData) => {
     if (!m) return false;
     const basic = 
-      Boolean(m.name?.trim()) && 
-      Boolean(m.registerNumber?.trim()) && 
-      Boolean(m.phone?.trim()) && 
-      Boolean(m.year?.trim()) && 
-      Boolean(m.department?.trim()) &&
-      Boolean(m.section?.trim());
+      Boolean((m.name || '').trim()) && 
+      Boolean((m.registerNumber || '').trim()) && 
+      Boolean((m.phone || '').trim()) && 
+      Boolean((m.year || '').trim()) && 
+      Boolean((m.department || '').trim()) &&
+      Boolean((m.section || '').trim());
       
     const hostel = m.residenceType === 'Day Scholar' || 
-      (Boolean(m.hostelName?.trim()) &&
-       Boolean(m.roomNumber?.trim()) &&
-       Boolean(m.wardenName?.trim()) &&
-       Boolean(m.wardenPhone?.trim()));
+      (Boolean((m.hostelName || '').trim()) &&
+       Boolean((m.roomNumber || '').trim()) &&
+       Boolean((m.wardenName || '').trim()) &&
+       Boolean((m.wardenPhone || '').trim()));
     return basic && hostel;
   }, []);
 
-  const requiredMembers = useMemo(() => registrationState.members.slice(0, 4), [registrationState.members]);
-  const optionalMember = registrationState.members[4];
+  const requiredMembers = useMemo(() => (registrationState.members || []).slice(0, 4), [registrationState.members]);
+  const optionalMember = (registrationState.members || [])[4] || { id: '5', role: 'Member 4 (Optional)', isOptional: true, name: '', registerNumber: '', phone: '', year: '3rd Year', department: 'CSE', section: '24S01', residenceType: 'Day Scholar' };
 
   // 1. Leader + 3 members (4 members minimum) MUST all be completed
   const requiredMembersComplete = useMemo(() => requiredMembers.every(isMemberComplete), [requiredMembers, isMemberComplete]);
 
   // 2. Member 4 (Optional): If any input is started, it must be fully completed. If empty, it's valid.
   const isOptionalTouched = Boolean(
-    optionalMember.name?.trim() || 
-    optionalMember.registerNumber?.trim() || 
-    optionalMember.phone?.trim()
+    (optionalMember?.name || '').trim() || 
+    (optionalMember?.registerNumber || '').trim() || 
+    (optionalMember?.phone || '').trim()
   );
   const isOptionalMemberValid = !isOptionalTouched || isMemberComplete(optionalMember);
 
   // 3. Team Name must be at least 2 characters
-  const isTeamNameValid = registrationState.teamName.trim().length >= 2;
+  const isTeamNameValid = (registrationState.teamName || '').trim().length >= 2;
 
   // 4. Overall Team Validity (Team size < 4 is rejected)
   const isTeamValid = isTeamNameValid && requiredMembersComplete && isOptionalMemberValid;
@@ -251,7 +249,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
             />
           </div>
 
-          {navSteps.map((step, idx) => {
+          {navSteps.map((step) => {
             const Icon = step.icon;
             const isCompleted = step.status === 'completed';
             const isActive = step.status === 'active';
@@ -346,7 +344,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
                 </div>
 
                 <div className="space-y-3">
-                  {registrationState.members.map((member) => (
+                  {(registrationState.members || []).map((member) => (
                     <MemberCard
                       key={member.id}
                       member={member}
@@ -379,7 +377,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
 
                     {/* Member Readiness Green Bars */}
                     <div className="flex items-center justify-center sm:justify-start gap-1 py-0.5 flex-wrap">
-                      {registrationState.members.map((m, idx) => {
+                      {(registrationState.members || []).map((m, idx) => {
                         const complete = isMemberComplete(m);
                         return (
                           <div
@@ -443,6 +441,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
               onChange={setRegistrationState}
               onBack={() => setCurrentStep('review')}
               onSubmitPayment={handleFinishPayment}
+              userEmail={userEmail}
             />
           )}
 

@@ -1,10 +1,10 @@
 import { TeamRegistrationState } from '../types/registration';
 
 export function downloadReceipt(state: TeamRegistrationState) {
-  const activeMembers = state.members.filter(m => m.name.trim() !== '');
+  const activeMembers = (state?.members || []).filter(m => m && Boolean((m.name || '').trim()));
   const memberCount = activeMembers.length;
   const totalAmount = memberCount * 350;
-  const regId = state.registrationId || `DFR2026-${Math.floor(1000 + Math.random() * 9000)}`;
+  const regId = state?.registrationId || `DFR2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
   const receiptHtml = `
     <!DOCTYPE html>

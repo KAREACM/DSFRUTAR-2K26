@@ -23,6 +23,7 @@ interface PaymentStepProps {
   onChange: (updatedState: TeamRegistrationState) => void;
   onBack: () => void;
   onSubmitPayment: (newRegId?: string) => void;
+  userEmail?: string;
 }
 
 const PaymentStepComponent: React.FC<PaymentStepProps> = ({
@@ -30,6 +31,7 @@ const PaymentStepComponent: React.FC<PaymentStepProps> = ({
   onChange,
   onBack,
   onSubmitPayment,
+  userEmail = '',
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,13 +39,13 @@ const PaymentStepComponent: React.FC<PaymentStepProps> = ({
   const [fileUploadError, setFileUploadError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const activeMembers = state.members.filter(m => m.name.trim() !== '');
+  const activeMembers = (state?.members || []).filter(m => m && Boolean((m.name || '').trim()));
   const memberCount = activeMembers.length;
   const totalAmount = memberCount * 350;
 
   const upiId = "acmkare@upi";
   const payeeName = "KARE ACM Student Chapter";
-  const note = `Disfrutar2K26-${state.teamName.replace(/\s+/g, '')}`;
+  const note = `Disfrutar2K26-${(state?.teamName || 'Team').replace(/\s+/g, '')}`;
   const upiDeepLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${totalAmount}&tn=${encodeURIComponent(note)}&cu=INR`;
 
   const handleTransactionIdChange = (id: string) => {
@@ -155,6 +157,7 @@ const PaymentStepComponent: React.FC<PaymentStepProps> = ({
         amount: totalAmount,
         compressedFile,
         dataUrl,
+        registeredByEmail: userEmail,
       });
 
       // Synchronize with local admin store as fallback

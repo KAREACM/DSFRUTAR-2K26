@@ -15,8 +15,8 @@ const SubmittedStepComponent: React.FC<SubmittedStepProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
-  const regId = state.registrationId || 'DFR2026-0187';
-  const activeMembers = state.members.filter(m => m.name.trim() !== '');
+  const regId = state?.registrationId || 'DFR2026-0187';
+  const activeMembers = (state?.members || []).filter(m => m && Boolean((m.name || '').trim()));
 
   const handleCopyId = () => {
     navigator.clipboard.writeText(regId);
@@ -24,8 +24,8 @@ const SubmittedStepComponent: React.FC<SubmittedStepProps> = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isApproved = state.paymentStatus === 'approved';
-  const isRejected = state.paymentStatus === 'rejected';
+  const isApproved = state?.paymentStatus === 'approved';
+  const isRejected = state?.paymentStatus === 'rejected';
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 gpu-accelerate">
@@ -85,7 +85,7 @@ const SubmittedStepComponent: React.FC<SubmittedStepProps> = ({
             {isApproved ? 'Registration & Payment Verified ✓' : isRejected ? 'Payment Rejected — Action Required ✗' : 'Submission Received — Verification Pending ⏳'}
           </span>
           <h2 className="text-2xl sm:text-3xl font-bold font-space text-white tracking-wide">
-            {state.teamName}
+            {state?.teamName || 'Registered Team'}
           </h2>
         </div>
 
@@ -128,7 +128,7 @@ const SubmittedStepComponent: React.FC<SubmittedStepProps> = ({
               <span>Application Status: Payment Disqualified</span>
             </div>
             <p className="leading-relaxed text-white/80">
-              Reason: <strong className="text-red-300 font-mono font-bold">{state.rejectReason || 'Payment details verification failed.'}</strong>
+              Reason: <strong className="text-red-300 font-mono font-bold">{state?.rejectReason || 'Payment details verification failed.'}</strong>
             </p>
             <p className="text-[11px] text-white/60 pt-1 border-t border-red-500/20">
               Please check your payment screenshot or UTR number and contact the organizing team for assistance.
@@ -158,11 +158,11 @@ const SubmittedStepComponent: React.FC<SubmittedStepProps> = ({
             {activeMembers.map((m, idx) => (
               <div key={m.id || idx} className="flex flex-wrap items-center justify-between text-xs font-mono py-2 px-3 rounded-xl bg-white/[0.03] border border-white/5 gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-[#8DA2FF] font-bold">[{m.role}]</span>
-                  <span className="text-white font-bold">{m.name}</span>
+                  <span className="text-[#8DA2FF] font-bold">[{m.role || (idx === 0 ? 'Leader' : `Member ${idx}`)}]</span>
+                  <span className="text-white font-bold">{m.name || 'Member'}</span>
                 </div>
                 <div className="text-white/50 text-[11px]">
-                  {m.registerNumber} • {m.department} ({m.section})
+                  {m.registerNumber || 'Reg No N/A'} {m.department ? `• ${m.department}` : ''} {m.section ? `(${m.section})` : ''}
                 </div>
               </div>
             ))}
