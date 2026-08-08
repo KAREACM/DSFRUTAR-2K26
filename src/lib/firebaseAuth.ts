@@ -37,10 +37,17 @@ export function isAdminCredentials(email?: string | null, password?: string | nu
 }
 
 
+function checkFirebaseInitialized() {
+  if (!auth || !auth.app || Object.keys(auth.app).length === 0) {
+    throw new Error("Firebase has not been initialized. Please configure your VITE_FIREBASE_* Environment Variables in your Vercel Project Settings.");
+  }
+}
+
 /**
  * Google OAuth Sign In for Students with @klu.ac.in domain validation
  */
 export async function signInStudentWithGoogle(): Promise<User> {
+  checkFirebaseInitialized();
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
@@ -72,6 +79,7 @@ export async function signInStudentWithGoogle(): Promise<User> {
  * Handles redirect result when using signInWithRedirect fallback
  */
 export async function handleGoogleRedirectResult(): Promise<User | null> {
+  if (!auth || !auth.app || Object.keys(auth.app).length === 0) return null;
   try {
     const result = await getRedirectResult(auth);
     if (!result) return null;
@@ -90,6 +98,7 @@ export async function handleGoogleRedirectResult(): Promise<User | null> {
  * Sign in student user with email & password (@klu.ac.in)
  */
 export async function signInStudent(email: string, password?: string): Promise<User> {
+  checkFirebaseInitialized();
   const cleanEmail = email.trim().toLowerCase();
   if (!isKluEmail(cleanEmail)) {
     throw new Error("Please login using your University Email (@klu.ac.in)");
@@ -123,6 +132,7 @@ export async function signInStudent(email: string, password?: string): Promise<U
  * Credentials strictly: email: disfrutar2k26@klu.ac.in, pass: disfrutar@2k26klu
  */
 export async function signInAdminUser(email: string, password: string): Promise<User> {
+  checkFirebaseInitialized();
   const cleanEmail = email.trim().toLowerCase();
   const cleanPass = password.trim();
 
@@ -156,6 +166,7 @@ export async function signInAdminUser(email: string, password: string): Promise<
  * Sign out current user
  */
 export function logoutUser(): Promise<void> {
+  if (!auth || !auth.app || Object.keys(auth.app).length === 0) return Promise.resolve();
   return signOut(auth);
 }
 
@@ -163,5 +174,9 @@ export function logoutUser(): Promise<void> {
  * Auth state listener
  */
 export function listenToAuthState(callback: (user: User | null) => void) {
+  if (!auth || !auth.app || Object.keys(auth.app).length === 0) {
+    callback(null);
+    return () => {};
+  }
   return onAuthStateChanged(auth, callback);
 }
