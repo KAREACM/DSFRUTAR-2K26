@@ -84,6 +84,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
             members: existingTeam.members.length > 0 ? existingTeam.members : prev.members,
             registrationId: existingTeam.id,
             paymentStatus: existingTeam.paymentStatus,
+            rejectReason: existingTeam.rejectReason,
             payment: {
               transactionId: existingTeam.transactionId || '',
               screenshotFile: null,

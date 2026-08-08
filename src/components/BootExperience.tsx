@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { CanvasParticleSystem } from './CanvasParticleSystem';
 import { PreloaderHUD } from './PreloaderHUD';
 import { HeroRevealSequence } from './HeroRevealSequence';
+import { startAsyncPreloadPipeline } from '../utils/preloadEngine';
 
 interface BootExperienceProps {
   onComplete?: () => void;
@@ -15,6 +16,11 @@ export const BootExperience: React.FC<BootExperienceProps> = ({ onComplete, clas
   const rafRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number>(performance.now());
   const hasTriggeredComplete = useRef<boolean>(false);
+
+  // Trigger background async preload thread & animation asset registration as soon as preloader starts
+  useEffect(() => {
+    startAsyncPreloadPipeline();
+  }, []);
 
   // Main animation clock loop driving the timeline
   useEffect(() => {

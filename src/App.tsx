@@ -66,29 +66,35 @@ export default function App() {
     <div className="relative w-full min-h-screen bg-[#050814] text-white">
       
       {/* Fixed Sticky Navigation Bar */}
-      {preloaderState !== 'playing' && currentPage === 'home' && (
-        <Navbar 
-          isVisible={preloaderState === 'fading' || preloaderState === 'completed'} 
-          onRegisterClick={() => setCurrentPage('login')}
-          onHomeClick={handleBackToHome}
-        />
+      {currentPage === 'home' && (
+        <div 
+          aria-hidden={preloaderState === 'playing'}
+          className={
+            preloaderState === 'playing' 
+              ? 'invisible opacity-0 fixed inset-0 overflow-hidden pointer-events-none' 
+              : 'visible opacity-100 relative pointer-events-auto w-full transition-opacity duration-300'
+          }
+        >
+          <Navbar 
+            isVisible={preloaderState === 'fading' || preloaderState === 'completed'} 
+            onRegisterClick={() => setCurrentPage('login')}
+            onHomeClick={handleBackToHome}
+          />
+          <HeroSection 
+            isVisible={preloaderState === 'fading' || preloaderState === 'completed'} 
+            onRegisterClick={() => setCurrentPage('login')}
+          />
+          <AboutSection />
+          <MentorsSection />
+          <PrizesSection />
+          <FaqSection />
+          <Footer />
+        </div>
       )}
 
-      {/* Main Content Pages */}
-      {preloaderState !== 'playing' && (
-        currentPage === 'home' ? (
-          <>
-            <HeroSection 
-              isVisible={preloaderState === 'fading' || preloaderState === 'completed'} 
-              onRegisterClick={() => setCurrentPage('login')}
-            />
-            <AboutSection />
-            <MentorsSection />
-            <PrizesSection />
-            <FaqSection />
-            <Footer />
-          </>
-        ) : currentPage === 'login' ? (
+      {/* Main Content Pages for Non-Home Routes */}
+      {currentPage !== 'home' && (
+        currentPage === 'login' ? (
           <LoginScreen 
             onBack={handleBackToHome} 
             onSuccessLogin={(email) => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Mail, ShieldAlert, ArrowLeft, KeyRound, CheckCircle2 } from 'lucide-react';
+import { Lock, Mail, ShieldAlert, ArrowLeft, KeyRound, CheckCircle2, X } from 'lucide-react';
 import { signInAdminUser } from '../../lib/firebaseAuth';
 
 interface AdminLoginProps {
@@ -72,8 +72,20 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onBack, onSuccessLogin }
         </div>
 
         {error && (
-          <div className="p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-mono text-center animate-shake">
-            {error}
+          <div className="flex items-center justify-between gap-2.5 p-3.5 rounded-2xl bg-red-500/15 border border-red-500/40 text-red-300 text-xs font-sans shadow-[0_0_20px_rgba(239,68,68,0.2)] animate-shake">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center shrink-0">
+                <ShieldAlert className="w-4 h-4" />
+              </div>
+              <span className="leading-snug">{error}</span>
+            </div>
+            <button 
+              type="button" 
+              onClick={() => setError('')}
+              className="p-1 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white shrink-0 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
         )}
 

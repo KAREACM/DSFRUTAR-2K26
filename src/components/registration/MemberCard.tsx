@@ -277,15 +277,20 @@ const MemberCardComponent: React.FC<MemberCardProps> = ({
             {/* Conditional Hostel Fields with GPU Composite CSS Grid Expansion */}
             <div className={`registration-accordion-grid ${member.residenceType === 'Hosteller' ? 'is-expanded pt-2' : ''}`}>
               <div className="accordion-content-inner">
-                <div className="p-4 rounded-[16px] bg-[#536BFF]/10 border border-[#536BFF]/30 space-y-3">
-                  <div className="flex items-center justify-between">
+                <div className={`p-4 rounded-[16px] space-y-3 transition-all ${
+                  isHostelFilled
+                    ? 'bg-[#536BFF]/10 border border-[#536BFF]/30'
+                    : 'bg-amber-500/10 border border-amber-500/35 shadow-[0_0_16px_rgba(245,158,11,0.15)]'
+                }`}>
+                  <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#8DA2FF] uppercase tracking-wider">
-                      <Home className="w-4 h-4" />
+                      <Home className="w-4 h-4 text-[#8DA2FF]" />
                       <span>Hostel Stay Information</span>
                     </div>
                     {!isHostelFilled && (
-                      <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/30">
-                        Incomplete Details
+                      <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-500/20 px-2.5 py-0.5 rounded-full border border-amber-500/40 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3 text-amber-400" />
+                        <span>Incomplete Hostel Details</span>
                       </span>
                     )}
                   </div>

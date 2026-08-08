@@ -7,7 +7,8 @@ import {
   Sparkles, 
   ShieldAlert,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  X
 } from 'lucide-react';
 import { signInStudent, signInStudentWithGoogle, handleGoogleRedirectResult, signInAdminUser, isKluEmail, isAdminCredentials } from '../lib/firebaseAuth';
 
@@ -107,7 +108,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       return;
     }
 
-    const cleanEmail = email.trim().toLowerCase();
+    let cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail.includes('@') && cleanEmail.length > 0) {
+      cleanEmail = `${cleanEmail}@klu.ac.in`;
+    }
     const cleanPass = password.trim();
 
     setIsLoading(true);
@@ -137,7 +141,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     // Validate university email domain @klu.ac.in
     if (!isKluEmail(cleanEmail)) {
       setIsLoading(false);
-      setErrorMessage('Please login using your University Email (@klu.ac.in)');
+      setErrorMessage('Please login using your Register Number or University Email (@klu.ac.in)');
       return;
     }
 
@@ -329,28 +333,40 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             {/* Error Message banner */}
             {errorMessage && (
               <motion.div 
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 p-3 rounded-[12px] bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-sans"
+                initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                className="flex items-center justify-between gap-2.5 p-3.5 rounded-[16px] bg-red-500/15 border border-red-500/40 text-red-300 text-xs font-sans shadow-[0_0_20px_rgba(239,68,68,0.2)]"
               >
-                <ShieldAlert className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center shrink-0">
+                    <ShieldAlert className="w-4 h-4" />
+                  </div>
+                  <span className="leading-snug">{errorMessage}</span>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => setErrorMessage('')}
+                  className="p-1 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white shrink-0 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
               </motion.div>
             )}
 
             {/* Email field */}
             <div className="space-y-1.5 text-left">
               <label htmlFor="email" className="block text-[11px] font-mono font-bold tracking-[0.16em] uppercase text-white/50 pl-2">
-                Email Address
+                Register Number / Email Address
               </label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
                   id="email"
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="m@example.com"
+                  placeholder="regno@klu.ac.in or 99240041356"
                   className="w-full h-[46px] pl-11 pr-5 rounded-full bg-white/[0.03] border border-white/10 hover:border-white/18 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 transition-all duration-300 text-sm placeholder-white/20 outline-none font-sans"
                   required
                 />

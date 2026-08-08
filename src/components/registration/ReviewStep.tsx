@@ -219,45 +219,56 @@ const ReviewStepComponent: React.FC<ReviewStepProps> = ({
       {/* Confirmation Modal */}
       <AnimatePresence>
         {showConfirmModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md gpu-accelerate">
+          <div 
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setShowConfirmModal(false);
+            }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl font-sans overflow-y-auto gpu-accelerate"
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-full max-w-md bg-[#0c102b] border border-[#536BFF]/50 rounded-[24px] p-6 sm:p-8 shadow-[0_32px_80px_rgba(0,0,0,0.9)] space-y-5 text-center overflow-hidden gpu-accelerate"
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-md bg-[#07091C]/95 border border-[#536BFF]/50 rounded-[28px] p-6 sm:p-8 shadow-[0_32px_80px_rgba(83,107,255,0.3)] space-y-5 text-center overflow-hidden my-auto text-white backdrop-blur-2xl gpu-accelerate"
             >
-              <div className="w-12 h-12 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto">
-                <ShieldAlert className="w-6 h-6" />
+              {/* Top Ambient Glow Line */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4/5 h-[1.5px] bg-gradient-to-r from-transparent via-[#536BFF]/80 to-transparent blur-[0.5px]" />
+
+              <div className="w-14 h-14 rounded-full bg-amber-500/15 border-2 border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto shadow-[0_0_24px_rgba(245,158,11,0.3)]">
+                <ShieldAlert className="w-7 h-7" />
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-xl font-space font-bold text-white">Confirm Team Details</h3>
+                <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 inline-block">
+                  Final Registration Verification
+                </span>
+                <h3 className="text-xl sm:text-2xl font-space font-bold text-white tracking-wide">Confirm Team Details</h3>
                 <p className="text-xs text-white/70 font-sans leading-relaxed">
-                  Please verify your details carefully. After completing payment, editing team information will no longer be allowed.
+                  Please verify your team details carefully. After completing checkout, modifying member information will require administrative approval.
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 text-left space-y-1 text-xs font-mono">
-                <div className="flex justify-between">
-                  <span className="text-white/50">Team Name:</span>
-                  <span className="text-white font-bold">{state.teamName}</span>
+              <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-left space-y-2 text-xs font-mono">
+                <div className="flex justify-between items-center pb-1 border-b border-white/10">
+                  <span className="text-white/50 uppercase text-[10px]">Team Name:</span>
+                  <span className="text-white font-bold font-space">{state.teamName}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-white/50">Members:</span>
-                  <span className="text-white font-bold">{memberCount} Persons</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-white/50 uppercase text-[10px]">Registered Size:</span>
+                  <span className="text-white font-bold">{memberCount} Members</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-white/50">Total Amount:</span>
-                  <span className="text-[#8DA2FF] font-bold">₹{totalAmount}</span>
+                <div className="flex justify-between items-center pt-1 border-t border-white/10">
+                  <span className="text-white/50 uppercase text-[10px]">Total Fee Amount:</span>
+                  <span className="text-[#8DA2FF] font-bold text-sm">₹{totalAmount}</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowConfirmModal(false)}
-                  className="h-[44px] rounded-full border border-white/10 bg-white/5 text-white/80 font-space text-xs font-semibold hover:bg-white/10 cursor-pointer"
+                  className="h-[46px] rounded-full border border-white/14 bg-white/5 text-white/80 font-space text-xs font-semibold hover:bg-white/10 hover:text-white cursor-pointer transition-all"
                 >
                   Edit Details
                 </button>
@@ -268,7 +279,7 @@ const ReviewStepComponent: React.FC<ReviewStepProps> = ({
                     setShowConfirmModal(false);
                     onConfirm();
                   }}
-                  className="h-[44px] rounded-full bg-[#536BFF] text-white font-space text-xs font-semibold hover:bg-[#4256F6] shadow-[0_0_16px_rgba(83,107,255,0.4)] cursor-pointer"
+                  className="h-[46px] rounded-full bg-gradient-to-r from-[#536BFF] to-[#4256F6] text-white font-space text-xs font-semibold hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_20px_rgba(83,107,255,0.4)] cursor-pointer transition-all"
                 >
                   Confirm & Pay →
                 </button>

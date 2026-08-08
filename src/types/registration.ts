@@ -28,6 +28,8 @@ export interface TeamRegistrationState {
     submittedAt?: string;
   };
   registrationId?: string;
+  paymentStatus?: 'pending' | 'approved' | 'rejected';
+  rejectReason?: string;
 }
 
 export type RegistrationStep = 

@@ -34,6 +34,7 @@ const PaymentStepComponent: React.FC<PaymentStepProps> = ({
   const [dragActive, setDragActive] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
+  const [fileUploadError, setFileUploadError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const activeMembers = state.members.filter(m => m.name.trim() !== '');
@@ -61,10 +62,11 @@ const PaymentStepComponent: React.FC<PaymentStepProps> = ({
     // Check type
     const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
     if (!validTypes.includes(file.type)) {
-      alert("Please upload a PNG, JPG, JPEG or PDF screenshot file.");
+      setFileUploadError("Invalid file type. Please upload a PNG, JPG, JPEG or PDF payment receipt.");
       return;
     }
 
+    setFileUploadError("");
     const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
 
     onChange({
@@ -392,6 +394,22 @@ const PaymentStepComponent: React.FC<PaymentStepProps> = ({
               <label className="block text-[10px] font-mono uppercase tracking-wider text-white/60 pl-2">
                 Upload Payment Screenshot *
               </label>
+
+              {fileUploadError && (
+                <div className="p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-sans flex items-center justify-between gap-2 animate-shake">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                    <span>{fileUploadError}</span>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => setFileUploadError('')}
+                    className="p-1 text-white/50 hover:text-white rounded-full bg-white/5"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
 
               {!state.payment.screenshotFile ? (
                 <div

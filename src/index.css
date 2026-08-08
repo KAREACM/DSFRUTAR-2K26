@@ -433,4 +433,16 @@ body {
   }
 }
 
+/* GPU Hardware Layer acceleration for GSAP animated text & scroll triggers (60-120 FPS) */
+.heading-word,
+.desc-word,
+.char-letter,
+.animate-gpu {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+
 

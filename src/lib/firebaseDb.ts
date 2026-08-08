@@ -367,6 +367,17 @@ export async function approveRegistrationInFirestore(teamId: string, adminName: 
       rejectReason: "",
       timeline: updatedTimeline,
     });
+
+    const teamNameVal = docSnap.exists() ? docSnap.data().teamName : teamId;
+    const sanitizedLog = sanitizeForFirestore({
+      id: `log_${Date.now()}`,
+      adminName: adminName,
+      action: "Approve Payment" as const,
+      teamName: teamNameVal,
+      timestamp: now,
+      details: `Team ${teamId} (${teamNameVal}) payment approved by ${adminName}`,
+    });
+    await addAuditLogToFirestore(sanitizedLog);
   } catch (err) {
     console.warn("Error updating Firestore approval:", err);
     // Fallback setDoc merge
@@ -428,6 +439,17 @@ export async function rejectRegistrationInFirestore(
       rejectReason: reason,
       timeline: updatedTimeline,
     });
+
+    const teamNameVal = docSnap.exists() ? docSnap.data().teamName : teamId;
+    const sanitizedLog = sanitizeForFirestore({
+      id: `log_${Date.now()}`,
+      adminName: adminName,
+      action: "Reject Payment" as const,
+      teamName: teamNameVal,
+      timestamp: now,
+      details: `Team ${teamId} (${teamNameVal}) payment rejected: ${reason}`,
+    });
+    await addAuditLogToFirestore(sanitizedLog);
   } catch (err) {
     console.warn("Error updating Firestore rejection:", err);
     // Fallback setDoc merge
