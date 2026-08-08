@@ -15,22 +15,50 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ""
 };
 
-// Initialize Firebase App
-export const app = initializeApp(firebaseConfig);
+// Declare exportable variables
+export let app: any;
+export let auth: any;
+export let db: any;
+export let storage: any;
+export let analytics: any = null;
 
-// Initialize Firebase Services
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+  try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
 
-// Initialize Analytics conditionally (supported in browser environment)
-export let analytics: ReturnType<typeof getAnalytics> | null = null;
-if (typeof window !== "undefined") {
-  isSupported().then((supported) => {
-    if (supported) {
-      analytics = getAnalytics(app);
+    if (typeof window !== "undefined") {
+      isSupported().then((supported) => {
+        if (supported) {
+          analytics = getAnalytics(app);
+        }
+      });
     }
-  });
+  } catch (error) {
+    console.error("Failed to initialize Firebase with configured credentials:", error);
+    // Mock fallbacks to prevent crash
+    app = {} as any;
+    auth = {
+      currentUser: null,
+      onAuthStateChanged: (cb: any) => { cb(null); return () => {}; }
+    } as any;
+    db = {} as any;
+    storage = {} as any;
+  }
+} else {
+  console.warn("WARNING: Firebase VITE_FIREBASE_* environment variables are not defined. The app will load with mock services.");
+  app = {} as any;
+  auth = {
+    currentUser: null,
+    onAuthStateChanged: (cb: any) => {
+      cb(null);
+      return () => {};
+    }
+  } as any;
+  db = {} as any;
+  storage = {} as any;
 }
 
 export default app;
