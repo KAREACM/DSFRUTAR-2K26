@@ -1,0 +1,8 @@
+{
+  "name": "Remix DISFRUTAR 2K26 v2",
+  "description": "A handcrafted cinematic AI OS boot sequence and particle logo assembly for DISFRUTAR 2K26 by KARE ACM Student Chapter.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
