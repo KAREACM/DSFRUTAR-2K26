@@ -25,12 +25,14 @@ export const AboutSection: React.FC = () => {
     "DISFRUTAR 2K26 is more than a hackathon — it's a movement to empower the next generation of innovators. We bring together curiosity, creativity, and technology to build solutions that shape a better tomorrow.";
 
   useEffect(() => {
+    const isMobile = window.innerWidth <= 768;
+
     const ctx = gsap.context(() => {
-      // 1. Header Reveal Timeline
+      // 1. Header Reveal Timeline (GPU Accelerated)
       const headerTl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 85%',
+          start: isMobile ? 'top 90%' : 'top 85%',
           fastScrollEnd: true,
           preventOverlaps: true,
           toggleActions: 'play none none none',
@@ -42,7 +44,7 @@ export const AboutSection: React.FC = () => {
         .fromTo(
           labelRef.current,
           { opacity: 0, y: 12 },
-          { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }
+          { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out', force3D: true }
         )
         // Heading Word Slide Up
         .fromTo(
@@ -52,8 +54,9 @@ export const AboutSection: React.FC = () => {
             y: '0%',
             opacity: 1,
             duration: 0.5,
-            stagger: 0.08,
+            stagger: isMobile ? 0.04 : 0.08,
             ease: 'power3.out',
+            force3D: true,
           },
           '-=0.2'
         )
@@ -65,8 +68,9 @@ export const AboutSection: React.FC = () => {
             y: '0%',
             opacity: 1,
             duration: 0.4,
-            stagger: 0.008,
+            stagger: isMobile ? 0.004 : 0.008,
             ease: 'power3.out',
+            force3D: true,
           },
           '-=0.3'
         );
@@ -79,7 +83,7 @@ export const AboutSection: React.FC = () => {
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: timelineRef.current,
-            start: 'top 85%',
+            start: isMobile ? 'top 90%' : 'top 85%',
             fastScrollEnd: true,
             preventOverlaps: true,
           },
@@ -92,8 +96,9 @@ export const AboutSection: React.FC = () => {
             opacity: 1,
             y: 0,
             duration: 0.5,
-            stagger: 0.08,
+            stagger: isMobile ? 0.05 : 0.08,
             ease: 'power3.out',
+            force3D: true,
           }
         ).fromTo(
           lines,
@@ -102,8 +107,9 @@ export const AboutSection: React.FC = () => {
             opacity: 1,
             scaleY: 1,
             duration: 0.5,
-            stagger: 0.06,
+            stagger: isMobile ? 0.04 : 0.06,
             ease: 'power2.out',
+            force3D: true,
           },
           '-=0.3'
         );
@@ -114,17 +120,18 @@ export const AboutSection: React.FC = () => {
         const cards = cardsRef.current.children;
         gsap.fromTo(
           cards,
-          { opacity: 0, y: 30, scale: 0.98 },
+          { opacity: 0, y: 24, scale: 0.98 },
           {
             opacity: 1,
             y: 0,
             scale: 1,
             duration: 0.6,
-            stagger: 0.1,
+            stagger: isMobile ? 0.06 : 0.1,
             ease: 'power3.out',
+            force3D: true,
             scrollTrigger: {
               trigger: cardsRef.current,
-              start: 'top 82%',
+              start: isMobile ? 'top 88%' : 'top 82%',
               fastScrollEnd: true,
               preventOverlaps: true,
             },
@@ -140,11 +147,12 @@ export const AboutSection: React.FC = () => {
           {
             opacity: 1,
             scale: 1,
-            duration: 0.7,
+            duration: 0.6,
             ease: 'power3.out',
+            force3D: true,
             scrollTrigger: {
               trigger: leftImageRef.current,
-              start: 'top 80%',
+              start: isMobile ? 'top 88%' : 'top 80%',
               fastScrollEnd: true,
               preventOverlaps: true,
             },
@@ -161,7 +169,7 @@ export const AboutSection: React.FC = () => {
         const stepsTl = gsap.timeline({
           scrollTrigger: {
             trigger: stepNodesRef.current,
-            start: 'top 82%',
+            start: isMobile ? 'top 88%' : 'top 82%',
             fastScrollEnd: true,
             preventOverlaps: true,
           },
@@ -171,24 +179,24 @@ export const AboutSection: React.FC = () => {
           .fromTo(
             howItWorksLineRef.current,
             { scaleY: 0 },
-            { scaleY: 1, duration: 0.7, ease: 'power3.out' }
+            { scaleY: 1, duration: 0.6, ease: 'power3.out', force3D: true }
           )
           .fromTo(
             badges,
             { scale: 0.6, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.4, stagger: 0.08, ease: 'back.out(1.5)' },
+            { scale: 1, opacity: 1, duration: 0.4, stagger: isMobile ? 0.05 : 0.08, ease: 'back.out(1.5)', force3D: true },
             '-=0.4'
           )
           .fromTo(
             titles,
             { x: 12, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.4, stagger: 0.08, ease: 'power3.out' },
+            { x: 0, opacity: 1, duration: 0.4, stagger: isMobile ? 0.05 : 0.08, ease: 'power3.out', force3D: true },
             '-=0.3'
           )
           .fromTo(
             descs,
             { opacity: 0, y: 6 },
-            { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'power3.out' },
+            { opacity: 1, y: 0, duration: 0.4, stagger: isMobile ? 0.05 : 0.08, ease: 'power3.out', force3D: true },
             '-=0.3'
           );
       }
@@ -204,11 +212,12 @@ export const AboutSection: React.FC = () => {
             scale: 1,
             y: 0,
             duration: 0.5,
-            stagger: 0.06,
+            stagger: isMobile ? 0.04 : 0.06,
             ease: 'power3.out',
+            force3D: true,
             scrollTrigger: {
               trigger: trustGalleryRef.current,
-              start: 'top 85%',
+              start: isMobile ? 'top 90%' : 'top 85%',
               fastScrollEnd: true,
               preventOverlaps: true,
             },
@@ -216,8 +225,11 @@ export const AboutSection: React.FC = () => {
         );
       }
 
-      // 7. Stats Count-Up & Icon Rotation
+      // 7. Stats Count-Up & Icon Rotation (Throttled DOM layout reflows)
       const statsObj = { count1: 0, count2: 0 };
+      let lastCount1 = -1;
+      let lastCount2 = -1;
+
       gsap.to(statsObj, {
         count1: 50,
         count2: 100,
@@ -225,16 +237,20 @@ export const AboutSection: React.FC = () => {
         ease: 'power2.out',
         scrollTrigger: {
           trigger: cardsRef.current,
-          start: 'top 75%',
+          start: isMobile ? 'top 85%' : 'top 75%',
           fastScrollEnd: true,
           preventOverlaps: true,
         },
         onUpdate: () => {
-          if (rocketCountRef.current) {
-            rocketCountRef.current.textContent = `${Math.floor(statsObj.count1)}+`;
+          const val1 = Math.floor(statsObj.count1);
+          const val2 = Math.floor(statsObj.count2);
+          if (val1 !== lastCount1 && rocketCountRef.current) {
+            lastCount1 = val1;
+            rocketCountRef.current.textContent = `${val1}+`;
           }
-          if (satCountRef.current) {
-            satCountRef.current.textContent = `${Math.floor(statsObj.count2)}%`;
+          if (val2 !== lastCount2 && satCountRef.current) {
+            lastCount2 = val2;
+            satCountRef.current.textContent = `${val2}%`;
           }
         },
       });
@@ -249,9 +265,10 @@ export const AboutSection: React.FC = () => {
             duration: 0.6,
             ease: 'back.out(1.5)',
             stagger: 0.1,
+            force3D: true,
             scrollTrigger: {
               trigger: cardsRef.current,
-              start: 'top 75%',
+              start: isMobile ? 'top 85%' : 'top 75%',
               fastScrollEnd: true,
               preventOverlaps: true,
             },
@@ -463,7 +480,7 @@ export const AboutSection: React.FC = () => {
           className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-[28px] items-stretch"
         >
           {/* LEFT CARD: Photo + Bottom Stats Panel */}
-          <div className="group relative bg-[#07091C]/65 border border-white/10 rounded-[24px] backdrop-blur-[16px] overflow-hidden shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[4px] hover:bg-[#07091C]/92 hover:border-[#536BFF]/50 hover:shadow-[0_12px_40px_rgba(83,107,255,0.22)] lg:h-[480px]">
+          <div className="about-card group relative bg-[#07091C]/65 border border-white/10 rounded-[24px] backdrop-blur-[16px] overflow-hidden shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[4px] hover:bg-[#07091C]/92 hover:border-[#536BFF]/50 hover:shadow-[0_12px_40px_rgba(83,107,255,0.22)] lg:h-[480px]">
             {/* Top Inner Highlight Line matching FAQ Active State */}
             <div
               className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30"
@@ -537,7 +554,7 @@ export const AboutSection: React.FC = () => {
           </div>
 
           {/* CENTER CARD: How It Works */}
-          <div className="group relative bg-[#07091C]/65 border border-white/10 rounded-[24px] p-6 lg:p-[30px] backdrop-blur-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[4px] hover:bg-[#07091C]/92 hover:border-[#536BFF]/50 hover:shadow-[0_12px_40px_rgba(83,107,255,0.22)] lg:h-[480px] overflow-hidden">
+          <div className="about-card group relative bg-[#07091C]/65 border border-white/10 rounded-[24px] p-6 lg:p-[30px] backdrop-blur-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[4px] hover:bg-[#07091C]/92 hover:border-[#536BFF]/50 hover:shadow-[0_12px_40px_rgba(83,107,255,0.22)] lg:h-[480px] overflow-hidden">
             {/* Top Inner Highlight Line matching FAQ Active State */}
             <div
               className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30"
@@ -592,7 +609,7 @@ export const AboutSection: React.FC = () => {
           </div>
 
           {/* RIGHT CARD: Built on Trust */}
-          <div className="group relative bg-[#07091C]/65 border border-white/10 rounded-[24px] p-6 lg:p-[30px] backdrop-blur-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[4px] hover:bg-[#07091C]/92 hover:border-[#536BFF]/50 hover:shadow-[0_12px_40px_rgba(83,107,255,0.22)] lg:h-[480px] overflow-hidden">
+          <div className="about-card group relative bg-[#07091C]/65 border border-white/10 rounded-[24px] p-6 lg:p-[30px] backdrop-blur-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[4px] hover:bg-[#07091C]/92 hover:border-[#536BFF]/50 hover:shadow-[0_12px_40px_rgba(83,107,255,0.22)] lg:h-[480px] overflow-hidden">
             {/* Top Inner Highlight Line matching FAQ Active State */}
             <div
               className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30"
