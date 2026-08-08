@@ -30,7 +30,9 @@ export const AboutSection: React.FC = () => {
       const headerTl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 82%',
+          start: 'top 85%',
+          fastScrollEnd: true,
+          preventOverlaps: true,
           toggleActions: 'play none none none',
         },
       });
@@ -40,7 +42,7 @@ export const AboutSection: React.FC = () => {
         .fromTo(
           labelRef.current,
           { opacity: 0, y: 12 },
-          { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }
+          { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }
         )
         // Heading Word Slide Up
         .fromTo(
@@ -49,11 +51,11 @@ export const AboutSection: React.FC = () => {
           {
             y: '0%',
             opacity: 1,
-            duration: 0.7,
-            stagger: 0.1,
+            duration: 0.5,
+            stagger: 0.08,
             ease: 'power3.out',
           },
-          '-=0.3'
+          '-=0.2'
         )
         // Description Word Stagger Reveal (Apple-style word mask)
         .fromTo(
@@ -62,48 +64,48 @@ export const AboutSection: React.FC = () => {
           {
             y: '0%',
             opacity: 1,
-            duration: 0.5,
-            stagger: 0.012,
+            duration: 0.4,
+            stagger: 0.008,
             ease: 'power3.out',
           },
-          '-=0.4'
+          '-=0.3'
         );
 
-      // 2. Timeline Row Animation (Sequential left to right)
+      // 2. Timeline Row Animation (Single Consolidated Pass)
       if (timelineRef.current) {
         const items = timelineRef.current.querySelectorAll('.timeline-item');
         const lines = timelineRef.current.querySelectorAll('.timeline-separator');
 
-        gsap.fromTo(
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: timelineRef.current,
+            start: 'top 85%',
+            fastScrollEnd: true,
+            preventOverlaps: true,
+          },
+        });
+
+        tl.fromTo(
           items,
-          { opacity: 0, y: 30 },
+          { opacity: 0, y: 25 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.6,
-            stagger: 0.1,
+            duration: 0.5,
+            stagger: 0.08,
             ease: 'power3.out',
-            scrollTrigger: {
-              trigger: timelineRef.current,
-              start: 'top 80%',
-            },
           }
-        );
-
-        gsap.fromTo(
+        ).fromTo(
           lines,
           { opacity: 0, scaleY: 0 },
           {
             opacity: 1,
             scaleY: 1,
-            duration: 0.7,
-            stagger: 0.08,
+            duration: 0.5,
+            stagger: 0.06,
             ease: 'power2.out',
-            scrollTrigger: {
-              trigger: timelineRef.current,
-              start: 'top 80%',
-            },
-          }
+          },
+          '-=0.3'
         );
       }
 
@@ -112,98 +114,83 @@ export const AboutSection: React.FC = () => {
         const cards = cardsRef.current.children;
         gsap.fromTo(
           cards,
-          { opacity: 0, y: 40, scale: 0.98 },
+          { opacity: 0, y: 30, scale: 0.98 },
           {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: 0.8,
-            stagger: 0.14,
+            duration: 0.6,
+            stagger: 0.1,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: cardsRef.current,
-              start: 'top 78%',
+              start: 'top 82%',
+              fastScrollEnd: true,
+              preventOverlaps: true,
             },
           }
         );
       }
 
-      // 4. Left Image Clip-Path / Reveal
+      // 4. Left Image Reveal (GPU Scale/Opacity acceleration)
       if (leftImageRef.current) {
         gsap.fromTo(
           leftImageRef.current,
-          { clipPath: 'inset(0 100% 0 0)', scale: 1.06 },
+          { opacity: 0, scale: 0.96 },
           {
-            clipPath: 'inset(0 0 0 0)',
+            opacity: 1,
             scale: 1,
-            duration: 1.1,
-            ease: 'power4.out',
+            duration: 0.7,
+            ease: 'power3.out',
             scrollTrigger: {
               trigger: leftImageRef.current,
-              start: 'top 75%',
+              start: 'top 80%',
+              fastScrollEnd: true,
+              preventOverlaps: true,
             },
           }
         );
       }
 
-      // 5. How It Works Vertical Line & Steps Animation
+      // 5. How It Works Vertical Line & Steps Animation (Single Master Timeline)
       if (howItWorksLineRef.current && stepNodesRef.current) {
-        const steps = stepNodesRef.current.children;
+        const badges = stepNodesRef.current.querySelectorAll('.step-badge');
+        const titles = stepNodesRef.current.querySelectorAll('.step-title');
+        const descs = stepNodesRef.current.querySelectorAll('.step-desc');
 
-        // Line growth
-        gsap.fromTo(
-          howItWorksLineRef.current,
-          { scaleY: 0 },
-          {
-            scaleY: 1,
-            duration: 1.2,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: stepNodesRef.current,
-              start: 'top 75%',
-            },
-          }
-        );
-
-        // Individual steps pop in sequence
-        Array.from(steps).forEach((stepNode, idx) => {
-          const step = stepNode as HTMLElement;
-          const badge = step.querySelector('.step-badge');
-          const title = step.querySelector('.step-title');
-          const desc = step.querySelector('.step-desc');
-
-          const stepTl = gsap.timeline({
-            scrollTrigger: {
-              trigger: step,
-              start: 'top 82%',
-            },
-          });
-
-          if (badge) {
-            stepTl.fromTo(
-              badge,
-              { scale: 0.5, opacity: 0 },
-              { scale: 1, opacity: 1, duration: 0.45, ease: 'back.out(1.7)' },
-              idx * 0.08
-            );
-          }
-          if (title) {
-            stepTl.fromTo(
-              title,
-              { x: 15, opacity: 0 },
-              { x: 0, opacity: 1, duration: 0.45, ease: 'power3.out' },
-              '-=0.25'
-            );
-          }
-          if (desc) {
-            stepTl.fromTo(
-              desc,
-              { opacity: 0, y: 8 },
-              { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' },
-              '-=0.25'
-            );
-          }
+        const stepsTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: stepNodesRef.current,
+            start: 'top 82%',
+            fastScrollEnd: true,
+            preventOverlaps: true,
+          },
         });
+
+        stepsTl
+          .fromTo(
+            howItWorksLineRef.current,
+            { scaleY: 0 },
+            { scaleY: 1, duration: 0.7, ease: 'power3.out' }
+          )
+          .fromTo(
+            badges,
+            { scale: 0.6, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.4, stagger: 0.08, ease: 'back.out(1.5)' },
+            '-=0.4'
+          )
+          .fromTo(
+            titles,
+            { x: 12, opacity: 0 },
+            { x: 0, opacity: 1, duration: 0.4, stagger: 0.08, ease: 'power3.out' },
+            '-=0.3'
+          )
+          .fromTo(
+            descs,
+            { opacity: 0, y: 6 },
+            { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'power3.out' },
+            '-=0.3'
+          );
       }
 
       // 6. Right Card Gallery Reveal
@@ -211,17 +198,19 @@ export const AboutSection: React.FC = () => {
         const thumbnails = trustGalleryRef.current.children;
         gsap.fromTo(
           thumbnails,
-          { opacity: 0, scale: 0.93, y: 12 },
+          { opacity: 0, scale: 0.95, y: 10 },
           {
             opacity: 1,
             scale: 1,
             y: 0,
-            duration: 0.55,
-            stagger: 0.07,
+            duration: 0.5,
+            stagger: 0.06,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: trustGalleryRef.current,
-              start: 'top 82%',
+              start: 'top 85%',
+              fastScrollEnd: true,
+              preventOverlaps: true,
             },
           }
         );
@@ -232,11 +221,13 @@ export const AboutSection: React.FC = () => {
       gsap.to(statsObj, {
         count1: 50,
         count2: 100,
-        duration: 1.6,
+        duration: 1.4,
         ease: 'power2.out',
         scrollTrigger: {
           trigger: cardsRef.current,
-          start: 'top 70%',
+          start: 'top 75%',
+          fastScrollEnd: true,
+          preventOverlaps: true,
         },
         onUpdate: () => {
           if (rocketCountRef.current) {
@@ -255,12 +246,14 @@ export const AboutSection: React.FC = () => {
           {
             rotate: 0,
             scale: 1,
-            duration: 0.7,
+            duration: 0.6,
             ease: 'back.out(1.5)',
-            stagger: 0.12,
+            stagger: 0.1,
             scrollTrigger: {
               trigger: cardsRef.current,
-              start: 'top 70%',
+              start: 'top 75%',
+              fastScrollEnd: true,
+              preventOverlaps: true,
             },
           }
         );
@@ -326,37 +319,44 @@ export const AboutSection: React.FC = () => {
       ref={sectionRef}
       className="relative w-full bg-[#040612] text-white py-[90px] lg:py-[115px] px-5 sm:px-10 lg:px-[80px] font-space overflow-hidden border-t border-b border-[#182544]/60 select-none"
     >
-      {/* Dynamic Animated Ambient Mesh Background (Register Button Palette) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {/* Dynamic Animated Ambient Mesh Background (GPU Composited Layer) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" style={{ transform: 'translateZ(0)' }}>
         {/* Luminous Top Central Glow Core */}
         <div 
-          className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[900px] h-[550px] rounded-full blur-[130px] opacity-70 animate-mesh-3"
+          className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[900px] h-[550px] rounded-full blur-[70px] opacity-70 animate-mesh-3"
           style={{
-            background: 'radial-gradient(circle, rgba(83, 107, 255, 0.28) 0%, rgba(66, 86, 246, 0.18) 45%, rgba(5, 8, 20, 0) 80%)'
+            background: 'radial-gradient(circle, rgba(83, 107, 255, 0.28) 0%, rgba(66, 86, 246, 0.18) 45%, rgba(5, 8, 20, 0) 80%)',
+            transform: 'translateZ(0)',
+            willChange: 'transform',
           }}
         />
 
         {/* Floating Orb 1 - Vibrant Electric Blue (Left) */}
         <div 
-          className="absolute top-[15%] left-[-10%] w-[650px] h-[650px] rounded-full blur-[140px] opacity-60 animate-mesh-1"
+          className="absolute top-[15%] left-[-10%] w-[650px] h-[650px] rounded-full blur-[80px] opacity-60 animate-mesh-1"
           style={{
-            background: 'radial-gradient(circle, rgba(79, 126, 255, 0.25) 0%, rgba(66, 86, 246, 0.14) 50%, transparent 75%)'
+            background: 'radial-gradient(circle, rgba(79, 126, 255, 0.25) 0%, rgba(66, 86, 246, 0.14) 50%, transparent 75%)',
+            transform: 'translateZ(0)',
+            willChange: 'transform',
           }}
         />
 
         {/* Floating Orb 2 - Deep Indigo Cyan Glow (Right) */}
         <div 
-          className="absolute bottom-[10%] right-[-10%] w-[700px] h-[700px] rounded-full blur-[150px] opacity-55 animate-mesh-2"
+          className="absolute bottom-[10%] right-[-10%] w-[700px] h-[700px] rounded-full blur-[80px] opacity-55 animate-mesh-2"
           style={{
-            background: 'radial-gradient(circle, rgba(96, 136, 255, 0.22) 0%, rgba(56, 72, 224, 0.16) 55%, transparent 80%)'
+            background: 'radial-gradient(circle, rgba(96, 136, 255, 0.22) 0%, rgba(56, 72, 224, 0.16) 55%, transparent 80%)',
+            transform: 'translateZ(0)',
+            willChange: 'transform',
           }}
         />
 
         {/* Ambient Ethereal Light Beam Sweep */}
         <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[600px] rounded-[100%] blur-[160px] opacity-30 pointer-events-none"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[600px] rounded-[100%] blur-[90px] opacity-30 pointer-events-none"
           style={{
-            background: 'linear-gradient(135deg, rgba(83,107,255,0.2) 0%, rgba(79,126,255,0.15) 50%, rgba(66,86,246,0.05) 100%)'
+            background: 'linear-gradient(135deg, rgba(83,107,255,0.2) 0%, rgba(79,126,255,0.15) 50%, rgba(66,86,246,0.05) 100%)',
+            transform: 'translateZ(0)',
           }}
         />
 
@@ -482,6 +482,8 @@ export const AboutSection: React.FC = () => {
                 <img
                   src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80"
                   alt="DISFRUTAR Hackathon Auditorium"
+                  decoding="async"
+                  loading="eager"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#07091C]/80 via-transparent to-transparent opacity-60 pointer-events-none" />
@@ -625,6 +627,8 @@ export const AboutSection: React.FC = () => {
                 <img
                   src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80"
                   alt="Hackathon Collaboration"
+                  decoding="async"
+                  loading="eager"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-[1.06]"
                 />
               </div>
@@ -634,6 +638,8 @@ export const AboutSection: React.FC = () => {
                 <img
                   src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80"
                   alt="Workshop Session"
+                  decoding="async"
+                  loading="eager"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-[1.06]"
                 />
               </div>
@@ -643,6 +649,8 @@ export const AboutSection: React.FC = () => {
                 <img
                   src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=600&q=80"
                   alt="Project Presentation"
+                  decoding="async"
+                  loading="eager"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-[1.06]"
                 />
               </div>
@@ -652,6 +660,8 @@ export const AboutSection: React.FC = () => {
                 <img
                   src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80"
                   alt="Organizing Team"
+                  decoding="async"
+                  loading="eager"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-[1.06]"
                 />
               </div>

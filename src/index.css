@@ -392,7 +392,7 @@ body {
 }
 
 @media (max-width: 768px) {
-  /* Reduce heavy backdrop blurs on mobile GPU compositing layers to maintain 60 FPS */
+  /* Reduce heavy backdrop blurs on mobile GPU compositing layers to maintain 60-120 FPS */
   .backdrop-blur-\[16px\],
   .backdrop-blur-\[20px\],
   .backdrop-blur-\[22px\],
@@ -400,18 +400,30 @@ body {
   .backdrop-blur-\[28px\],
   .backdrop-blur-2xl,
   .spec-panel {
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
   }
 
-  /* Reduce heavy background orb filter blurs on mobile screen viewports */
+  /* Reduce heavy background orb filter blurs on mobile screen viewports (including About section blurs) */
+  .blur-\[70px\],
+  .blur-\[80px\],
+  .blur-\[90px\],
   .blur-\[120px\],
   .blur-\[130px\],
   .blur-\[140px\],
   .blur-\[150px\],
   .blur-\[160px\],
   .blur-\[180px\] {
-    filter: blur(40px) !important;
+    filter: blur(28px) !important;
+    -webkit-filter: blur(28px) !important;
+  }
+
+  /* Simplify continuous keyframe rotations on mobile to prevent GPU fill-rate throttling */
+  .animate-mesh-1,
+  .animate-mesh-2,
+  .animate-mesh-3 {
+    animation-duration: 35s !important;
+    transform: translate3d(0, 0, 0);
   }
 
   /* Force hardware acceleration on key animated containers */
@@ -419,11 +431,12 @@ body {
   .faq-card-item,
   .mentor-card,
   .registration-card,
-  .member-card-container {
-    transform: translateZ(0);
+  .member-card-container,
+  .about-card {
+    transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    contain: content;
+    contain: layout paint style;
   }
 
   /* Disable heavy hover shadow calculations on touch screens */
@@ -437,12 +450,20 @@ body {
 .heading-word,
 .desc-word,
 .char-letter,
-.animate-gpu {
+.animate-gpu,
+.timeline-item,
+.timeline-separator,
+.step-badge,
+.step-title,
+.step-desc,
+.about-card {
   will-change: transform, opacity;
-  transform: translateZ(0);
+  transform: translate3d(0, 0, 0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
+
+
 
 
 
