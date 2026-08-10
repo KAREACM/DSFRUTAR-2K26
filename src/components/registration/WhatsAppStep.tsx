@@ -12,7 +12,7 @@ const WhatsAppStepComponent: React.FC<WhatsAppStepProps> = ({
   const [joined, setJoined] = useState(false);
 
   const handleJoin = () => {
-    window.open('https://chat.whatsapp.com/sample-disfrutar-2k26-community', '_blank');
+    window.open('https://chat.whatsapp.com/CT6etElQq8g1rNMuLMAVEq?s=cl&p=i&ilr=0', '_blank');
     setJoined(true);
   };
 

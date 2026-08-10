@@ -27,8 +27,7 @@ const INITIAL_MEMBERS: MemberData[] = [
   { id: '1', role: 'Leader', name: '', registerNumber: '', phone: '', year: '3rd Year', department: 'CSE', section: '24S01', residenceType: 'Day Scholar' },
   { id: '2', role: 'Member 1', name: '', registerNumber: '', phone: '', year: '3rd Year', department: 'CSE', section: '24S01', residenceType: 'Day Scholar' },
   { id: '3', role: 'Member 2', name: '', registerNumber: '', phone: '', year: '3rd Year', department: 'CSE', section: '24S01', residenceType: 'Day Scholar' },
-  { id: '4', role: 'Member 3', name: '', registerNumber: '', phone: '', year: '3rd Year', department: 'CSE', section: '24S01', residenceType: 'Day Scholar' },
-  { id: '5', role: 'Member 4 (Optional)', isOptional: true, name: '', registerNumber: '', phone: '', year: '3rd Year', department: 'CSE', section: '24S01', residenceType: 'Day Scholar' },
+  { id: '4', role: 'Member 3 (Optional)', isOptional: true, name: '', registerNumber: '', phone: '', year: '3rd Year', department: 'CSE', section: '24S01', residenceType: 'Day Scholar' },
 ];
 
 export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
@@ -145,13 +144,13 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
     return basic && hostel;
   }, []);
 
-  const requiredMembers = useMemo(() => (registrationState.members || []).slice(0, 4), [registrationState.members]);
-  const optionalMember = (registrationState.members || [])[4] || { id: '5', role: 'Member 4 (Optional)', isOptional: true, name: '', registerNumber: '', phone: '', year: '3rd Year', department: 'CSE', section: '24S01', residenceType: 'Day Scholar' };
+  const requiredMembers = useMemo(() => (registrationState.members || []).slice(0, 3), [registrationState.members]);
+  const optionalMember = (registrationState.members || [])[3] || { id: '4', role: 'Member 3 (Optional)', isOptional: true, name: '', registerNumber: '', phone: '', year: '3rd Year', department: 'CSE', section: '24S01', residenceType: 'Day Scholar' };
 
-  // 1. Leader + 3 members (4 members minimum) MUST all be completed
+  // 1. Leader + 2 members (3 members minimum) MUST all be completed
   const requiredMembersComplete = useMemo(() => requiredMembers.every(isMemberComplete), [requiredMembers, isMemberComplete]);
 
-  // 2. Member 4 (Optional): If any input is started, it must be fully completed. If empty, it's valid.
+  // 2. Member 3 (Optional): If any input is started, it must be fully completed. If empty, it's valid.
   const isOptionalTouched = Boolean(
     (optionalMember?.name || '').trim() || 
     (optionalMember?.registerNumber || '').trim() || 
@@ -162,7 +161,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
   // 3. Team Name must be at least 2 characters
   const isTeamNameValid = (registrationState.teamName || '').trim().length >= 2;
 
-  // 4. Overall Team Validity (Team size < 4 is rejected)
+  // 4. Overall Team Validity (Team size < 3 is rejected)
   const isTeamValid = isTeamNameValid && requiredMembersComplete && isOptionalMemberValid;
 
   // Steps definition for progress indicator
@@ -338,7 +337,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center justify-between px-2">
                   <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white/70">
-                    Team Members (4 Minimum, 5 Max)
+                    Team Members (3 Minimum, 4 Max)
                   </h3>
                   <span className="text-[10px] sm:text-[11px] font-mono text-white/40">Collapsible Cards</span>
                 </div>
@@ -394,7 +393,7 @@ export const RegistrationFlow: React.FC<RegistrationFlowProps> = ({
                         );
                       })}
                       <span className="text-[10px] sm:text-[11px] font-mono text-white/70 ml-1 font-bold">
-                        {requiredMembers.filter(isMemberComplete).length}/4 Verified
+                        {requiredMembers.filter(isMemberComplete).length}/3 Verified
                       </span>
                     </div>
 

@@ -154,7 +154,7 @@ export const FaqSection: React.FC = () => {
         <p className="text-white/80 leading-relaxed text-[14px] sm:text-[15px]">
           Each team must consist of{' '}
           <span className="text-white font-semibold bg-white/10 px-2.5 py-0.5 rounded border border-white/12">
-            4 to 5 members
+            3 to 4 members
           </span>
           . Individual participation is not allowed.
         </p>
@@ -176,9 +176,9 @@ export const FaqSection: React.FC = () => {
             </div>
             <div className="flex items-center gap-3 p-3 rounded-xl bg-white/4 border border-white/8">
               <span className="px-2.5 py-1 text-xs font-bold font-space text-[#8DA2FF] bg-[#536BFF]/15 rounded-md border border-[#536BFF]/30 shrink-0">
-                29 August
+                28 August
               </span>
-              <span className="text-white/90 font-medium">Offline Bootcamp</span>
+              <span className="text-white/90 font-medium">Online Bootcamp</span>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-xl bg-[#536BFF]/10 border border-[#536BFF]/35 shadow-[0_0_16px_rgba(83,107,255,0.15)]">
               <span className="px-2.5 py-1 text-xs font-bold font-space text-white bg-[#536BFF] rounded-md shadow-[0_0_10px_#536BFF] shrink-0">

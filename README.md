@@ -66,7 +66,7 @@ Bringing together top student developers, AI researchers, software engineers, an
 > - **Duration**: 32 Hours Non-Stop Innovation (15 August 2026).
 > - **Host Institution**: Kalasalingam Academy of Research and Education (Deemed to be University), Anand Nagar, Krishnankoil.
 > - **Organizing Body**: KARE ACM Student Chapter.
-> - **Team Size**: 4 to 5 Members per Team.
+> - **Team Size**: 3 to 4 Members per Team.
 > - **Core Problem Domains**: Generative AI, Autonomous Agents, Edge AI & IoT, Computer Vision, NLP & Large Language Models, and Quantum Machine Learning.
 
 ### Mission & Vision
@@ -340,3 +340,6 @@ Distributed under the **MIT License**. See `LICENSE` for more details.
 <div align="center">
   <sub>Crafted with ❤️ by KARE ACM Student Chapter</sub>
 </div>
+# DISFRUTAR-2K26
+# DISFRUTAR-2K26
+# DISFRUTAR-2K26

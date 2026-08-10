@@ -161,7 +161,7 @@ const MemberCardComponent: React.FC<MemberCardProps> = ({
                   <input
                     type="text"
                     value={member.registerNumber}
-                    onChange={(e) => handleInputChange('registerNumber', e.target.value.toUpperCase())}
+                    onChange={(e) => handleInputChange('registerNumber', e.target.value.replace(/\D/g, ''))}
                     placeholder="e.g. 9921004123"
                     className="registration-input w-full h-[44px] pl-11 pr-4 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 text-sm text-white placeholder-white/25 outline-none font-sans uppercase"
                   />
@@ -180,8 +180,8 @@ const MemberCardComponent: React.FC<MemberCardProps> = ({
                   <input
                     type="tel"
                     value={member.phone || ''}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="e.g. +91 9876543210"
+                    onChange={(e) => handleInputChange('phone', e.target.value.replace(/\D/g, ''))}
+                    placeholder="e.g. 9876543210"
                     className="registration-input w-full h-[44px] pl-11 pr-4 rounded-full bg-white/[0.04] border border-white/12 hover:border-white/20 focus:border-[#536BFF] focus:ring-1 focus:ring-[#536BFF]/30 text-sm text-white placeholder-white/25 outline-none font-sans"
                   />
                 </div>
@@ -336,8 +336,8 @@ const MemberCardComponent: React.FC<MemberCardProps> = ({
                         <input
                           type="tel"
                           value={member.wardenPhone || ''}
-                          onChange={(e) => handleInputChange('wardenPhone', e.target.value)}
-                          placeholder="+91 9876543210"
+                          onChange={(e) => handleInputChange('wardenPhone', e.target.value.replace(/\D/g, ''))}
+                          placeholder="9876543210"
                           className="registration-input w-full h-[40px] pl-10 pr-4 rounded-full bg-white/[0.05] border border-white/10 text-xs text-white placeholder-white/20 outline-none focus:border-[#536BFF]"
                         />
                       </div>

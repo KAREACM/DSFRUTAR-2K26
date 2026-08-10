@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Rocket, Users, Lightbulb, ShieldCheck } from 'lucide-react';
+import { Rocket, Users, Lightbulb, ShieldCheck, Code2, PhoneCall, Award } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -284,49 +284,45 @@ export const AboutSection: React.FC = () => {
     {
       number: '15',
       month: 'AUGUST',
-      title: 'Bootcamps Begin',
-      description: 'Kickstart your learning journey',
+      title: 'Boot Camp 1 (Online)',
+      description: 'Intro to Agentic AI, intelligent agents, and applications. 09:00 AM – 06:00 PM',
     },
     {
-      number: '29',
+      number: '28',
       month: 'AUGUST',
-      title: 'Bootcamps Continue',
-      description: 'Offline workshops & sessions',
+      title: 'Boot Camp 2 (Online)',
+      description: 'Advanced Agentic AI, frameworks, and practical development. 09:00 AM – 06:00 PM',
     },
     {
       number: '4 – 5',
       month: 'SEPTEMBER',
-      title: 'Hackathon',
-      description: '32-Hour Innovation Sprint',
+      title: 'Hackathon (Offline)',
+      description: 'Agentic AI challenge. Build solutions to real-world problems. 09:00 AM – 07:00 PM',
     },
     {
       number: '₹350',
       month: '',
-      title: 'Event Registration',
-      description: 'Selected participants may get internship opportunities',
+      title: 'Registration Fee',
+      description: '₹350 per participant. Earns 2 EE credits & internship opportunities.',
     },
   ];
 
-  const howItWorksSteps = [
+  const courseTopics = [
     {
-      step: '01',
-      title: 'Learn',
-      description: 'Attend online & offline bootcamps from industry experts.',
+      title: 'Python & Django Core',
+      description: 'Build robust and highly scalable backends for artificial intelligence applications.',
     },
     {
-      step: '02',
-      title: 'Build',
-      description: 'Collaborate, ideate, and build innovative solutions.',
+      title: 'AI Agent Architectures',
+      description: 'Understand cognitive loops, tool use, and multi-agent interaction systems.',
     },
     {
-      step: '03',
-      title: 'Pitch',
-      description: 'Present your ideas to mentors and industry leaders.',
+      title: 'RAG & LangChain Orchestration',
+      description: 'Develop intelligent document ingestion, retrieval, and conversation history flows.',
     },
     {
-      step: '04',
-      title: 'Grow',
-      description: 'Top teams get recognition and internship opportunities.',
+      title: 'AI-Powered Employees',
+      description: 'Coordinate multiple agents into a cohesive automated workforce.',
     },
   ];
 
@@ -553,7 +549,7 @@ export const AboutSection: React.FC = () => {
             </div>
           </div>
 
-          {/* CENTER CARD: How It Works */}
+          {/* CENTER CARD: Course details */}
           <div className="about-card group relative bg-[#07091C]/65 border border-white/10 rounded-[24px] p-6 lg:p-[30px] backdrop-blur-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[4px] hover:bg-[#07091C]/92 hover:border-[#536BFF]/50 hover:shadow-[0_12px_40px_rgba(83,107,255,0.22)] lg:h-[480px] overflow-hidden">
             {/* Top Inner Highlight Line matching FAQ Active State */}
             <div
@@ -567,39 +563,38 @@ export const AboutSection: React.FC = () => {
             {/* Card Header */}
             <div className="flex items-center gap-3.5 mb-4 relative z-10">
               <div className="w-[46px] h-[46px] rounded-full bg-[#4F7EFF]/15 border border-[#4F7EFF]/40 flex items-center justify-center text-[#4F7EFF] shrink-0 shadow-[0_0_18px_rgba(79,126,255,0.35)] group-hover:bg-[#536BFF] group-hover:text-white group-hover:border-[#536BFF] group-hover:shadow-[0_0_18px_rgba(83,107,255,0.6)] transition-all duration-300">
-                <Lightbulb className="w-5 h-5 stroke-[2]" />
+                <Code2 className="w-5 h-5 stroke-[2]" />
               </div>
-              <h3 className="text-[22px] lg:text-[25px] font-bold text-white tracking-tight">
-                How It Works
-              </h3>
+              <div>
+                <h3 className="text-[20px] lg:text-[22px] font-bold text-white tracking-tight leading-tight">
+                  AI Django Course
+                </h3>
+                <p className="text-[11px] font-mono text-[#8DA2FF] font-semibold uppercase tracking-wider">
+                  Agentic AI for Developers
+                </p>
+              </div>
             </div>
 
-            {/* Vertical Timeline List */}
+            {/* Course Description / Topics */}
             <div className="relative flex-1 flex flex-col justify-between my-1 z-10">
-              {/* Vertical Line */}
-              <div
-                ref={howItWorksLineRef}
-                className="absolute left-[17px] top-[18px] bottom-[18px] w-[2px] bg-[#4F7EFF]/35 origin-top pointer-events-none"
-              />
-
-              <div ref={stepNodesRef} className="flex flex-col justify-between h-full py-0.5">
-                {howItWorksSteps.map((step, idx) => (
+              <div className="flex flex-col justify-between h-full py-0.5 space-y-3">
+                {courseTopics.map((topic, idx) => (
                   <div
                     key={idx}
-                    className="relative flex items-start gap-3.5 z-10 my-0.5"
+                    className="relative flex items-start gap-3 z-10"
                   >
-                    {/* Number Badge */}
-                    <div className="step-badge w-[36px] h-[36px] rounded-full bg-[#07091C] border-2 border-[#4F7EFF] text-[#4F7EFF] font-bold text-[13px] flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(79,126,255,0.35)] group-hover:border-[#536BFF] group-hover:text-white group-hover:bg-[#536BFF] group-hover:shadow-[0_0_14px_rgba(83,107,255,0.55)] transition-all duration-300">
-                      {step.step}
+                    {/* Bullet indicator */}
+                    <div className="w-[20px] h-[20px] rounded-full bg-[#4F7EFF]/20 text-[#8DA2FF] font-bold text-[10px] flex items-center justify-center shrink-0 border border-[#4F7EFF]/35 mt-0.5">
+                      ✓
                     </div>
 
-                    {/* Step Content */}
-                    <div className="flex flex-col pt-0.5">
-                      <h4 className="step-title text-[15px] lg:text-[17px] font-semibold text-white tracking-tight leading-none mb-1">
-                        {step.title}
+                    {/* Topic Content */}
+                    <div className="flex flex-col">
+                      <h4 className="text-[14px] lg:text-[15px] font-semibold text-white tracking-tight leading-none mb-1">
+                        {topic.title}
                       </h4>
-                      <p className="step-desc text-[12px] lg:text-[13px] text-[#A2B6DE] font-normal leading-relaxed">
-                        {step.description}
+                      <p className="text-[11px] lg:text-[12px] text-[#A2B6DE] font-normal leading-relaxed">
+                        {topic.description}
                       </p>
                     </div>
                   </div>
@@ -608,7 +603,7 @@ export const AboutSection: React.FC = () => {
             </div>
           </div>
 
-          {/* RIGHT CARD: Built on Trust */}
+          {/* RIGHT CARD: Clarifications & Contacts */}
           <div className="about-card group relative bg-[#07091C]/65 border border-white/10 rounded-[24px] p-6 lg:p-[30px] backdrop-blur-[16px] shadow-[0_16px_60px_rgba(0,0,0,0.35)] flex flex-col justify-between transition-all duration-300 hover:-translate-y-[4px] hover:bg-[#07091C]/92 hover:border-[#536BFF]/50 hover:shadow-[0_12px_40px_rgba(83,107,255,0.22)] lg:h-[480px] overflow-hidden">
             {/* Top Inner Highlight Line matching FAQ Active State */}
             <div
@@ -619,68 +614,71 @@ export const AboutSection: React.FC = () => {
               }}
             />
 
-            <div className="relative z-10">
+            <div className="relative z-10 space-y-4">
               {/* Header */}
               <div className="flex items-center gap-3.5 mb-3">
                 <div className="w-[46px] h-[46px] rounded-full bg-[#4F7EFF]/15 border border-[#4F7EFF]/40 flex items-center justify-center text-[#4F7EFF] shrink-0 shadow-[0_0_18px_rgba(79,126,255,0.35)] group-hover:bg-[#536BFF] group-hover:text-white group-hover:border-[#536BFF] group-hover:shadow-[0_0_18px_rgba(83,107,255,0.6)] transition-all duration-300">
-                  <ShieldCheck className="w-5 h-5 stroke-[2]" />
+                  <PhoneCall className="w-5 h-5 stroke-[2]" />
                 </div>
-                <h3 className="text-[22px] lg:text-[25px] font-bold text-white tracking-tight">
-                  Built on Trust
+                <h3 className="text-[20px] lg:text-[22px] font-bold text-white tracking-tight">
+                  Clarifications
                 </h3>
               </div>
 
-              {/* Subtitle Paragraph */}
-              <p className="text-[13px] lg:text-[14px] text-[#C5D5F8] font-normal leading-relaxed mb-4">
-                Our community is our strength. We ensure a transparent, inclusive,
-                and high-impact experience for every participant.
-              </p>
+              {/* Fee & Credits strip */}
+              <div className="grid grid-cols-2 gap-2 bg-[#536BFF]/10 p-3 rounded-xl border border-[#536BFF]/20 text-xs font-mono">
+                <div>
+                  <span className="text-white/40 text-[9px] uppercase block">Reg Fee</span>
+                  <span className="text-white font-bold">₹350 / member</span>
+                </div>
+                <div>
+                  <span className="text-white/40 text-[9px] uppercase block">Credits</span>
+                  <span className="text-emerald-400 font-bold flex items-center gap-1">
+                    <Award className="w-3.5 h-3.5" /> 2 EE Credits
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* 2x2 Image Grid Gallery */}
-            <div ref={trustGalleryRef} className="grid grid-cols-2 gap-3 mt-auto relative z-10">
-              {/* Image 1 */}
-              <div className="relative h-[95px] lg:h-[105px] rounded-[14px] overflow-hidden border border-white/10 shadow-sm group/img">
-                <img
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80"
-                  alt="Hackathon Collaboration"
-                  decoding="async"
-                  loading="eager"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-[1.06]"
-                />
-              </div>
+            {/* Coordinator Directory */}
+            <div className="space-y-2 mt-auto relative z-10">
+              <span className="text-[10px] font-mono font-bold text-white/40 uppercase tracking-widest block mb-1">
+                Contact Directory
+              </span>
+              
+              <div className="space-y-2">
+                <a 
+                  href="tel:+917893340788" 
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/5 hover:border-[#536BFF]/40 hover:bg-[#536BFF]/5 transition-all text-xs font-mono"
+                >
+                  <div className="flex flex-col">
+                    <span className="text-white font-semibold">Shaik Thaha</span>
+                    <span className="text-white/40 text-[10px]">Lead Organizer</span>
+                  </div>
+                  <span className="text-[#8DA2FF] font-semibold">+91 7893340788</span>
+                </a>
 
-              {/* Image 2 */}
-              <div className="relative h-[95px] lg:h-[105px] rounded-[14px] overflow-hidden border border-white/10 shadow-sm group/img">
-                <img
-                  src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80"
-                  alt="Workshop Session"
-                  decoding="async"
-                  loading="eager"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-[1.06]"
-                />
-              </div>
+                <a 
+                  href="tel:+918885261206" 
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/5 hover:border-[#536BFF]/40 hover:bg-[#536BFF]/5 transition-all text-xs font-mono"
+                >
+                  <div className="flex flex-col">
+                    <span className="text-white font-semibold">A. Harini</span>
+                    <span className="text-white/40 text-[10px]">Coordinator</span>
+                  </div>
+                  <span className="text-[#8DA2FF] font-semibold">+91 8885261206</span>
+                </a>
 
-              {/* Image 3 */}
-              <div className="relative h-[95px] lg:h-[105px] rounded-[14px] overflow-hidden border border-white/10 shadow-sm group/img">
-                <img
-                  src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=600&q=80"
-                  alt="Project Presentation"
-                  decoding="async"
-                  loading="eager"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-[1.06]"
-                />
-              </div>
-
-              {/* Image 4 */}
-              <div className="relative h-[95px] lg:h-[105px] rounded-[14px] overflow-hidden border border-white/10 shadow-sm group/img">
-                <img
-                  src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80"
-                  alt="Organizing Team"
-                  decoding="async"
-                  loading="eager"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-[1.06]"
-                />
+                <a 
+                  href="tel:+919573861418" 
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/5 hover:border-[#536BFF]/40 hover:bg-[#536BFF]/5 transition-all text-xs font-mono"
+                >
+                  <div className="flex flex-col">
+                    <span className="text-white font-semibold">G. Umesh Chandra</span>
+                    <span className="text-white/40 text-[9px] truncate max-w-[110px]">Coordinator</span>
+                  </div>
+                  <span className="text-[#8DA2FF] font-semibold">+91 9573861418</span>
+                </a>
               </div>
             </div>
           </div>

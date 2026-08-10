@@ -64,11 +64,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
         duration: 0.5,
         stagger: 0.1
       }, 0.1)
-      .to(presenterTextRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.4
-      }, "-=0.3");
+        .to(presenterTextRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.4
+        }, "-=0.3");
 
       // 2. DISFRUTAR Character Stagger Revelation
       tl.to('.char-letter', {
@@ -96,11 +96,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
         opacity: 1,
         duration: 0.5
       }, "-=0.2")
-      .to(taglineRef.current, {
-        y: 0,
-        opacity: 1,
-        duration: 0.4
-      }, "-=0.3");
+        .to(taglineRef.current, {
+          y: 0,
+          opacity: 1,
+          duration: 0.4
+        }, "-=0.3");
 
       // 5. Glass Information Card Rise & Scale
       tl.to(cardRef.current, {
@@ -125,12 +125,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
   }, [isVisible]);
 
   return (
-    <section 
+    <section
       id="home"
       ref={heroRef}
-      className={`relative h-screen w-full text-white flex flex-col items-center justify-between font-space overflow-hidden selection:bg-[#4D7CFF] selection:text-white transition-opacity duration-500 ease-out pt-[54px] sm:pt-[60px] md:pt-[64px] pb-4 ${
-        isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
-      }`}
+      className={`relative h-screen w-full text-white flex flex-col items-center justify-between font-space overflow-hidden selection:bg-[#4D7CFF] selection:text-white transition-opacity duration-500 ease-out pt-[54px] sm:pt-[60px] md:pt-[64px] pb-4 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
       style={{
         backgroundColor: '#050814',
         backgroundImage: "url('/images/hero_secction_bg.png'), url('/hero_secction_bg.png')",
@@ -144,11 +143,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
 
       {/* Main Hero Content Area - Rhythmic Vertical Spacing (Max Width 1180px) */}
       <main className="relative z-10 w-full max-w-[1180px] mx-auto px-4 flex-1 flex flex-col items-center justify-center text-center my-auto py-1">
-        
+
         {/* KARE ACM Presenter Header (Nav -> 54px gap on desktop, reduced to fit without scroll) */}
         <div className="flex items-center justify-center gap-3 sm:gap-4 mt-2 sm:mt-3 md:mt-[24px] mb-2 sm:mb-3 md:mb-[20px]">
           <div ref={lineLeftRef} className="w-[32px] sm:w-[48px] md:w-[64px] h-[1px] bg-[#4F7EFF] origin-right" />
-          <span 
+          <span
             ref={presenterTextRef}
             className="text-[9px] sm:text-[11px] md:text-[12px] lg:text-[13px] font-medium tracking-[0.24em] sm:tracking-[0.36em] md:tracking-[0.42em] text-white/88 uppercase font-space"
           >
@@ -158,7 +157,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
         </div>
 
         {/* Main Display Title: DISFRUTAR (Tracking 0.34em, slightly scaled to prevent scroll) */}
-        <h1 
+        <h1
           ref={titleRef}
           className="font-space font-bold text-white tracking-[0.22em] sm:tracking-[0.28em] md:tracking-[0.34em] leading-none mb-1.5 sm:mb-2 md:mb-[12px] select-none text-[32px] sm:text-[52px] md:text-[72px] lg:text-[84px] xl:text-[96px] flex items-center justify-center overflow-hidden"
           style={{
@@ -174,7 +173,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
         </h1>
 
         {/* Subtitle Year: 2K26 (Refined #4F7EFF Bloom & 0.30em tracking) */}
-        <div 
+        <div
           ref={yearRef}
           className="font-space font-semibold text-[#4F7EFF] tracking-[0.24em] sm:tracking-[0.28em] md:tracking-[0.30em] leading-tight mb-2.5 sm:mb-3 md:mb-[18px] text-[22px] sm:text-[32px] md:text-[40px] lg:text-[46px]"
           style={{
@@ -185,7 +184,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
         </div>
 
         {/* Event Title: 32-HOUR AI HACKATHON */}
-        <h2 
+        <h2
           ref={eventTitleRef}
           className="font-space font-normal text-white tracking-[0.16em] sm:tracking-[0.20em] md:tracking-[0.24em] uppercase mb-1.5 sm:mb-2 md:mb-[10px] text-[13px] sm:text-[17px] md:text-[21px] lg:text-[24px]"
         >
@@ -193,7 +192,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
         </h2>
 
         {/* Tagline: THINK • BUILD • INNOVATE */}
-        <p 
+        <p
           ref={taglineRef}
           className="font-space font-medium tracking-[0.32em] sm:tracking-[0.44em] md:tracking-[0.55em] text-[#FFFFFF]/52 text-[10px] sm:text-[11px] md:text-[12px] uppercase leading-tight mb-4 sm:mb-5 md:mb-[24px]"
         >
@@ -201,7 +200,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
         </p>
 
         {/* Information Glass Card with 4 Luminous Corner Radial Lights & Dark Surface */}
-        <div 
+        <div
           ref={cardRef}
           className="relative w-full max-w-[1042px] min-h-[58px] md:h-[68px] rounded-[18px] backdrop-blur-[22px] grid grid-cols-2 lg:grid-cols-4 overflow-hidden mb-4 sm:mb-5 md:mb-[24px] energy-border shadow-none"
         >
@@ -213,8 +212,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
 
           {/* Column 1: Date */}
           <div className="flex items-center justify-center gap-2.5 py-1.5 sm:py-2 px-3 relative">
-            <CalendarDays 
-              className="w-[20px] h-[20px] text-[#4F7EFF] shrink-0 stroke-[2]" 
+            <CalendarDays
+              className="w-[20px] h-[20px] text-[#4F7EFF] shrink-0 stroke-[2]"
               style={{ filter: 'drop-shadow(0 0 6px rgba(79,126,255,0.55))' }}
             />
             <span className="text-[13px] sm:text-[14px] md:text-[15px] font-medium leading-[22px] tracking-[0.01em] text-white/95 whitespace-nowrap">
@@ -226,8 +225,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
 
           {/* Column 2: Location */}
           <div className="flex items-center justify-center gap-2.5 py-1.5 sm:py-2 px-3 relative">
-            <MapPinned 
-              className="w-[20px] h-[20px] text-[#4F7EFF] shrink-0 stroke-[2]" 
+            <MapPinned
+              className="w-[20px] h-[20px] text-[#4F7EFF] shrink-0 stroke-[2]"
               style={{ filter: 'drop-shadow(0 0 6px rgba(79,126,255,0.55))' }}
             />
             <span className="text-[12px] sm:text-[13px] md:text-[14px] font-medium leading-[22px] tracking-[0.01em] text-white/95 whitespace-nowrap">
@@ -239,12 +238,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
 
           {/* Column 3: Team Size */}
           <div className="flex items-center justify-center gap-2.5 py-1.5 sm:py-2 px-3 relative">
-            <UsersRound 
-              className="w-[20px] h-[20px] text-[#4F7EFF] shrink-0 stroke-[2]" 
+            <UsersRound
+              className="w-[20px] h-[20px] text-[#4F7EFF] shrink-0 stroke-[2]"
               style={{ filter: 'drop-shadow(0 0 6px rgba(79,126,255,0.55))' }}
             />
             <span className="text-[13px] sm:text-[14px] md:text-[15px] font-medium leading-[22px] tracking-[0.01em] text-white/95 whitespace-nowrap">
-              4–5 MEMBERS
+              3–4 MEMBERS
             </span>
             {/* Divider Line (Vertical) */}
             <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-[40px] bg-white/8" />
@@ -252,8 +251,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
 
           {/* Column 4: Duration */}
           <div className="flex items-center justify-center gap-2.5 py-1.5 sm:py-2 px-3">
-            <Clock3 
-              className="w-[20px] h-[20px] text-[#4F7EFF] shrink-0 stroke-[2]" 
+            <Clock3
+              className="w-[20px] h-[20px] text-[#4F7EFF] shrink-0 stroke-[2]"
               style={{ filter: 'drop-shadow(0 0 6px rgba(79,126,255,0.55))' }}
             />
             <span className="text-[13px] sm:text-[14px] md:text-[15px] font-medium leading-[22px] tracking-[0.01em] text-white/95 whitespace-nowrap">
@@ -264,7 +263,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isVisible = true, onRe
 
         {/* Primary Hero CTA Button: Register for DISFRUTAR 2K26 */}
         <div ref={ctaRef} className="mb-2 sm:mb-3 md:mb-4">
-          <button 
+          <button
             ref={ctaBtnRef}
             onMouseMove={handleCtaBtnMouseMove}
             onMouseLeave={handleCtaBtnMouseLeave}

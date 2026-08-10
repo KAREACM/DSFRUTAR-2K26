@@ -43,8 +43,8 @@ const PaymentStepComponent: React.FC<PaymentStepProps> = ({
   const memberCount = activeMembers.length;
   const totalAmount = memberCount * 350;
 
-  const upiId = "acmkare@upi";
-  const payeeName = "KARE ACM Student Chapter";
+  const upiId = "chinnasamyponnusamy-1@okicici";
+  const payeeName = "Dr.P.Chinnasamy";
   const note = `Disfrutar2K26-${(state?.teamName || 'Team').replace(/\s+/g, '')}`;
   const upiDeepLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${totalAmount}&tn=${encodeURIComponent(note)}&cu=INR`;
 
@@ -227,65 +227,12 @@ const PaymentStepComponent: React.FC<PaymentStepProps> = ({
 
           {/* QR Code Canvas Frame */}
           <div className="flex flex-col items-center justify-center p-6 rounded-[20px] bg-[#0c102b] border border-white/10 space-y-3 gpu-accelerate">
-            <div className="relative p-4 rounded-[16px] bg-white text-black shadow-[0_0_32px_rgba(83,107,255,0.3)]">
-              {/* High precision SVG QR Code visualization */}
-              <svg viewBox="0 0 200 200" className="w-44 h-44 sm:w-52 sm:h-52">
-                <rect width="200" height="200" fill="#FFFFFF" />
-                {/* Position detection patterns */}
-                <rect x="10" y="10" width="50" height="50" fill="#000000" />
-                <rect x="18" y="18" width="34" height="34" fill="#FFFFFF" />
-                <rect x="26" y="26" width="18" height="18" fill="#000000" />
-
-                <rect x="140" y="10" width="50" height="50" fill="#000000" />
-                <rect x="148" y="18" width="34" height="34" fill="#FFFFFF" />
-                <rect x="156" y="26" width="18" height="18" fill="#000000" />
-
-                <rect x="10" y="140" width="50" height="50" fill="#000000" />
-                <rect x="18" y="148" width="34" height="34" fill="#FFFFFF" />
-                <rect x="26" y="156" width="18" height="18" fill="#000000" />
-
-                {/* Simulated QR data matrix dots */}
-                <g fill="#000000">
-                  <rect x="70" y="20" width="10" height="10" />
-                  <rect x="90" y="20" width="10" height="10" />
-                  <rect x="110" y="20" width="10" height="10" />
-                  <rect x="70" y="40" width="10" height="10" />
-                  <rect x="100" y="40" width="20" height="10" />
-                  
-                  <rect x="20" y="70" width="10" height="10" />
-                  <rect x="40" y="70" width="20" height="10" />
-                  <rect x="70" y="70" width="10" height="10" />
-                  <rect x="90" y="70" width="20" height="20" fill="#536BFF" />
-                  <rect x="120" y="70" width="10" height="10" />
-                  <rect x="140" y="70" width="20" height="10" />
-                  <rect x="170" y="70" width="10" height="10" />
-
-                  <rect x="20" y="90" width="10" height="20" />
-                  <rect x="40" y="100" width="10" height="10" />
-                  <rect x="60" y="90" width="20" height="10" />
-                  <rect x="120" y="90" width="30" height="10" />
-                  <rect x="160" y="90" width="20" height="20" />
-
-                  <rect x="70" y="120" width="20" height="10" />
-                  <rect x="100" y="120" width="10" height="20" />
-                  <rect x="130" y="120" width="20" height="10" />
-
-                  <rect x="70" y="140" width="10" height="20" />
-                  <rect x="90" y="150" width="20" height="10" />
-                  <rect x="120" y="140" width="20" height="20" />
-                  <rect x="150" y="140" width="10" height="20" />
-                  <rect x="170" y="150" width="10" height="20" />
-
-                  <rect x="70" y="170" width="30" height="10" />
-                  <rect x="110" y="170" width="20" height="10" />
-                  <rect x="140" y="170" width="20" height="10" />
-                  <rect x="170" y="180" width="10" height="10" />
-                </g>
-
-                {/* Center ACM Logo emblem */}
-                <circle cx="100" cy="100" r="18" fill="#07091C" />
-                <text x="100" y="104" fontSize="9" fontWeight="bold" fill="#536BFF" textAnchor="middle" fontFamily="sans-serif">ACM</text>
-              </svg>
+            <div className="relative p-2 rounded-[24px] bg-white text-black shadow-[0_0_32px_rgba(83,107,255,0.3)] w-44 h-44 sm:w-52 sm:h-52 overflow-hidden flex items-center justify-center">
+              <img 
+                src="/payment_qr.jpg" 
+                alt="UPI Payment QR Code" 
+                className="w-full h-full object-contain"
+              />
             </div>
 
             <div className="text-center space-y-1">

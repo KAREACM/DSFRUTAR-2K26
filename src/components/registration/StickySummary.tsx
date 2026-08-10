@@ -12,8 +12,8 @@ const StickySummaryComponent: React.FC<StickySummaryProps> = ({
   members,
 }) => {
   // Calculate completed count
-  const requiredMembers = (members || []).slice(0, 4);
-  const optionalMember = (members || [])[4];
+  const requiredMembers = (members || []).slice(0, 3);
+  const optionalMember = (members || [])[3];
 
   const isMemberComplete = (m: MemberData) => {
     if (!m) return false;
@@ -36,7 +36,7 @@ const StickySummaryComponent: React.FC<StickySummaryProps> = ({
   const totalFee = totalMemberCount * feePerPerson;
 
   const isTeamNameValid = (teamName || '').trim().length >= 2;
-  const isValidTeam = isTeamNameValid && completedRequired === 4 && isOptionalMemberValid;
+  const isValidTeam = isTeamNameValid && completedRequired === 3 && isOptionalMemberValid;
 
   return (
     <div className="w-full bg-[#07091C]/90 border border-white/12 rounded-[22px] p-5 sm:p-6 backdrop-blur-[24px] shadow-[0_16px_48px_rgba(0,0,0,0.6)] space-y-5 gpu-accelerate registration-card">
@@ -66,7 +66,7 @@ const StickySummaryComponent: React.FC<StickySummaryProps> = ({
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs font-mono text-white/60">
           <span>Required Team Size</span>
-          <span className="font-bold text-white">{completedRequired} / 4 Verified</span>
+          <span className="font-bold text-white">{completedRequired} / 3 Verified</span>
         </div>
 
         <div className="grid grid-cols-5 gap-1.5">
@@ -89,7 +89,7 @@ const StickySummaryComponent: React.FC<StickySummaryProps> = ({
         </div>
 
         <p className="text-[11px] text-white/40 font-sans italic pt-1">
-          * Minimum 4 members required. Member 5 is optional (₹350 extra).
+          * Minimum 3 members required. Member 4 is optional (₹350 extra).
         </p>
       </div>
 
